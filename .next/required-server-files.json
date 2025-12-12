@@ -1,7 +1,9 @@
 {
   "version": 1,
   "config": {
-    "env": {},
+    "env": {
+      "NEXT_PUBLIC_BASE_PATH": "/Canary-Academy-demo"
+    },
     "webpack": null,
     "typescript": {
       "ignoreBuildErrors": true
@@ -9,7 +11,7 @@
     "typedRoutes": false,
     "distDir": ".next",
     "cleanDistDir": true,
-    "assetPrefix": "",
+    "assetPrefix": "/Canary-Academy-demo",
     "cacheMaxMemorySize": 52428800,
     "configOrigin": "next.config.mjs",
     "useFileSystemPublicRoutes": true,
@@ -42,7 +44,7 @@
         256,
         384
       ],
-      "path": "/_next/image",
+      "path": "/Canary-Academy-demo/_next/image/",
       "loader": "default",
       "loaderFile": "",
       "domains": [],
@@ -75,9 +77,9 @@
       "maxInactiveAge": 60000,
       "pagesBufferLength": 5
     },
-    "basePath": "",
+    "basePath": "/Canary-Academy-demo",
     "sassOptions": {},
-    "trailingSlash": false,
+    "trailingSlash": true,
     "i18n": null,
     "productionBrowserSourceMaps": false,
     "excludeDefaultMomentLocales": true,

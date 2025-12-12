@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
+import { getAssetPath } from "@/lib/get-base-path"
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false)
@@ -63,7 +64,7 @@ export default function ContactPage() {
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/images/contact-hero-bg.jpg"
+          src={getAssetPath("/images/contact-hero-bg.jpg")}
           alt="Contact Hero Background"
           fill
           className="object-cover"

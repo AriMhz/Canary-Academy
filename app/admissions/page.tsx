@@ -7,6 +7,7 @@ import { CheckCircle2, Calendar, FileText, Users, Clock } from "lucide-react"
 import Link from "next/link"
 import { AdmissionForm } from "@/components/admissions/admission-form"
 import Image from "next/image"
+import { getAssetPath } from "@/lib/get-base-path"
 
 const admissionProcess = [
   {
@@ -66,7 +67,7 @@ export default function AdmissionsPage() {
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/images/admissions-hero-bg.jpg"
+          src={getAssetPath("/images/admissions-hero-bg.jpg")}
           alt="Admissions Hero Background"
           fill
           className="object-cover"

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { X } from "lucide-react"
+import { getAssetPath } from "@/lib/get-base-path"
 
 const categories = ["All", "Campus", "Facilities", "Events"]
 
@@ -25,7 +26,7 @@ export default function GalleryPage() {
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/images/gallery-hero-bg.jpg"
+          src={getAssetPath("/images/gallery-hero-bg.jpg")}
           alt="Gallery Hero Background"
           fill
           className="object-cover"

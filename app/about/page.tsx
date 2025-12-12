@@ -3,6 +3,7 @@ import { SectionHeading } from "@/components/section-heading"
 import { Card, CardContent } from "@/components/ui/card"
 import { Award, Target, Eye, Heart, Users, BookOpen } from "lucide-react"
 import Image from "next/image"
+import { getAssetPath } from "@/lib/get-base-path"
 
 const values = [
   {
@@ -44,7 +45,7 @@ export default function AboutPage() {
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/images/about-hero-bg.jpg"
+          src={getAssetPath("/images/about-hero-bg.jpg")}
           alt="About Hero Background"
           fill
           className="object-cover"
@@ -111,7 +112,7 @@ export default function AboutPage() {
             <div className="relative order-1 lg:order-2">
               <div className="relative h-[400px] lg:h-[500px] w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white transform transition-transform duration-700 hover:scale-[1.02] group">
                 <Image
-                  src="/images/school-building.jpg"
+                  src={getAssetPath("/images/school-building.jpg")}
                   alt="Canary Academy Campus Building"
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"

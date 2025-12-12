@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { getAssetPath } from "@/lib/get-base-path"
 
 export function SitePopup() {
     const [isOpen, setIsOpen] = useState(false)
@@ -39,7 +40,7 @@ export function SitePopup() {
 
                 {/* Image */}
                 <Image
-                    src="/images/popup-ad.jpg"
+                    src={getAssetPath("/images/popup-ad.jpg")}
                     alt="School Admission 2025-2026"
                     width={0}
                     height={0}

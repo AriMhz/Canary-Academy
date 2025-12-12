@@ -2,15 +2,38 @@
   "version": 3,
   "pages404": true,
   "caseSensitive": false,
-  "basePath": "",
+  "basePath": "/Canary-Academy-demo",
   "redirects": [
     {
-      "source": "/:path+/",
-      "destination": "/:path+",
+      "source": "/Canary-Academy-demo",
+      "destination": "/Canary-Academy-demo/",
+      "basePath": false,
       "internal": true,
       "priority": true,
       "statusCode": 308,
-      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+      "regex": "^/Canary-Academy-demo$"
+    },
+    {
+      "source": "/:file((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+)/",
+      "destination": "/:file",
+      "internal": true,
+      "priority": true,
+      "missing": [
+        {
+          "type": "header",
+          "key": "x-nextjs-data"
+        }
+      ],
+      "statusCode": 308,
+      "regex": "^(?:/((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+))/$"
+    },
+    {
+      "source": "/:notfile((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+)",
+      "destination": "/:notfile/",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/\\.]+))$"
     }
   ],
   "headers": [],

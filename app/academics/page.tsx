@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, BookOpen, Microscope, Calculator, Palette, Music, Dumbbell } from "lucide-react"
 import Image from "next/image"
+import { getAssetPath } from "@/lib/get-base-path"
 
 const facilities = [
   {
@@ -62,7 +63,7 @@ export default function AcademicsPage() {
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/images/academics-hero-bg.jpg"
+          src={getAssetPath("/images/academics-hero-bg.jpg")}
           alt="Academics Hero Background"
           fill
           className="object-cover"

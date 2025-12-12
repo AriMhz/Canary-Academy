@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar, ArrowRight } from "lucide-react"
 import Image from "next/image"
+import { getAssetPath } from "@/lib/get-base-path"
 
 const categories = ["All", "News", "Events", "Achievements"]
 
@@ -25,7 +26,7 @@ export default function NewsPage() {
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/images/news-hero-bg.jpg"
+          src={getAssetPath("/images/news-hero-bg.jpg")}
           alt="News & Events Hero Background"
           fill
           className="object-cover"

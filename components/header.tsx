@@ -17,6 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Menu, X, ChevronDown, Phone, Mail, Bell } from "lucide-react"
+import { getAssetPath } from "@/lib/get-base-path"
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -82,7 +83,7 @@ export function Header() {
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-12 h-12 transition-transform duration-300 group-hover:scale-105">
               <Image
-                src="/images/school-20logo-20canary-20academy.png"
+                src={getAssetPath("/images/school-20logo-20canary-20academy.png")}
                 alt="Canary Academy Logo"
                 fill
                 className="object-contain"
@@ -170,7 +171,7 @@ export function Header() {
           <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3">
             <div className="relative w-10 h-10">
               <Image
-                src="/images/school-20logo-20canary-20academy.png"
+                src={getAssetPath("/images/school-20logo-20canary-20academy.png")}
                 alt="Canary Academy Logo"
                 fill
                 className="object-contain"

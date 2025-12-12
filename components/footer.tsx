@@ -1,6 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react"
+import { getAssetPath } from "@/lib/get-base-path"
 
 const footerLinks = {
   quickLinks: [
@@ -28,7 +29,7 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <div className="relative w-12 h-12">
                 <Image
-                  src="/images/school-20logo-20canary-20academy.png"
+                  src={getAssetPath("/images/school-20logo-20canary-20academy.png")}
                   alt="Canary Academy Logo"
                   fill
                   className="object-contain"
