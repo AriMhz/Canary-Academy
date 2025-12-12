@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar, ArrowRight } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 
 export function LatestNews() {
@@ -20,10 +21,11 @@ export function LatestNews() {
           {newsData.map((news) => (
             <Card key={news.id} className="overflow-hidden hover:shadow-premium transition-all duration-300 group">
               <div className="relative h-48 overflow-hidden bg-muted">
-                <img
-                  src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${news.image || "/placeholder.svg"}`}
+                <Image
+                  src={news.image}
                   alt={news.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <Badge className="absolute top-4 left-4 bg-[#F5A623] hover:bg-[#FFB84D] text-white">
                   {news.category}

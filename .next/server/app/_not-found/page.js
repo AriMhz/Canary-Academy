@@ -5,7 +5,7 @@ R.c("server/chunks/ssr/4ea12_next_dist_esm_build_templates_app-page_3d9f32d5.js"
 R.c("server/chunks/ssr/[root-of-the-server]__507e9e91._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__51215202._.js")
 R.c("server/chunks/ssr/[root-of-the-server]__b37895fd._.js")
-R.c("server/chunks/ssr/[root-of-the-server]__786116c2._.js")
+R.c("server/chunks/ssr/[root-of-the-server]__45e0ec2b._.js")
 R.c("server/chunks/ssr/4ea12_next_dist_client_components_c14f8d53._.js")
 R.c("server/chunks/ssr/4ea12_next_dist_client_components_builtin_forbidden_50f12910.js")
 R.c("server/chunks/ssr/34cbe_anary-academy-website__next-internal_server_app__not-found_page_actions_caff5840.js")
