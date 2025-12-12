@@ -21,7 +21,7 @@ export function LatestNews() {
             <Card key={news.id} className="overflow-hidden hover:shadow-premium transition-all duration-300 group">
               <div className="relative h-48 overflow-hidden bg-muted">
                 <img
-                  src={news.image || "/placeholder.svg"}
+                  src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${news.image || "/placeholder.svg"}`}
                   alt={news.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
