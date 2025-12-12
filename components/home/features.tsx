@@ -3,6 +3,7 @@
 import { Container } from "@/components/container"
 import { SectionHeading } from "@/components/section-heading"
 import { features } from "@/lib/data"
+import { getAssetPath } from "@/lib/get-base-path"
 import Image from "next/image"
 import { ArrowRight, BookOpen, Users, Trophy, School } from "lucide-react"
 import { useState, useEffect } from "react"
@@ -13,25 +14,25 @@ export function Features() {
   const featureData = [
     {
       ...features[0], // Qualified Faculty
-      image: "/features/qualified faculity.jpg",
+      image: getAssetPath("/features/qualified faculity.jpg"),
       color: "from-[#F5A623] to-[#E08E00]",
       icon: Users
     },
     {
       ...features[1], // Modern Curriculum
-      image: "/features/modern curruculumn.jpg",
+      image: getAssetPath("/features/modern curruculumn.jpg"),
       color: "from-[#4A90E2] to-[#0056D2]",
       icon: BookOpen
     },
     {
       ...features[2], // Facilities
-      image: "/features/trophies.jpg",
+      image: getAssetPath("/features/trophies.jpg"),
       color: "from-[#50E3C2] to-[#2C4F5E]",
       icon: School
     },
     {
       ...features[3], // Extracurricular
-      image: "/features/extra activities.jpg",
+      image: getAssetPath("/features/extra activities.jpg"),
       color: "from-[#FF5F6D] to-[#FFC371]",
       icon: Trophy
     }
