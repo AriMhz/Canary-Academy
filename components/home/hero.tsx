@@ -23,7 +23,7 @@ export function Hero() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="/background.mp4" type="video/mp4" />
+        <source src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/background.mp4`} type="video/mp4" />
       </video>
 
       {/* Overlay */}
