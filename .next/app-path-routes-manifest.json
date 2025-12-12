@@ -1,0 +1,15 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/about/page": "/about",
+  "/academics/page": "/academics",
+  "/admin/page": "/admin",
+  "/admissions/page": "/admissions",
+  "/careers/page": "/careers",
+  "/contact/page": "/contact",
+  "/faculty/page": "/faculty",
+  "/gallery/page": "/gallery",
+  "/news/page": "/news",
+  "/page": "/",
+  "/privacy/page": "/privacy"
+}

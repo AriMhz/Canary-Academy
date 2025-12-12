@@ -1,5 +1,5 @@
 var R=require("./chunks/[turbopack]_runtime.js")("postcss.js")
-R.c("chunks/[turbopack-node]_transforms_postcss_ts_117a6fb0._.js")
+R.c("chunks/[turbopack-node]_transforms_postcss_ts_9d014633._.js")
 R.c("chunks/[root-of-the-server]__2a07e2cd._.js")
 R.m("[turbopack-node]/globals.ts [postcss] (ecmascript)")
 R.m("[turbopack-node]/ipc/evaluate.ts/evaluate.js { INNER => \"[turbopack-node]/transforms/postcss.ts { CONFIG => \\\"[project]/canary-academy-website/postcss.config.mjs [postcss] (ecmascript)\\\" } [postcss] (ecmascript)\", RUNTIME => \"[turbopack-node]/ipc/evaluate.ts [postcss] (ecmascript)\" } [postcss] (ecmascript)")
