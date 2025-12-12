@@ -1,6 +1,8 @@
 // Placeholder data for the website
 // This can be replaced with database queries later
 
+import { getAssetPath } from "./get-base-path"
+
 export const testimonials = [
   {
     id: 1,
@@ -41,25 +43,25 @@ export const features = [
     description:
       "Our experienced teachers are dedicated to nurturing each student's potential with personalized attention.",
     icon: "👨‍🏫",
-    image: "/professional-educator-woman.jpg",
+    image: getAssetPath("/professional-educator-woman.jpg"),
   },
   {
     title: "Modern Curriculum",
     description: "We blend traditional values with contemporary teaching methods to prepare students for the future.",
     icon: "📚",
-    image: "/modern-classroom-students.jpg",
+    image: getAssetPath("/modern-classroom-students.jpg"),
   },
   {
     title: "State-of-the-art Facilities",
     description: "From science labs to sports facilities, we provide the best infrastructure for holistic development.",
     icon: "🏫",
-    image: "/school-science-laboratory.png",
+    image: getAssetPath("/school-science-laboratory.png"),
   },
   {
     title: "Extracurricular Activities",
     description: "Sports, arts, music, and clubs help students discover their passions beyond academics.",
     icon: "🎨",
-    image: "/school-sports-event.png",
+    image: getAssetPath("/school-sports-event.png"),
   },
 ]
 
@@ -70,7 +72,7 @@ export const newsData = [
     date: "2024-03-15",
     category: "Events",
     excerpt: "Join us for our annual sports day celebration featuring athletic competitions and team spirit.",
-    image: "/school-sports-day.png",
+    image: getAssetPath("/school-sports-day.png"),
   },
   {
     id: 2,
@@ -78,7 +80,7 @@ export const newsData = [
     date: "2024-03-10",
     category: "Achievements",
     excerpt: "Our students showcased innovative projects at the inter-school science exhibition.",
-    image: "/science-exhibition-students.jpg",
+    image: getAssetPath("/science-exhibition-students.jpg"),
   },
   {
     id: 3,
@@ -86,7 +88,7 @@ export const newsData = [
     date: "2024-03-05",
     category: "News",
     excerpt: "State-of-the-art computer lab with latest technology now available for all students.",
-    image: "/modern-computer-lab-school.jpg",
+    image: getAssetPath("/modern-computer-lab-school.jpg"),
   },
 ]
 
@@ -96,21 +98,21 @@ export const facultyData = [
     name: "Dr. Ramesh Adhikari",
     position: "Principal",
     qualification: "Ph.D. in Education",
-    image: "/professional-educator-man.jpg",
+    image: getAssetPath("/professional-educator-man.jpg"),
   },
   {
     id: 2,
     name: "Mrs. Sita Rai",
     position: "Vice Principal",
     qualification: "M.Ed., 20 years experience",
-    image: "/professional-educator-woman.jpg",
+    image: getAssetPath("/professional-educator-woman.jpg"),
   },
   {
     id: 3,
     name: "Mr. Kamal Thapa",
     position: "Head of Science Department",
     qualification: "M.Sc. in Physics",
-    image: "/science-teacher-man.jpg",
+    image: getAssetPath("/science-teacher-man.jpg"),
   },
 ]
 
@@ -119,37 +121,37 @@ export const galleryImages = [
     id: 1,
     title: "School Campus",
     category: "Campus",
-    image: "/modern-school-exterior.png",
+    image: getAssetPath("/modern-school-exterior.png"),
   },
   {
     id: 2,
     title: "Science Laboratory",
     category: "Facilities",
-    image: "/school-science-laboratory.png",
+    image: getAssetPath("/school-science-laboratory.png"),
   },
   {
     id: 3,
     title: "Library",
     category: "Facilities",
-    image: "/school-library-students.jpg",
+    image: getAssetPath("/school-library-students.jpg"),
   },
   {
     id: 4,
     title: "Sports Day",
     category: "Events",
-    image: "/school-sports-event.png",
+    image: getAssetPath("/school-sports-event.png"),
   },
   {
     id: 5,
     title: "Annual Function",
     category: "Events",
-    image: "/school-annual-function-stage.jpg",
+    image: getAssetPath("/school-annual-function-stage.jpg"),
   },
   {
     id: 6,
     title: "Classroom",
     category: "Facilities",
-    image: "/modern-classroom-students.jpg",
+    image: getAssetPath("/modern-classroom-students.jpg"),
   },
 ]
 
