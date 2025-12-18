@@ -34,6 +34,8 @@ async function dbConnect() {
     if (!cached!.promise) {
         const opts = {
             bufferCommands: false,
+            serverSelectionTimeoutMS: 5000, // Fail fast (5s) if DB is unreachable to prevent Vercel timeout
+            socketTimeoutMS: 45000,         // Close sockets after 45s of inactivity
         };
 
         cached!.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
