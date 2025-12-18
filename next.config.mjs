@@ -1,16 +1,12 @@
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === 'production';
-
 const nextConfig = {
+  // Output mode commented out - we need server-side rendering for MongoDB
   // output: 'export',
-  // basePath: isProd ? '/Canary-Academy-demo' : '',
-  trailingSlash: true,
-  // env: {
-  //   NEXT_PUBLIC_BASE_PATH: isProd ? '/Canary-Academy-demo' : '',
-  // },
+
   typescript: {
     ignoreBuildErrors: true,
   },
+
   images: {
     unoptimized: true,
   },
