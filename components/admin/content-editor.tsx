@@ -196,9 +196,13 @@ export function ContentEditor() {
                                                     <FormField label="Main Title"><TextAreaInput {...bind(["hero", "title"])} rows={2} /></FormField>
                                                     <FormField label="Subtitle"><TextAreaInput {...bind(["hero", "subtitle"])} rows={3} /></FormField>
 
-                                                    <FormField label="Background Video">
-                                                        <VideoInput {...bind(["hero", "backgroundVideo"])} onUpload={(f) => handleUpload(f, v => updateContent(["hero", "backgroundVideo"], v))} />
-                                                    </FormField>
+                                                    <div className="p-3 bg-gray-50 border rounded-lg">
+                                                        <label className="text-sm font-medium text-gray-500 block mb-1">Background Video</label>
+                                                        <div className="text-sm text-gray-600 italic flex items-center gap-2">
+                                                            <Lock className="w-3 h-3" />
+                                                            Fixed (Cannot be changed via Admin)
+                                                        </div>
+                                                    </div>
 
                                                     <Separator className="my-4" />
                                                     <div className="space-y-3">
