@@ -720,7 +720,7 @@ export async function fetchCMSContent(): Promise<CMSContent> {
   if (typeof window === "undefined") return defaultContent
 
   try {
-    const response = await fetch('/api/content')
+    const response = await fetch('/api/content', { cache: 'no-store' })
     if (response.ok) {
       const data = await response.json()
       return {
@@ -809,6 +809,7 @@ export async function saveCMSContent(content: CMSContent): Promise<void> {
     window.dispatchEvent(new Event('cms:update'))
   } catch (error) {
     console.error("Error saving CMS content:", error)
+    alert("❌ Error Saving Content!\n\nPossible reasons:\n1. Image is too large (try compressing it to < 1MB)\n2. Internet connection issue\n\nPlease check the console for more details.")
   }
 }
 
