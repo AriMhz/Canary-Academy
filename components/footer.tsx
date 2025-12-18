@@ -12,7 +12,7 @@ export function Footer() {
   const { t } = useLanguage()
 
   // Hide footer on admin pages
-  if (pathname?.startsWith('/admin')) {
+  if (pathname?.startsWith('/owner')) {
     return null
   }
 

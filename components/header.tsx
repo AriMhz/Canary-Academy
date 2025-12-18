@@ -31,7 +31,7 @@ export function Header({ forceRender = false, onNavigate }: { forceRender?: bool
   const { t, language, setLanguage } = useLanguage()
 
   // Hide header on admin pages (unless forced to render in visual editor)
-  if (!forceRender && pathname?.startsWith('/admin')) {
+  if (!forceRender && pathname?.startsWith('/owner')) {
     return null
   }
 
