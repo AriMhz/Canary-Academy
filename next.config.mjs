@@ -2,12 +2,12 @@
 const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig = {
-  output: 'export',
-  basePath: isProd ? '/Canary-Academy-demo' : '',
+  // output: 'export',
+  // basePath: isProd ? '/Canary-Academy-demo' : '',
   trailingSlash: true,
-  env: {
-    NEXT_PUBLIC_BASE_PATH: isProd ? '/Canary-Academy-demo' : '',
-  },
+  // env: {
+  //   NEXT_PUBLIC_BASE_PATH: isProd ? '/Canary-Academy-demo' : '',
+  // },
   typescript: {
     ignoreBuildErrors: true,
   },

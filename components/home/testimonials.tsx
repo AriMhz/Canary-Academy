@@ -1,9 +1,16 @@
+"use client"
+
 import { Container } from "@/components/container"
 import { SectionHeading } from "@/components/section-heading"
 import { testimonials } from "@/lib/data"
 import { Star, Quote, User } from "lucide-react"
+import { useLanguage } from "@/lib/i18n-context"
+import { useCMS } from "@/lib/cms-context"
 
 export function Testimonials() {
+  const { content, isEditorMode } = useCMS()
+  const { t } = useLanguage()
+
   return (
     <section className="py-24 bg-white relative overflow-hidden">
       {/* Background Decor */}
@@ -14,16 +21,18 @@ export function Testimonials() {
 
       <Container>
         <SectionHeading
-          title="What Our Community Says"
-          subtitle="Hear from parents, students, and alumni about their experiences at Canary Academy."
+          title={content.testimonials.title}
+          subtitle={content.testimonials.subtitle}
           className="mb-16 lg:mb-20"
+          data-editable-title="testimonials.title"
+          data-editable-subtitle="testimonials.subtitle"
         />
 
         <div className="grid md:grid-cols-3 gap-8 relative z-10">
-          {testimonials.map((testimonial, index) => (
+          {content.testimonials.items.map((testimonial, index) => (
             <div
-              key={testimonial.id}
-              className="group relative bg-[#2C4F5E] border border-white/10 p-6 md:p-8 rounded-3xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#2C4F5E]/20 overflow-hidden flex flex-col h-full shadow-xl"
+              key={index}
+              className={`group relative bg-[#2C4F5E] border border-white/10 p-6 md:p-8 rounded-3xl transition-all duration-500 ${!isEditorMode ? "hover:-translate-y-2" : ""} hover:shadow-2xl hover:shadow-[#2C4F5E]/20 overflow-hidden flex flex-col h-full shadow-xl`}
             >
               <Quote className="absolute -bottom-6 -right-6 w-24 h-24 md:w-32 md:h-32 text-white/5 group-hover:text-white/10 transition-colors duration-500 transform rotate-12 z-0" />
 
@@ -39,7 +48,10 @@ export function Testimonials() {
                 </div>
 
                 {/* Content */}
-                <p className="text-lg text-white/90 leading-relaxed italic">
+                <p
+                  className="text-lg text-white/90 leading-relaxed italic"
+                  data-editable={`testimonials.items.${index}.content`}
+                >
                   "{testimonial.content}"
                 </p>
 
@@ -50,10 +62,16 @@ export function Testimonials() {
                   </div>
 
                   <div>
-                    <h4 className="font-bold text-white group-hover:text-[#F5A623] transition-colors">
+                    <h4
+                      className="font-bold text-white group-hover:text-[#F5A623] transition-colors"
+                      data-editable={`testimonials.items.${index}.name`}
+                    >
                       {testimonial.name}
                     </h4>
-                    <p className="text-sm text-white/60">
+                    <p
+                      className="text-sm text-white/60"
+                      data-editable={`testimonials.items.${index}.role`}
+                    >
                       {testimonial.role}
                     </p>
                   </div>

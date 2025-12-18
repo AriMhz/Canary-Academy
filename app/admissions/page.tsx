@@ -1,3 +1,5 @@
+"use client"
+
 import { Container } from "@/components/container"
 import { SectionHeading } from "@/components/section-heading"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,59 +10,80 @@ import Link from "next/link"
 import { AdmissionForm } from "@/components/admissions/admission-form"
 import Image from "next/image"
 import { getAssetPath } from "@/lib/get-base-path"
-
-const admissionProcess = [
-  {
-    step: 1,
-    title: "Submit Application",
-    description: "Fill out the online application form with required documents.",
-    icon: FileText,
-  },
-  {
-    step: 2,
-    title: "Entrance Test",
-    description: "Attend the scheduled entrance examination at our campus.",
-    icon: Clock,
-  },
-  {
-    step: 3,
-    title: "Interview",
-    description: "Parents and students meet with our admission committee.",
-    icon: Users,
-  },
-  {
-    step: 4,
-    title: "Admission Confirmation",
-    description: "Receive admission decision and complete enrollment process.",
-    icon: CheckCircle2,
-  },
-]
-
-const requiredDocuments = [
-  "Birth certificate (original and photocopy)",
-  "Previous school leaving certificate",
-  "Mark sheets from previous academic year",
-  "Recent passport-size photographs (4 copies)",
-  "Parents/Guardian ID proof",
-  "Medical records and vaccination certificates",
-]
-
-const feeStructure = [
-  { level: "Primary (K-5)", admissionFee: "NPR 15,000", monthlyFee: "NPR 8,000" },
-  { level: "Lower Secondary (6-8)", admissionFee: "NPR 18,000", monthlyFee: "NPR 10,000" },
-  { level: "Secondary (9-10)", admissionFee: "NPR 20,000", monthlyFee: "NPR 12,000" },
-]
-
-const importantDates = [
-  { event: "Application Period Opens", date: "January 1, 2025" },
-  { event: "Application Deadline", date: "March 31, 2025" },
-  { event: "Entrance Tests", date: "April 10-15, 2025" },
-  { event: "Interview Sessions", date: "April 20-25, 2025" },
-  { event: "Results Announcement", date: "May 1, 2025" },
-  { event: "New Session Begins", date: "June 1, 2025" },
-]
+import { useLanguage } from "@/lib/i18n-context"
 
 export default function AdmissionsPage() {
+  const { t } = useLanguage()
+
+  const admissionProcess = [
+    {
+      step: 1,
+      title: t("admissions.process.items.0.title"),
+      description: t("admissions.process.items.0.description"),
+      icon: FileText,
+    },
+    {
+      step: 2,
+      title: t("admissions.process.items.1.title"),
+      description: t("admissions.process.items.1.description"),
+      icon: Clock,
+    },
+    {
+      step: 3,
+      title: t("admissions.process.items.2.title"),
+      description: t("admissions.process.items.2.description"),
+      icon: Users,
+    },
+    {
+      step: 4,
+      title: t("admissions.process.items.3.title"),
+      description: t("admissions.process.items.3.description"),
+      icon: CheckCircle2,
+    },
+  ]
+
+  const requiredDocuments = [
+    t("admissions.documents.items.0"),
+    t("admissions.documents.items.1"),
+    t("admissions.documents.items.2"),
+    t("admissions.documents.items.3"),
+    t("admissions.documents.items.4"),
+    t("admissions.documents.items.5"),
+  ]
+
+  const feeStructure = [
+    { level: t("home.programs.items.0.level") || "Primary (K-5)", admissionFee: "NPR 15,000", monthlyFee: "NPR 8,000" },
+    { level: t("home.programs.items.1.level") || "Lower Secondary (6-8)", admissionFee: "NPR 18,000", monthlyFee: "NPR 10,000" },
+    { level: t("home.programs.items.2.level") || "Secondary (9-10)", admissionFee: "NPR 20,000", monthlyFee: "NPR 12,000" },
+  ]
+
+  const importantDates = [
+    { event: t("admissions.dates.items.0.event"), date: t("admissions.dates.items.0.date") },
+    { event: t("admissions.dates.items.1.event"), date: t("admissions.dates.items.1.date") },
+    { event: t("admissions.dates.items.2.event"), date: t("admissions.dates.items.2.date") },
+    { event: t("admissions.dates.items.3.event"), date: t("admissions.dates.items.3.date") },
+    { event: t("admissions.dates.items.4.event"), date: t("admissions.dates.items.4.date") },
+    { event: t("admissions.dates.items.5.event"), date: t("admissions.dates.items.5.date") },
+  ]
+
+  const scholarshipSteps = [
+    {
+      title: t("admissions.scholarships.steps.0.title"),
+      desc: t("admissions.scholarships.steps.0.desc"),
+      icon: FileText
+    },
+    {
+      title: t("admissions.scholarships.steps.1.title"),
+      desc: t("admissions.scholarships.steps.1.desc"),
+      icon: Users
+    },
+    {
+      title: t("admissions.scholarships.steps.2.title"),
+      desc: t("admissions.scholarships.steps.2.desc"),
+      icon: CheckCircle2
+    }
+  ]
+
   return (
     <div className="pt-20">
       {/* Hero Section */}
@@ -68,7 +91,7 @@ export default function AdmissionsPage() {
         {/* Background Image */}
         <Image
           src={getAssetPath("/images/admissions-hero-bg.jpg")}
-          alt="Admissions Hero Background"
+          alt={t("admissions.hero.title")}
           fill
           className="object-cover"
           priority
@@ -78,10 +101,9 @@ export default function AdmissionsPage() {
 
         <Container className="relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">Admissions</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{t("admissions.hero.title")}</h1>
             <p className="text-xl text-white/90 leading-relaxed">
-              Join the Canary Academy family and give your child the gift of quality education. Applications are now
-              open for the 2025-26 academic year.
+              {t("admissions.hero.description")}
             </p>
           </div>
         </Container>
@@ -91,8 +113,8 @@ export default function AdmissionsPage() {
       <section className="py-20 bg-background">
         <Container>
           <SectionHeading
-            title="Admission Process"
-            subtitle="A simple four-step process to secure your child's future"
+            title={t("admissions.process.title")}
+            subtitle={t("admissions.process.subtitle")}
           />
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
             {admissionProcess.map((item) => (
@@ -113,82 +135,40 @@ export default function AdmissionsPage() {
         </Container>
       </section>
 
-      {/* Important Dates */}
-      <section className="py-20 bg-muted">
-        <Container>
-          <SectionHeading title="Important Dates" subtitle="Mark your calendar for key admission milestones" />
-          <div className="max-w-3xl mx-auto mt-12">
-            <Card className="shadow-premium">
-              <CardContent className="p-8">
-                <div className="space-y-4">
-                  {importantDates.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between py-4 border-b last:border-b-0 border-border"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Calendar className="w-5 h-5 text-[#F5A623]" />
-                        <span className="font-medium text-foreground">{item.event}</span>
-                      </div>
-                      <span className="text-muted-foreground">{item.date}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </Container>
-      </section>
 
       {/* Scholarships */}
       <section id="scholarships" className="py-20 bg-muted/50">
         <Container>
-          <SectionHeading title="Available Scholarships" subtitle="Empowering deserving students through financial assistance" />
+          <SectionHeading title={t("admissions.scholarships.title")} subtitle={t("admissions.scholarships.subtitle")} />
           <Card className="mt-12 overflow-hidden border-0 shadow-2xl">
             <div className="grid md:grid-cols-2">
               <div className="bg-[#2C4F5E] p-8 md:p-12 flex flex-col justify-center text-white">
-                <Badge className="w-fit bg-[#F5A623] text-white hover:bg-[#F5A623] mb-6">Financial Aid</Badge>
-                <h3 className="text-3xl font-bold mb-6">Scholarships at Canary Academy</h3>
+                <Badge className="w-fit bg-[#F5A623] text-white hover:bg-[#F5A623] mb-6">{t("admissions.scholarships.badge")}</Badge>
+                <h3 className="text-3xl font-bold mb-6">{t("admissions.scholarships.mainTitle")}</h3>
                 <p className="text-white/90 leading-relaxed mb-6">
-                  Scholarship programs provide an excellent opportunity for students to receive financial assistance, making quality education more accessible and inclusive. Canary Academy offers a variety of scholarships to support deserving candidates and ease their academic journey.
+                  {t("admissions.scholarships.p1")}
                 </p>
                 <p className="text-white/90 leading-relaxed">
-                  These scholarships reflect Canary Academy's commitment to empowering students from diverse backgrounds to pursue quality higher education.
+                  {t("admissions.scholarships.p2")}
                 </p>
               </div>
               <div className="bg-white p-8 md:p-12 flex flex-col justify-center">
-                <h4 className="text-xl font-bold text-[#2C4F5E] mb-6">How to Apply?</h4>
+                <h4 className="text-xl font-bold text-[#2C4F5E] mb-6">{t("admissions.scholarships.applyTitle")}</h4>
                 <div className="space-y-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#F5A623]/10 flex items-center justify-center shrink-0">
-                      <FileText className="w-4 h-4 text-[#F5A623]" />
+                  {scholarshipSteps.map((step, index) => (
+                    <div key={index} className="flex items-start gap-4">
+                      <div className="w-8 h-8 rounded-full bg-[#F5A623]/10 flex items-center justify-center shrink-0">
+                        <step.icon className="w-4 h-4 text-[#F5A623]" />
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-900">{step.title}</h5>
+                        <p className="text-sm text-gray-600">{step.desc}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h5 className="font-semibold text-gray-900">Submit Application</h5>
-                      <p className="text-sm text-gray-600">Submit a scholarship application along with academic transcripts and essays.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#F5A623]/10 flex items-center justify-center shrink-0">
-                      <Users className="w-4 h-4 text-[#F5A623]" />
-                    </div>
-                    <div>
-                      <h5 className="font-semibold text-gray-900">Interview</h5>
-                      <p className="text-sm text-gray-600">Participate in an interview with the scholarship committee.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#F5A623]/10 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="w-4 h-4 text-[#F5A623]" />
-                    </div>
-                    <div>
-                      <h5 className="font-semibold text-gray-900">Supporting Materials</h5>
-                      <p className="text-sm text-gray-600">Some scholarships may require additional documents depending on eligibility.</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 <Button className="mt-8 w-fit bg-[#2C4F5E] hover:bg-[#1a3b47]" asChild>
-                  <Link href="/contact">Enquire for Scholarship</Link>
+                  <Link href="/contact">{t("admissions.scholarships.button")}</Link>
                 </Button>
               </div>
             </div>
@@ -201,9 +181,9 @@ export default function AdmissionsPage() {
         <Container>
           <div className="grid lg:grid-cols-2 gap-12">
             <div>
-              <SectionHeading title="Required Documents" subtitle="" centered={false} />
+              <SectionHeading title={t("admissions.documents.title")} subtitle="" centered={false} />
               <p className="text-muted-foreground leading-relaxed mt-4 mb-6">
-                Please ensure you have the following documents ready when submitting your application:
+                {t("admissions.documents.text")}
               </p>
               <div className="space-y-3">
                 {requiredDocuments.map((doc, index) => (
@@ -217,9 +197,9 @@ export default function AdmissionsPage() {
 
             {/* Fee Structure */}
             <div>
-              <SectionHeading title="Fee Structure" subtitle="" centered={false} />
+              <SectionHeading title={t("admissions.fees.title")} subtitle="" centered={false} />
               <p className="text-muted-foreground leading-relaxed mt-4 mb-6">
-                Transparent and competitive fee structure for quality education:
+                {t("admissions.fees.text")}
               </p>
               <div className="space-y-4">
                 {feeStructure.map((fee, index) => (
@@ -229,11 +209,11 @@ export default function AdmissionsPage() {
                     </CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Admission Fee:</span>
+                        <span className="text-sm text-muted-foreground">{t("admissions.fees.labels.admission")}</span>
                         <span className="font-semibold text-foreground">{fee.admissionFee}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Monthly Fee:</span>
+                        <span className="text-sm text-muted-foreground">{t("admissions.fees.labels.monthly")}</span>
                         <span className="font-semibold text-foreground">{fee.monthlyFee}</span>
                       </div>
                     </CardContent>
@@ -241,7 +221,7 @@ export default function AdmissionsPage() {
                 ))}
               </div>
               <p className="text-xs text-muted-foreground mt-4">
-                * Fees are subject to revision. Contact us for scholarship opportunities.
+                {t("admissions.fees.disclaimer")}
               </p>
             </div>
           </div>
@@ -251,7 +231,7 @@ export default function AdmissionsPage() {
       {/* Application Form */}
       <section className="py-20 bg-muted">
         <Container>
-          <SectionHeading title="Apply Online" subtitle="Fill out the form below to start your admission journey" />
+          <SectionHeading title={t("admissions.form.title")} subtitle={t("admissions.form.subtitle")} />
           <div className="max-w-3xl mx-auto mt-12">
             <AdmissionForm />
           </div>
@@ -263,14 +243,13 @@ export default function AdmissionsPage() {
         <Container>
           <Card className="bg-gradient-to-br from-[#2C4F5E] to-[#3A5F70] text-white border-0">
             <CardContent className="p-12 text-center space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold">Have Questions?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold">{t("admissions.cta.title")}</h2>
               <p className="text-lg text-white/90 max-w-2xl mx-auto">
-                Our admissions team is here to help. Contact us for a campus tour or to learn more about the admission
-                process.
+                {t("admissions.cta.text")}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button asChild size="lg" className="bg-[#F5A623] hover:bg-[#FFB84D] text-white">
-                  <Link href="/contact">Contact Admissions</Link>
+                  <Link href="/contact">{t("admissions.cta.buttonContact")}</Link>
                 </Button>
                 <Button
                   asChild
@@ -278,7 +257,7 @@ export default function AdmissionsPage() {
                   variant="outline"
                   className="border-2 border-white text-white hover:bg-white hover:text-[#2C4F5E] bg-transparent"
                 >
-                  <a href="tel:+977-1-XXXXXXX">Call Us Now</a>
+                  <a href="tel:+977-1-XXXXXXX">{t("admissions.cta.buttonCall")}</a>
                 </Button>
               </div>
             </CardContent>

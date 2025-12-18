@@ -7,32 +7,37 @@ import { getAssetPath } from "@/lib/get-base-path"
 import Image from "next/image"
 import { ArrowRight, BookOpen, Users, Trophy, School } from "lucide-react"
 import { useState, useEffect } from "react"
+import { useLanguage } from "@/lib/i18n-context"
+import { useCMS } from "@/lib/cms-context"
 
 export function Features() {
   const [activeIndex, setActiveIndex] = useState(0)
+  const { t } = useLanguage()
+  const { content } = useCMS()
 
   const featureData = [
     {
-      ...features[0], // Qualified Faculty
-      image: getAssetPath("/features/qualified faculity.jpg"),
+      ...content.features.items[0], // Qualified Faculty
+      // Use CMS image if available, fallback to code default
+      image: content.features.items[0]?.image || getAssetPath("/features/qualified faculity.jpg"),
       color: "from-[#F5A623] to-[#E08E00]",
       icon: Users
     },
     {
-      ...features[1], // Modern Curriculum
-      image: getAssetPath("/features/modern curruculumn.jpg"),
+      ...content.features.items[1], // Modern Curriculum
+      image: content.features.items[1]?.image || getAssetPath("/features/modern curruculumn.jpg"),
       color: "from-[#4A90E2] to-[#0056D2]",
       icon: BookOpen
     },
     {
-      ...features[2], // Facilities
-      image: getAssetPath("/features/trophies.jpg"),
+      ...content.features.items[2], // Facilities
+      image: content.features.items[2]?.image || getAssetPath("/features/trophies.jpg"),
       color: "from-[#50E3C2] to-[#2C4F5E]",
       icon: School
     },
     {
-      ...features[3], // Extracurricular
-      image: getAssetPath("/features/extra activities.jpg"),
+      ...content.features.items[3], // Extracurricular
+      image: content.features.items[3]?.image || getAssetPath("/features/extra activities.jpg"),
       color: "from-[#FF5F6D] to-[#FFC371]",
       icon: Trophy
     }
@@ -52,16 +57,21 @@ export function Features() {
     <section id="features-section" className="py-24 bg-white overflow-hidden transition-colors duration-500">
       <Container>
         <SectionHeading
-          title="Why Choose Canary Academy?"
-          subtitle="We provide a comprehensive and all-round education."
+          title={content.features.title} // Use CMS title
+          subtitle={content.features.subtitle} // Use CMS subtitle
           className="mb-16 lg:mb-20"
+          data-editable-title="features.title"
+          data-editable-subtitle="features.subtitle"
         />
         <div className="relative">
           {/* Main Layout Wrapper */}
           <div className="flex flex-col lg:flex-row items-center">
 
             {/* Left Image Section */}
-            <div className="w-full lg:w-7/12 relative h-[350px] md:h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl group">
+            <div
+              className="w-full lg:w-7/12 relative h-[350px] md:h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl group"
+              data-editable={`features.items.${activeIndex}.image`}
+            >
               <div className="absolute inset-0 bg-black/20 z-10" />
               <Image
                 key={activeIndex} // Trigger animation on change
@@ -88,7 +98,7 @@ export function Features() {
                   </p>
 
                   <div className="inline-flex items-center text-[#F5A623] font-semibold uppercase tracking-wider cursor-pointer hover:gap-2 transition-all pt-2">
-                    Learn More <ArrowRight className="ml-2 w-4 h-4" />
+                    {t("buttons.learnMore")} <ArrowRight className="ml-2 w-4 h-4" />
                   </div>
                 </div>
 
@@ -102,7 +112,7 @@ export function Features() {
                         ? `bg-gradient-to-br ${feature.color} border-white/50 shadow-lg scale-105`
                         : "bg-white/5 border-white/10 hover:bg-white/10"
                         }`}
-                      aria-label={feature.title}
+                      aria-label={t(`home.features.items.${index}.title`)}
                     >
                       {activeIndex === index && (
                         <div className="absolute inset-0 bg-white/20 animate-pulse" />

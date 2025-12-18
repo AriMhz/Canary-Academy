@@ -29,11 +29,32 @@ export function AdmissionForm() {
     agreeTerms: false,
   })
 
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically send the form data to your backend
-    console.log("Form submitted:", formData)
-    setSubmitted(true)
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/admissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        setSubmitted(true)
+      } else {
+        console.error('Failed to submit admission')
+        // You might want to show an error message to the user here
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (field: string, value: string | boolean) => {
@@ -276,9 +297,9 @@ export function AdmissionForm() {
             type="submit"
             size="lg"
             className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white"
-            disabled={!formData.agreeTerms}
+            disabled={!formData.agreeTerms || isSubmitting}
           >
-            Submit Application
+            {isSubmitting ? "Submitting..." : "Submit Application"}
           </Button>
 
           <p className="text-xs text-muted-foreground text-center">

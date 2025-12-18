@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/user/Downloads/canary-academy-website/app/admin/layout.tsx"],"sourcesContent":["\"use client\"\r\n\r\nimport type React from \"react\"\r\nimport { LanguageProvider } from \"@/lib/i18n-context\"\r\n\r\nexport default function AdminLayout({\r\n    children,\r\n}: Readonly<{\r\n    children: React.ReactNode\r\n}>) {\r\n    return (\r\n        <LanguageProvider>\r\n            {children}\r\n        </LanguageProvider>\r\n    )\r\n}\r\n"],"names":[],"mappings":";;;;;AAGA;AAHA;;;AAKe,SAAS,YAAY,EAChC,QAAQ,EAGV;IACE,qBACI,2ZAAC,wLAAgB;kBACZ;;;;;;AAGb"}}]
+}

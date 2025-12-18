@@ -1,27 +1,37 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Container } from "@/components/container"
-import { galleryImages } from "@/lib/data"
+import { useCMS } from "@/lib/cms-context"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { X } from "lucide-react"
 import { getAssetPath } from "@/lib/get-base-path"
-
-const categories = ["All", "Campus", "Facilities", "Events"]
+import { useLanguage } from "@/lib/i18n-context"
+import { translations } from "@/lib/translations"
 
 export default function GalleryPage() {
+  const { t, language } = useLanguage()
+  const { content } = useCMS()
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
+
+  // Use gallery from CMS context
+  const galleryImages = content.gallery || []
+
+  // English categories to map to/from
+  const englishCategories = ["All", "Campus", "Facilities", "Events"];
+
+  // Get translated categories
+  const translatedCategories = translations[language].gallery.categories;
 
   const filteredImages =
     selectedCategory === "All" ? galleryImages : galleryImages.filter((img) => img.category === selectedCategory)
 
   return (
     <div className="pt-20">
-      {/* Hero Section */}
       {/* Hero Section */}
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
@@ -37,10 +47,9 @@ export default function GalleryPage() {
 
         <Container className="relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">Gallery</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{t("gallery.title")}</h1>
             <p className="text-xl text-white/90 leading-relaxed">
-              Explore our campus, facilities, and the vibrant life at Canary Academy through these moments captured in
-              time.
+              {t("gallery.description")}
             </p>
           </div>
         </Container>
@@ -51,7 +60,7 @@ export default function GalleryPage() {
         <Container>
           {/* Category Filter */}
           <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-            {categories.map((category) => (
+            {englishCategories.map((category, index) => (
               <Button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -62,7 +71,7 @@ export default function GalleryPage() {
                     : "border-2 border-[#2C4F5E] text-[#2C4F5E] hover:bg-[#2C4F5E] hover:text-white bg-transparent"
                 }
               >
-                {category}
+                {translatedCategories[index]}
               </Button>
             ))}
           </div>
@@ -94,7 +103,7 @@ export default function GalleryPage() {
 
           {filteredImages.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">No images found in this category.</p>
+              <p className="text-muted-foreground">{t("gallery.noImages")}</p>
             </div>
           )}
         </Container>

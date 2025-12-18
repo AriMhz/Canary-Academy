@@ -1,25 +1,37 @@
+"use client"
+
+import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin } from "lucide-react"
 import { getAssetPath } from "@/lib/get-base-path"
-
-const footerLinks = {
-  quickLinks: [
-    { name: "About Us", href: "/about" },
-    { name: "Academics", href: "/academics" },
-    { name: "Admissions", href: "/admissions" },
-    { name: "Scholarships", href: "/admissions#scholarships" },
-    { name: "Gallery", href: "/gallery" },
-  ],
-  resources: [
-    { name: "News & Events", href: "/news" },
-    { name: "Contact", href: "/contact" },
-    { name: "Career Opportunities", href: "/careers" },
-    { name: "Privacy Policy", href: "/privacy" },
-  ],
-}
+import { useLanguage } from "@/lib/i18n-context"
 
 export function Footer() {
+  const pathname = usePathname()
+  const { t } = useLanguage()
+
+  // Hide footer on admin pages
+  if (pathname?.startsWith('/admin')) {
+    return null
+  }
+
+  const footerLinks = {
+    quickLinks: [
+      { name: t('nav.about'), href: "/about" },
+      { name: t('nav.academics'), href: "/academics" },
+      { name: t('nav.admissions'), href: "/admissions" },
+      { name: t('nav.scholarships'), href: "/admissions#scholarships" },
+      { name: t('nav.gallery'), href: "/gallery" },
+    ],
+    resources: [
+      { name: t('nav.newsEvents'), href: "/news" }, // Using nav.newsEvents as it matches "News & Events"
+      { name: t('nav.contact'), href: "/contact" },
+      { name: t('footer.career'), href: "/careers" },
+      { name: t('footer.privacy'), href: "/privacy" },
+    ],
+  }
+
   return (
     <footer className="bg-[#2C4F5E] text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -27,27 +39,27 @@ export function Footer() {
           {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12">
+              <div className="relative w-12 h-12 bg-white rounded-full p-1.5 shadow-md">
                 <Image
                   src={getAssetPath("/images/school-20logo-20canary-20academy.png")}
                   alt="Canary Academy Logo"
                   fill
-                  className="object-contain"
+                  className="object-contain p-0.5"
                 />
               </div>
               <div>
-                <div className="text-lg font-bold">Canary Academy</div>
-                <div className="text-xs text-[#F5A623]">Estd. 1999</div>
+                <div className="text-[22px] font-bold text-white leading-tight uppercase">Canary Academy</div>
+                <div className="text-xs text-[#F5A623] font-medium tracking-wide">{t('slogan')}</div>
               </div>
             </div>
             <p className="text-sm text-white/80 leading-relaxed">
-              Excellence in education for over two decades. Nurturing young minds with world-class teaching and values.
+              {t('footer.text')}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2">
               {footerLinks.quickLinks.map((link) => (
                 <li key={link.name}>
@@ -61,7 +73,7 @@ export function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Resources</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('footer.resources')}</h3>
             <ul className="space-y-2">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
@@ -75,19 +87,30 @@ export function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+            <h3 className="text-lg font-semibold mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-2 text-sm text-white/80">
                 <MapPin size={18} className="mt-0.5 flex-shrink-0" />
-                <span>Kathmandu, Nepal</span>
+                <a
+                  href="https://maps.google.com/?q=Canary+Academy,+Haldibari-2,+Jhapa"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-[#F5A623] transition-colors"
+                >
+                  {t('footer.location')}
+                </a>
               </li>
               <li className="flex items-center gap-2 text-sm text-white/80">
                 <Phone size={18} className="flex-shrink-0" />
-                <span>+977-1-XXXXXXX</span>
+                <a href="tel:+9779801444350" className="hover:text-[#F5A623] transition-colors">
+                  +977 9801444350
+                </a>
               </li>
               <li className="flex items-center gap-2 text-sm text-white/80">
                 <Mail size={18} className="flex-shrink-0" />
-                <span>info@canaryacademy.edu.np</span>
+                <a href="mailto:info@canaryacademy.edu.np" className="hover:text-[#F5A623] transition-colors">
+                  info@canaryacademy.edu.np
+                </a>
               </li>
             </ul>
 
@@ -111,6 +134,15 @@ export function Footer() {
               >
                 <Instagram size={18} />
               </a>
+              <a
+                href="https://www.youtube.com/@VoiceOfCanary-t5i"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 bg-white/10 rounded-full hover:bg-[#F5A623] transition-colors"
+                aria-label="YouTube"
+              >
+                <Youtube size={18} />
+              </a>
             </div>
           </div>
         </div>
@@ -118,8 +150,8 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/60">
-            <p>&copy; {new Date().getFullYear()} Canary Academy. All rights reserved.</p>
-            <p>Established 2056 BS (1999 AD)</p>
+            <p>&copy; {new Date().getFullYear()} {t('footer.copyright')}</p>
+            <p>{t('footer.established')}</p>
           </div>
         </div>
       </div>

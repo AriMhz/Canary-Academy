@@ -5,9 +5,14 @@ import Link from "next/link"
 import { ArrowRight, Award, Users, BookOpen } from "lucide-react"
 import { useEffect, useState } from "react"
 import { CountUp } from "@/components/ui/count-up"
+import { useLanguage } from "@/lib/i18n-context"
+
+import { useCMS } from "@/lib/cms-context"
 
 export function Hero() {
   const [isVisible, setIsVisible] = useState(false)
+  const { t } = useLanguage()
+  const { content } = useCMS()
 
   useEffect(() => {
     setIsVisible(true)
@@ -22,8 +27,9 @@ export function Hero() {
         muted
         playsInline
         className="absolute inset-0 w-full h-full object-cover"
+        data-editable="hero.backgroundVideo"
       >
-        <source src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/background.mp4`} type="video/mp4" />
+        <source src={content.hero.backgroundVideo || `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/background.mp4`} type="video/mp4" />
       </video>
 
       {/* Overlay */}
@@ -36,24 +42,32 @@ export function Hero() {
             className={`text-white space-y-8 transition-all duration-1000 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
               }`}
           >
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm">
+            <div
+              data-editable="hero.badge"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm"
+            >
               <Award className="w-4 h-4 text-[#F5A623]" />
-              <span>Excellence in Education Since 1999</span>
+              <span>{content.hero.badge}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-balance">
-              Nurturing Excellence, <span className="text-[#F5A623]">Inspiring Futures</span>
+            <h1
+              data-editable="hero.title"
+              className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-balance"
+            >
+              {content.hero.title}
             </h1>
 
-            <p className="text-lg sm:text-xl text-white/90 leading-relaxed max-w-2xl">
-              At Canary Academy, we provide world-class education that combines traditional values with modern teaching
-              methods, preparing students for success in an ever-changing world.
+            <p
+              data-editable="hero.subtitle"
+              className="text-lg sm:text-xl text-[#F5A623] leading-relaxed max-w-2xl"
+            >
+              {content.hero.subtitle}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-start">
               <Button asChild size="lg" className="bg-[#F5A623] hover:bg-[#FFB84D] text-white text-base px-8 h-12">
-                <Link href="/admissions">
-                  Apply for Admission
+                <Link href="/admissions" data-editable="hero.cta">
+                  {content.hero.cta}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
@@ -63,7 +77,7 @@ export function Hero() {
                 variant="outline"
                 className="border-2 border-white text-white hover:bg-white hover:text-[#2C4F5E] text-base px-8 h-12 bg-transparent"
               >
-                <Link href="/about">Learn More</Link>
+                <Link href="/about" data-editable="hero.learnMore">{content.hero.learnMore}</Link>
               </Button>
             </div>
           </div>
@@ -80,10 +94,10 @@ export function Hero() {
                     <BookOpen className="w-5 h-5 text-[#F5A623]" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xl lg:text-2xl font-bold text-white">
-                      <CountUp end={25} suffix="+" />
+                    <div className="text-xl lg:text-2xl font-bold text-white" data-editable="hero.stats.yearsExp.value">
+                      <CountUp end={content.hero.stats.yearsExp.value} suffix="+" />
                     </div>
-                    <div className="text-xs lg:text-sm text-white/80">Years Exp.</div>
+                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.yearsExp.label">{content.hero.stats.yearsExp.label}</div>
                   </div>
                 </div>
               </div>
@@ -94,10 +108,10 @@ export function Hero() {
                     <Users className="w-5 h-5 text-[#F5A623]" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xl lg:text-2xl font-bold text-white">
-                      <CountUp end={50} suffix="+" />
+                    <div className="text-xl lg:text-2xl font-bold text-white" data-editable="hero.stats.teachers.value">
+                      <CountUp end={content.hero.stats.teachers.value} suffix="+" />
                     </div>
-                    <div className="text-xs lg:text-sm text-white/80">Teachers</div>
+                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.teachers.label">{content.hero.stats.teachers.label}</div>
                   </div>
                 </div>
               </div>
@@ -108,10 +122,10 @@ export function Hero() {
                     <Award className="w-5 h-5 text-[#F5A623]" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xl lg:text-2xl font-bold text-white">
-                      <CountUp end={1000} suffix="+" />
+                    <div className="text-xl lg:text-2xl font-bold text-white" data-editable="hero.stats.students.value">
+                      <CountUp end={content.hero.stats.students.value} suffix="+" />
                     </div>
-                    <div className="text-xs lg:text-sm text-white/80">Students</div>
+                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.students.label">{content.hero.stats.students.label}</div>
                   </div>
                 </div>
               </div>
@@ -122,10 +136,10 @@ export function Hero() {
                     <Users className="w-5 h-5 text-[#F5A623]" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xl lg:text-2xl font-bold text-white">
-                      <CountUp end={5000} suffix="+" />
+                    <div className="text-xl lg:text-2xl font-bold text-white" data-editable="hero.stats.alumni.value">
+                      <CountUp end={content.hero.stats.alumni.value} suffix="+" />
                     </div>
-                    <div className="text-xs lg:text-sm text-white/80">Alumni</div>
+                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.alumni.label">{content.hero.stats.alumni.label}</div>
                   </div>
                 </div>
               </div>

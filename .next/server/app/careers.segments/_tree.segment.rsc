@@ -1,4 +1,2 @@
-:HL["/Canary-Academy-demo/_next/static/chunks/4e20891f2fd03463.css","style"]
-:HL["/Canary-Academy-demo/_next/static/chunks/a4366927c783a00f.css","style"]
-:HL["/Canary-Academy-demo/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-0:{"buildId":"IfSrwSs2edk5HabmgQLGM","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"careers","paramType":null,"paramKey":"careers","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
+:HL["/_next/static/chunks/9261f5726ec6a91d.css","style"]
+0:{"buildId":"u4A-1yOdzHMIEW6AIc407","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"careers","paramType":null,"paramKey":"careers","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}

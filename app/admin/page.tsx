@@ -1,136 +1,214 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Container } from "@/components/container"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, FileText, ImageIcon, Calendar, BookOpen, TrendingUp } from "lucide-react"
+import { Users, FileText, ImageIcon, Calendar, BookOpen, TrendingUp, Lock, LogOut, Edit3, Layout, Settings, Globe } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useLanguage } from "@/lib/i18n-context"
 import { AdminNewsManager } from "@/components/admin/admin-news-manager"
 import { AdminGalleryManager } from "@/components/admin/admin-gallery-manager"
 import { AdminApplications } from "@/components/admin/admin-applications"
-
+import { AdminArticlesManager } from "@/components/admin/admin-articles-manager"
+import { ContentEditor } from "@/components/admin/content-editor"
+import { AdminOverview } from "@/components/admin/admin-overview"
 export default function AdminPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
   const [selectedTab, setSelectedTab] = useState("overview")
+  const { language, setLanguage, t } = useLanguage()
 
-  const stats = [
-    { label: "Total Students", value: "1,247", icon: Users, change: "+12%" },
-    { label: "Applications", value: "156", icon: FileText, change: "+8%" },
-    { label: "News Posts", value: "24", icon: BookOpen, change: "+3" },
-    { label: "Gallery Images", value: "342", icon: ImageIcon, change: "+15" },
-  ]
+  useEffect(() => {
+    const session = sessionStorage.getItem("adminSession")
+    if (session === "true") {
+      setIsLoggedIn(true)
+    }
+  }, [])
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (username === "admin" && password === "password") {
+      sessionStorage.setItem("adminSession", "true")
+      setIsLoggedIn(true)
+      setError("")
+    } else {
+      setError("Invalid credentials")
+    }
+  }
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("adminSession")
+    setIsLoggedIn(false)
+    setUsername("")
+    setPassword("")
+  }
+
+
+
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-[#2C4F5E] flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl border-0">
+          <CardHeader className="space-y-1 text-center pb-8">
+            <div className="mx-auto w-12 h-12 bg-[#F5A623]/10 rounded-full flex items-center justify-center mb-4">
+              <Lock className="w-6 h-6 text-[#F5A623]" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-[#2C4F5E]">{t('admin.login')}</CardTitle>
+            <p className="text-sm text-muted-foreground">{t('admin.loginDesc')}</p>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username">{t('admin.username')}</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">{t('admin.password')}</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
+              <Button type="submit" className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white">
+                {t('admin.signIn')}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   return (
-    <div className="pt-20 min-h-screen bg-muted">
+    <div className="min-h-screen bg-muted">
       {/* Header */}
       <section className="py-8 bg-[#2C4F5E] text-white">
         <Container>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold">Admin Dashboard</h1>
-              <p className="text-white/80 mt-1">Manage your school website content</p>
+              <h1 className="text-3xl md:text-4xl font-bold">{t('admin.dashboard')}</h1>
+              <p className="text-white/80 mt-1">{t('admin.manageContent')}</p>
             </div>
-            <Button className="bg-[#F5A623] hover:bg-[#FFB84D] text-white">View Website</Button>
+            <div className="flex items-center gap-4">
+              {/* Language Switcher */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center justify-center gap-2 px-3 py-2 rounded-full text-white hover:bg-white/10 hover:text-[#F5A623] transition-colors h-auto w-auto border border-white/20">
+                    <Globe className="w-4 h-4" />
+                    <span className="text-sm font-medium">{language === 'en' ? 'English' : 'नेपाली'}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-[#2C4F5E] border-white/10 text-white min-w-[120px]">
+                  <DropdownMenuItem
+                    className={`hover:bg-white/10 cursor-pointer ${language === 'en' ? 'font-bold text-[#F5A623]' : ''} `}
+                    onClick={() => setLanguage('en')}
+                  >
+                    English
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className={`hover:bg-white/10 cursor-pointer ${language === 'np' ? 'font-bold text-[#F5A623]' : ''} `}
+                    onClick={() => setLanguage('np')}
+                  >
+                    नेपाली
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Button onClick={handleLogout} variant="destructive" className="bg-red-500/10 hover:bg-red-500/20 text-red-200 hover:text-red-100 border border-red-500/20">
+                <LogOut className="w-4 h-4 mr-2" />
+                {t('admin.logout')}
+              </Button>
+            </div>
           </div>
         </Container>
       </section>
 
       {/* Main Content */}
       <section className="py-8">
-        <Container>
-          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-8">
-            <TabsList className="bg-white shadow-md p-1">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="news">News & Events</TabsTrigger>
-              <TabsTrigger value="gallery">Gallery</TabsTrigger>
-              <TabsTrigger value="applications">Applications</TabsTrigger>
-            </TabsList>
+        <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-8">
+          {/* Tab List in Container */}
+          <Container>
+            <div className="overflow-x-auto pb-4 -mb-4 scrollbar-hide">
+              <TabsList className="bg-white/80 backdrop-blur-sm border shadow-premium p-1.5 h-auto inline-flex w-full min-w-[700px] md:w-full md:min-w-0 md:grid md:grid-cols-5 gap-1 rounded-xl">
+                <TabsTrigger
+                  value="overview"
+                  className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 md:py-4 data-[state=active]:bg-[#F5A623]/10 data-[state=active]:text-[#F5A623] data-[state=active]:shadow-none transition-all duration-300 rounded-lg"
+                >
+                  <Layout className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium">{t('admin.tabs.overview')}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="cms"
+                  className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 md:py-4 data-[state=active]:bg-[#F5A623]/10 data-[state=active]:text-[#F5A623] data-[state=active]:shadow-none transition-all duration-300 rounded-lg"
+                >
+                  <Edit3 className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium">{t('admin.tabs.cms')}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="news"
+                  className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 md:py-4 data-[state=active]:bg-[#F5A623]/10 data-[state=active]:text-[#F5A623] data-[state=active]:shadow-none transition-all duration-300 rounded-lg"
+                >
+                  <FileText className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium">{t('admin.tabs.news')}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="gallery"
+                  className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 md:py-4 data-[state=active]:bg-[#F5A623]/10 data-[state=active]:text-[#F5A623] data-[state=active]:shadow-none transition-all duration-300 rounded-lg"
+                >
+                  <ImageIcon className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium">{t('admin.tabs.gallery')}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="applications"
+                  className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 md:py-4 data-[state=active]:bg-[#F5A623]/10 data-[state=active]:text-[#F5A623] data-[state=active]:shadow-none transition-all duration-300 rounded-lg"
+                >
+                  <Users className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium">{t('admin.tabs.applications')}</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="articles"
+                  className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 md:py-4 data-[state=active]:bg-[#F5A623]/10 data-[state=active]:text-[#F5A623] data-[state=active]:shadow-none transition-all duration-300 rounded-lg"
+                >
+                  <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium">{t('admin.tabs.articles')}</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </Container>
 
+          {/* Visual Editor Tab - FULL SCREEN */}
+          <TabsContent value="cms" className="m-0 p-0">
+            <ContentEditor />
+          </TabsContent>
+
+          {/* Other Tabs in Container */}
+          <Container>
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-8">
-              {/* Stats Grid */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                  <Card key={index} className="hover:shadow-premium transition-all duration-300">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="w-12 h-12 bg-[#F5A623]/10 rounded-lg flex items-center justify-center">
-                          <stat.icon className="w-6 h-6 text-[#F5A623]" />
-                        </div>
-                        <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
-                          <TrendingUp className="w-4 h-4" />
-                          {stat.change}
-                        </div>
-                      </div>
-                      <div className="text-3xl font-bold text-[#2C4F5E] mb-1">{stat.value}</div>
-                      <div className="text-sm text-muted-foreground">{stat.label}</div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Quick Actions */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="grid md:grid-cols-3 gap-4">
-                  <Button
-                    onClick={() => setSelectedTab("news")}
-                    variant="outline"
-                    className="h-auto py-6 flex-col gap-2 border-2 hover:border-[#F5A623] hover:bg-[#F5A623]/5"
-                  >
-                    <FileText className="w-8 h-8 text-[#F5A623]" />
-                    <span className="font-semibold">Add News Post</span>
-                  </Button>
-                  <Button
-                    onClick={() => setSelectedTab("gallery")}
-                    variant="outline"
-                    className="h-auto py-6 flex-col gap-2 border-2 hover:border-[#F5A623] hover:bg-[#F5A623]/5"
-                  >
-                    <ImageIcon className="w-8 h-8 text-[#F5A623]" />
-                    <span className="font-semibold">Upload Images</span>
-                  </Button>
-                  <Button
-                    onClick={() => setSelectedTab("applications")}
-                    variant="outline"
-                    className="h-auto py-6 flex-col gap-2 border-2 hover:border-[#F5A623] hover:bg-[#F5A623]/5"
-                  >
-                    <Users className="w-8 h-8 text-[#F5A623]" />
-                    <span className="font-semibold">Review Applications</span>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Recent Activity */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { action: "New application received", time: "2 hours ago", type: "application" },
-                      { action: "News post published: Annual Sports Day", time: "5 hours ago", type: "news" },
-                      { action: "12 images uploaded to gallery", time: "1 day ago", type: "gallery" },
-                      { action: "Application approved for Grade 5", time: "2 days ago", type: "application" },
-                    ].map((activity, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors"
-                      >
-                        <div className="w-10 h-10 bg-[#F5A623]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                          <Calendar className="w-5 h-5 text-[#F5A623]" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-foreground">{activity.action}</p>
-                          <p className="text-xs text-muted-foreground">{activity.time}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <AdminOverview onNavigate={setSelectedTab} />
             </TabsContent>
 
             {/* News & Events Tab */}
@@ -138,17 +216,22 @@ export default function AdminPage() {
               <AdminNewsManager />
             </TabsContent>
 
-            {/* Gallery Tab */}
-            <TabsContent value="gallery">
-              <AdminGalleryManager />
+            {/* Articles Tab */}
+            <TabsContent value="articles">
+              <AdminArticlesManager />
             </TabsContent>
 
             {/* Applications Tab */}
             <TabsContent value="applications">
               <AdminApplications />
             </TabsContent>
-          </Tabs>
-        </Container>
+
+            {/* Gallery Tab */}
+            <TabsContent value="gallery">
+              <AdminGalleryManager />
+            </TabsContent>
+          </Container>
+        </Tabs>
       </section>
     </div>
   )

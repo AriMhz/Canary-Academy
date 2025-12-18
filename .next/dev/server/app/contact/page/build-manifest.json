@@ -2,20 +2,20 @@
   "devFiles": [],
   "ampDevFiles": [],
   "polyfillFiles": [
-    "static/chunks/28779_next_dist_build_polyfills_polyfill-nomodule.js"
+    "static/chunks/1dff6_next_dist_build_polyfills_polyfill-nomodule.js"
   ],
   "lowPriorityFiles": [],
   "rootMainFiles": [
-    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_d93d6c7f._.js",
-    "static/chunks/28779_next_dist_compiled_react-dom_aef28470._.js",
-    "static/chunks/28779_next_dist_compiled_react-server-dom-turbopack_0d13ea4a._.js",
-    "static/chunks/28779_next_dist_compiled_next-devtools_index_7defe7ec.js",
-    "static/chunks/28779_next_dist_compiled_2a85f75d._.js",
-    "static/chunks/28779_next_dist_client_c19181ff._.js",
-    "static/chunks/28779_next_dist_c6139ca2._.js",
-    "static/chunks/ef159_@swc_helpers_cjs_7c225c92._.js",
-    "static/chunks/canary-academy-website_a0ff3932._.js",
-    "static/chunks/turbopack-canary-academy-website_3a2a8236._.js"
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_f1d3f032._.js",
+    "static/chunks/1dff6_next_dist_compiled_react-dom_987ad27f._.js",
+    "static/chunks/1dff6_next_dist_compiled_react-server-dom-turbopack_b69c1d6b._.js",
+    "static/chunks/1dff6_next_dist_compiled_next-devtools_index_b10aad90.js",
+    "static/chunks/1dff6_next_dist_compiled_c5f28bd9._.js",
+    "static/chunks/1dff6_next_dist_client_e3c2bcb2._.js",
+    "static/chunks/1dff6_next_dist_4512f89c._.js",
+    "static/chunks/69652_@swc_helpers_cjs_679851cc._.js",
+    "static/chunks/_a0ff3932._.js",
+    "static/chunks/turbopack-_8177140e._.js"
   ],
   "pages": {},
   "ampFirstPages": []

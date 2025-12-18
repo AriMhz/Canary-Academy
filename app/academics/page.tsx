@@ -1,70 +1,173 @@
+"use client"
+
 import { Container } from "@/components/container"
 import { SectionHeading } from "@/components/section-heading"
-import { programs } from "@/lib/data"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, BookOpen, Microscope, Calculator, Palette, Music, Dumbbell } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { BookOpen, Beaker, Users, Trophy, Music, Palette, Monitor, Brain } from "lucide-react"
 import Image from "next/image"
 import { getAssetPath } from "@/lib/get-base-path"
-
-const facilities = [
-  {
-    icon: Microscope,
-    title: "Science Laboratories",
-    description: "Well-equipped physics, chemistry, and biology labs for hands-on learning.",
-  },
-  {
-    icon: BookOpen,
-    title: "Modern Library",
-    description: "Extensive collection of books, journals, and digital resources.",
-  },
-  {
-    icon: Calculator,
-    title: "Computer Lab",
-    description: "Latest technology and software for digital literacy.",
-  },
-  {
-    icon: Palette,
-    title: "Art Studio",
-    description: "Creative space for painting, sculpture, and visual arts.",
-  },
-  {
-    icon: Music,
-    title: "Music Room",
-    description: "Instruments and equipment for musical education.",
-  },
-  {
-    icon: Dumbbell,
-    title: "Sports Facilities",
-    description: "Indoor and outdoor facilities for various sports activities.",
-  },
-]
-
-const cocurricular = [
-  {
-    category: "Sports",
-    activities: ["Football", "Basketball", "Cricket", "Badminton", "Table Tennis", "Athletics"],
-  },
-  {
-    category: "Arts & Culture",
-    activities: ["Music", "Dance", "Drama", "Painting", "Debate", "Public Speaking"],
-  },
-  {
-    category: "Clubs",
-    activities: ["Science Club", "Literary Club", "Mathematics Club", "Environmental Club", "Photography Club"],
-  },
-]
+import { useLanguage } from "@/lib/i18n-context"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export default function AcademicsPage() {
+  const { t } = useLanguage()
+
+  const facilities = [
+    {
+      icon: Beaker,
+      title: t("academics.facilities.items.0.title"),
+      description: t("academics.facilities.items.0.description"),
+    },
+    {
+      icon: BookOpen,
+      title: t("academics.facilities.items.1.title"),
+      description: t("academics.facilities.items.1.description"),
+    },
+    {
+      icon: Monitor,
+      title: t("academics.facilities.items.2.title"),
+      description: t("academics.facilities.items.2.description"),
+    },
+    {
+      icon: Palette,
+      title: t("academics.facilities.items.3.title"),
+      description: t("academics.facilities.items.3.description"),
+    },
+    {
+      icon: Music,
+      title: t("academics.facilities.items.4.title"),
+      description: t("academics.facilities.items.4.description"),
+    },
+    {
+      icon: Trophy,
+      title: t("academics.facilities.items.5.title"),
+      description: t("academics.facilities.items.5.description"),
+    },
+  ]
+
+  const cocurricular = [
+    {
+      category: t("academics.cocurricular.items.0.category"),
+      activities: [
+        t("academics.cocurricular.items.0.activities.0"),
+        t("academics.cocurricular.items.0.activities.1"),
+        t("academics.cocurricular.items.0.activities.2"),
+        t("academics.cocurricular.items.0.activities.3"),
+        t("academics.cocurricular.items.0.activities.4"),
+        t("academics.cocurricular.items.0.activities.5"),
+      ],
+      icon: Trophy,
+      color: "text-emerald-600",
+      bg: "bg-emerald-50",
+      border: "border-emerald-100",
+    },
+    {
+      category: t("academics.cocurricular.items.1.category"),
+      activities: [
+        t("academics.cocurricular.items.1.activities.0"),
+        t("academics.cocurricular.items.1.activities.1"),
+        t("academics.cocurricular.items.1.activities.2"),
+        t("academics.cocurricular.items.1.activities.3"),
+        t("academics.cocurricular.items.1.activities.4"),
+        t("academics.cocurricular.items.1.activities.5"),
+      ],
+      icon: Palette,
+      color: "text-purple-600",
+      bg: "bg-purple-50",
+      border: "border-purple-100",
+    },
+    {
+      category: t("academics.cocurricular.items.2.category"),
+      activities: [
+        t("academics.cocurricular.items.2.activities.0"),
+        t("academics.cocurricular.items.2.activities.1"),
+        t("academics.cocurricular.items.2.activities.2"),
+        t("academics.cocurricular.items.2.activities.3"),
+        t("academics.cocurricular.items.2.activities.4"),
+      ],
+      icon: Users,
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+      border: "border-blue-100",
+    },
+  ]
+
+  const methodology = [
+    {
+      title: t("academics.methodology.items.0.title"),
+      description: t("academics.methodology.items.0.description"),
+      icon: Users,
+    },
+    {
+      title: t("academics.methodology.items.1.title"),
+      description: t("academics.methodology.items.1.description"),
+      icon: Monitor,
+    },
+    {
+      title: t("academics.methodology.items.2.title"),
+      description: t("academics.methodology.items.2.description"),
+      icon: Brain,
+    },
+    {
+      title: t("academics.methodology.items.3.title"),
+      description: t("academics.methodology.items.3.description"),
+      icon: Beaker,
+    },
+  ]
+
+  const programs = [
+    {
+      level: t("home.programs.items.0.level") || "Primary (K-5)",
+      description: t("home.programs.items.0.description") || "Foundation years focusing on literacy, numeracy, and social skills development.",
+      subjects: [
+        t("home.programs.items.0.subjects.0"),
+        t("home.programs.items.0.subjects.1"),
+        t("home.programs.items.0.subjects.2"),
+        t("home.programs.items.0.subjects.3"),
+        t("home.programs.items.0.subjects.4"),
+        t("home.programs.items.0.subjects.5")
+      ],
+      image: "/images/primary-school.jpg",
+    },
+    {
+      level: t("home.programs.items.1.level") || "Lower Secondary (6-8)",
+      description: t("home.programs.items.1.description") || "Building on fundamentals with deeper subject exploration and critical thinking.",
+      subjects: [
+        t("home.programs.items.1.subjects.0"),
+        t("home.programs.items.1.subjects.1"),
+        t("home.programs.items.1.subjects.2"),
+        t("home.programs.items.1.subjects.3"),
+        t("home.programs.items.1.subjects.4"),
+        t("home.programs.items.1.subjects.5"),
+        t("home.programs.items.1.subjects.6")
+      ],
+      image: "/images/secondary-school.jpg",
+    },
+    {
+      level: t("home.programs.items.2.level") || "Secondary (9-10)",
+      description: t("home.programs.items.2.description") || "Comprehensive preparation for board examinations and higher education.",
+      subjects: [
+        t("home.programs.items.2.subjects.0"),
+        t("home.programs.items.2.subjects.1"),
+        t("home.programs.items.2.subjects.2"),
+        t("home.programs.items.2.subjects.3"),
+        t("home.programs.items.2.subjects.4"),
+        t("home.programs.items.2.subjects.5"),
+        t("home.programs.items.2.subjects.6")
+      ],
+      image: "/images/library.jpg",
+    },
+  ]
+
   return (
     <div className="pt-20">
-      {/* Hero Section */}
       {/* Hero Section */}
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
         <Image
           src={getAssetPath("/images/academics-hero-bg.jpg")}
-          alt="Academics Hero Background"
+          alt={t("academics.hero.title")}
           fill
           className="object-cover"
           priority
@@ -74,10 +177,9 @@ export default function AcademicsPage() {
 
         <Container className="relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">Academic Excellence</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{t("academics.hero.title")}</h1>
             <p className="text-xl text-white/90 leading-relaxed">
-              Our comprehensive curriculum and modern teaching methods ensure every student reaches their full
-              potential.
+              {t("academics.hero.description")}
             </p>
           </div>
         </Container>
@@ -87,30 +189,74 @@ export default function AcademicsPage() {
       <section className="py-20 bg-background">
         <Container>
           <SectionHeading
-            title="Our Academic Programs"
-            subtitle="Structured learning pathways from kindergarten through secondary education"
+            title={t("academics.programs.title")}
+            subtitle={t("academics.programs.subtitle")}
           />
-          <div className="grid md:grid-cols-3 gap-8 mt-12">
-            {programs.map((program, index) => (
-              <Card key={index} className="hover:shadow-premium transition-all duration-300">
-                <CardHeader>
-                  <Badge className="w-fit bg-[#F5A623] hover:bg-[#FFB84D] text-white mb-2">{program.level}</Badge>
-                  <CardTitle className="text-2xl text-[#2C4F5E]">{program.level}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">{program.description}</p>
 
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-sm text-[#2C4F5E]">Core Subjects:</h4>
-                    <div className="space-y-1.5">
+          <div className="space-y-16 mt-12">
+            {programs.map((program, index) => (
+              <div key={index} className={`flex flex-col lg:flex-row gap-12 items-center ${index % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
+                {/* Image Side */}
+                <div className="w-full lg:w-1/2">
+                  <div className="relative h-[300px] md:h-[400px] w-full rounded-2xl overflow-hidden shadow-2xl group">
+                    <Image
+                      src={getAssetPath(program.image)}
+                      alt={program.level}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  </div>
+                </div>
+
+                {/* Content Side */}
+                <div className="w-full lg:w-1/2 space-y-6">
+                  <div className="inline-block px-4 py-1.5 bg-[#F5A623]/10 rounded-full">
+                    <span className="text-[#F5A623] font-semibold text-sm uppercase tracking-wider">{program.level}</span>
+                  </div>
+                  <h3 className="text-3xl font-bold text-[#2C4F5E]">{program.level}</h3>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    {program.description}
+                  </p>
+
+                  <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
+                    <h4 className="font-semibold text-[#2C4F5E] mb-4 flex items-center gap-2">
+                      <BookOpen className="w-5 h-5 text-[#F5A623]" />
+                      {t("academics.programs.start")}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
                       {program.subjects.map((subject, idx) => (
-                        <div key={idx} className="flex items-center gap-2 text-sm">
-                          <CheckCircle2 className="w-4 h-4 text-[#F5A623] flex-shrink-0" />
-                          <span className="text-muted-foreground">{subject}</span>
-                        </div>
+                        <span key={idx} className="px-3 py-1 bg-white border border-slate-200 rounded-full text-sm text-slate-600 hover:border-[#F5A623] hover:text-[#F5A623] transition-colors cursor-default">
+                          {subject}
+                        </span>
                       ))}
                     </div>
                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Teaching Methodology */}
+      <section className="py-20 bg-muted/50">
+        <Container>
+          <SectionHeading
+            title={t("academics.methodology.title")}
+            subtitle={t("academics.methodology.subtitle")}
+          />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+            {methodology.map((item, index) => (
+              <Card key={index} className="border-none shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6 text-center space-y-4 pt-8">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-[#2C4F5E]/5 flex items-center justify-center">
+                    <item.icon className="w-8 h-8 text-[#2C4F5E]" />
+                  </div>
+                  <h3 className="text-xl font-bold text-[#2C4F5E]">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {item.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -119,97 +265,76 @@ export default function AcademicsPage() {
       </section>
 
       {/* Facilities */}
-      <section className="py-20 bg-muted">
+      <section className="py-20 bg-background">
         <Container>
           <SectionHeading
-            title="World-Class Facilities"
-            subtitle="State-of-the-art infrastructure supporting modern education"
+            title={t("academics.facilities.title")}
+            subtitle={t("academics.facilities.subtitle")}
           />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
             {facilities.map((facility, index) => (
-              <Card key={index} className="hover:shadow-premium transition-all duration-300 group">
-                <CardContent className="p-6 space-y-4">
-                  <div className="w-14 h-14 bg-[#F5A623]/10 rounded-full flex items-center justify-center group-hover:bg-[#F5A623]/20 transition-colors">
-                    <facility.icon className="w-7 h-7 text-[#F5A623]" />
+              <div key={index} className="group p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:border-[#F5A623]/30">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 rounded-xl bg-[#F5A623]/10 group-hover:bg-[#F5A623] transition-colors duration-300">
+                    <facility.icon className="w-6 h-6 text-[#F5A623] group-hover:text-white transition-colors duration-300" />
                   </div>
-                  <h3 className="text-xl font-bold text-[#2C4F5E]">{facility.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{facility.description}</p>
-                </CardContent>
-              </Card>
+                  <div>
+                    <h3 className="text-lg font-bold text-[#2C4F5E] mb-2 group-hover:text-[#F5A623] transition-colors">{facility.title}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {facility.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </Container>
       </section>
 
       {/* Co-curricular Activities */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-[#2C4F5E] text-white">
         <Container>
-          <SectionHeading title="Beyond the Classroom" subtitle="Co-curricular activities for holistic development" />
-          <div className="grid md:grid-cols-3 gap-8 mt-12">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("academics.cocurricular.title")}</h2>
+            <p className="text-white/80 text-lg max-w-2xl mx-auto">
+              {t("academics.cocurricular.subtitle")}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
             {cocurricular.map((item, index) => (
-              <Card key={index} className="border-2 border-[#F5A623]/20 shadow-premium">
-                <CardHeader>
-                  <CardTitle className="text-2xl text-[#2C4F5E]">{item.category}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {item.activities.map((activity, idx) => (
-                      <Badge key={idx} variant="outline" className="border-[#2C4F5E] text-[#2C4F5E]">
-                        {activity}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/10 hover:bg-white/20 transition-colors">
+                <div className="flex items-center gap-3 mb-6">
+                  <item.icon className="w-8 h-8 text-[#F5A623]" />
+                  <h3 className="text-2xl font-bold">{item.category}</h3>
+                </div>
+                <ul className="space-y-3">
+                  {item.activities.map((activity, idx) => (
+                    <li key={idx} className="flex items-center gap-2 text-white/90">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#F5A623]" />
+                      {activity}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
           </div>
         </Container>
       </section>
 
-      {/* Teaching Methodology */}
-      <section className="py-20 bg-muted">
+      {/* CTA Section */}
+      <section className="py-20 bg-[#F5A623]">
         <Container>
-          <div className="max-w-4xl mx-auto">
-            <SectionHeading
-              title="Our Teaching Approach"
-              subtitle="Innovative methods that make learning engaging and effective"
-            />
-            <div className="grid md:grid-cols-2 gap-6 mt-12">
-              <Card>
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="text-lg font-bold text-[#2C4F5E]">Student-Centered Learning</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    We focus on individual learning styles and pace, ensuring every student receives the attention they
-                    need.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="text-lg font-bold text-[#2C4F5E]">Interactive Teaching</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Our teachers use modern technology and hands-on activities to make learning engaging and memorable.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="text-lg font-bold text-[#2C4F5E]">Critical Thinking</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    We encourage students to question, analyze, and think independently rather than just memorize facts.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="text-lg font-bold text-[#2C4F5E]">Continuous Assessment</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Regular feedback and assessment help students track their progress and identify areas for
-                    improvement.
-                  </p>
-                </CardContent>
-              </Card>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-white max-w-2xl">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("cta.title")}</h2>
+              <p className="text-xl text-white/90">
+                {t("cta.text")}
+              </p>
             </div>
+            <Button asChild size="lg" className="bg-white text-[#F5A623] hover:bg-white/90 hover:text-[#F5A623] border-none text-lg px-8 h-14 rounded-full shadow-xl">
+              <Link href="/admissions">{t("hero.cta")}</Link>
+            </Button>
           </div>
         </Container>
       </section>

@@ -1,9 +1,7 @@
 {
   "version": 1,
   "config": {
-    "env": {
-      "NEXT_PUBLIC_BASE_PATH": "/Canary-Academy-demo"
-    },
+    "env": {},
     "webpack": null,
     "typescript": {
       "ignoreBuildErrors": true
@@ -11,7 +9,7 @@
     "typedRoutes": false,
     "distDir": ".next",
     "cleanDistDir": true,
-    "assetPrefix": "/Canary-Academy-demo",
+    "assetPrefix": "",
     "cacheMaxMemorySize": 52428800,
     "configOrigin": "next.config.mjs",
     "useFileSystemPublicRoutes": true,
@@ -44,7 +42,7 @@
         256,
         384
       ],
-      "path": "/Canary-Academy-demo/_next/image/",
+      "path": "/_next/image/",
       "loader": "default",
       "loaderFile": "",
       "domains": [],
@@ -77,7 +75,7 @@
       "maxInactiveAge": 60000,
       "pagesBufferLength": 5
     },
-    "basePath": "/Canary-Academy-demo",
+    "basePath": "",
     "sassOptions": {},
     "trailingSlash": true,
     "i18n": null,
@@ -93,7 +91,6 @@
     "compiler": {},
     "expireTime": 31536000,
     "staticPageGenerationTimeout": 60,
-    "output": "export",
     "modularizeImports": {
       "@mui/icons-material": {
         "transform": "@mui/icons-material/{{member}}"
@@ -102,7 +99,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\user",
+    "outputFileTracingRoot": "C:\\Users\\Azn\\Downloads\\canary-academy-website",
     "cacheComponents": false,
     "cacheLife": {
       "default": {
@@ -160,7 +157,7 @@
       "proxyPrefetch": "flexible",
       "optimisticClientCache": true,
       "manualClientBasePath": false,
-      "cpus": 15,
+      "cpus": 19,
       "memoryBasedWorkersCount": false,
       "imgOptConcurrency": null,
       "imgOptTimeoutInSeconds": 7,
@@ -292,12 +289,12 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.mjs",
     "turbopack": {
-      "root": "C:\\Users\\user"
+      "root": "C:\\Users\\Azn\\Downloads\\canary-academy-website"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "C:\\Users\\user\\Downloads\\canary-academy-website",
-  "relativeAppDir": "Downloads\\canary-academy-website",
+  "appDir": "C:\\Users\\Azn\\Downloads\\canary-academy-website",
+  "relativeAppDir": "",
   "files": [
     ".next\\routes-manifest.json",
     ".next\\server\\pages-manifest.json",

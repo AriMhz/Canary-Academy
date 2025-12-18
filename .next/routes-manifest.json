@@ -2,17 +2,8 @@
   "version": 3,
   "pages404": true,
   "caseSensitive": false,
-  "basePath": "/Canary-Academy-demo",
+  "basePath": "",
   "redirects": [
-    {
-      "source": "/Canary-Academy-demo",
-      "destination": "/Canary-Academy-demo/",
-      "basePath": false,
-      "internal": true,
-      "priority": true,
-      "statusCode": 308,
-      "regex": "^/Canary-Academy-demo$"
-    },
     {
       "source": "/:file((?!\\.well-known(?:/.*)?)(?:[^/]+/)*[^/]+\\.\\w+)/",
       "destination": "/:file",
@@ -42,7 +33,24 @@
     "afterFiles": [],
     "fallback": []
   },
-  "dynamicRoutes": [],
+  "dynamicRoutes": [
+    {
+      "page": "/articles/[id]",
+      "regex": "^/articles/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/articles/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/news/[id]",
+      "regex": "^/news/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/news/(?<nxtPid>[^/]+?)(?:/)?$"
+    }
+  ],
   "staticRoutes": [
     {
       "page": "/",
@@ -69,10 +77,40 @@
       "namedRegex": "^/about(?:/)?$"
     },
     {
+      "page": "/about/committee",
+      "regex": "^/about/committee(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about/committee(?:/)?$"
+    },
+    {
+      "page": "/about/organizational-structure",
+      "regex": "^/about/organizational\\-structure(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about/organizational\\-structure(?:/)?$"
+    },
+    {
       "page": "/academics",
       "regex": "^/academics(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/academics(?:/)?$"
+    },
+    {
+      "page": "/academics/other-programs",
+      "regex": "^/academics/other\\-programs(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/academics/other\\-programs(?:/)?$"
+    },
+    {
+      "page": "/academics/regular-classes",
+      "regex": "^/academics/regular\\-classes(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/academics/regular\\-classes(?:/)?$"
+    },
+    {
+      "page": "/academics/subjects",
+      "regex": "^/academics/subjects(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/academics/subjects(?:/)?$"
     },
     {
       "page": "/admin",
@@ -85,6 +123,24 @@
       "regex": "^/admissions(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admissions(?:/)?$"
+    },
+    {
+      "page": "/api/admissions",
+      "regex": "^/api/admissions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admissions(?:/)?$"
+    },
+    {
+      "page": "/api/content",
+      "regex": "^/api/content(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/content(?:/)?$"
+    },
+    {
+      "page": "/articles",
+      "regex": "^/articles(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/articles(?:/)?$"
     },
     {
       "page": "/careers",

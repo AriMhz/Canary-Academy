@@ -1,9 +1,15 @@
+"use client"
+
 import { Container } from "@/components/container"
 import { SectionHeading } from "@/components/section-heading"
-import { programs } from "@/lib/data"
-import { CheckCircle2, ArrowRight, BookOpen, Rocket, UserCheck } from "lucide-react"
+import { CheckCircle2, ArrowRight, BookOpen, Rocket, UserCheck, Plus, X } from "lucide-react"
+import { useLanguage } from "@/lib/i18n-context"
+import { useCMS } from "@/lib/cms-context"
 
 export function Programs() {
+  const { content, isEditorMode, updateContent } = useCMS()
+  const { t } = useLanguage()
+
   const getIcon = (level: string) => {
     if (level.includes("Primary")) return BookOpen
     if (level.includes("Lower Secondary")) return Rocket
@@ -20,6 +26,20 @@ export function Programs() {
     return gradients[index % gradients.length]
   }
 
+  const handleAddSubject = (programIndex: number, currentSubjects: string[]) => {
+    if (updateContent) {
+      const newSubjects = [...currentSubjects, "New Subject"]
+      updateContent(["programs", "items", programIndex.toString(), "subjects"], newSubjects)
+    }
+  }
+
+  const handleDeleteSubject = (programIndex: number, subjectIndex: number, currentSubjects: string[]) => {
+    if (updateContent) {
+      const newSubjects = currentSubjects.filter((_, idx) => idx !== subjectIndex)
+      updateContent(["programs", "items", programIndex.toString(), "subjects"], newSubjects)
+    }
+  }
+
   return (
     <section className="py-24 bg-slate-50 relative overflow-hidden">
       {/* Background Decor */}
@@ -28,18 +48,22 @@ export function Programs() {
 
       <Container>
         <SectionHeading
-          title="Academic Programs"
-          subtitle="Comprehensive curriculum designed to nurture young minds from kindergarten through secondary education."
+          title={content.programs.title}
+          subtitle={content.programs.subtitle}
           className="mb-16 lg:mb-20"
+          data-editable-title="programs.title"
+          data-editable-subtitle="programs.subtitle"
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-8">
-          {programs.map((program, index) => {
+          {content.programs.items.map((program, index) => {
             const Icon = getIcon(program.level)
+            const subjects = program.subjects
+
             return (
               <div
                 key={index}
-                className="group relative bg-white rounded-3xl p-6 md:p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-premium-lg border border-slate-100 hover:border-[#F5A623]/30 overflow-hidden flex flex-col h-full"
+                className={`group relative bg-white rounded-3xl p-6 md:p-8 transition-all duration-500 ${!isEditorMode ? "hover:-translate-y-2" : ""} hover:shadow-premium-lg border border-slate-100 hover:border-[#F5A623]/30 overflow-hidden flex flex-col h-full`}
               >
                 {/* Hover Gradient Overlay */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(index)} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
@@ -53,10 +77,16 @@ export function Programs() {
                     <div className="w-14 h-14 rounded-2xl bg-[#F5A623]/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
                       <Icon className="w-7 h-7 text-[#F5A623]" />
                     </div>
-                    <h3 className="text-2xl font-bold text-[#2C4F5E] mb-3 group-hover:text-[#F5A623] transition-colors duration-300">
+                    <h3
+                      className="text-2xl font-bold text-[#2C4F5E] mb-3 group-hover:text-[#F5A623] transition-colors duration-300"
+                      data-editable={`programs.items.${index}.level`}
+                    >
                       {program.level}
                     </h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p
+                      className="text-muted-foreground leading-relaxed"
+                      data-editable={`programs.items.${index}.description`}
+                    >
                       {program.description}
                     </p>
                   </div>
@@ -64,22 +94,52 @@ export function Programs() {
                   {/* Subjects */}
                   <div className="flex-grow">
                     <h4 className="font-semibold text-sm text-[#2C4F5E] uppercase tracking-wider mb-4 flex items-center gap-2">
-                      Core Subjects
+                      {t("home.programs.coreSubjects")}
                       <span className="h-px flex-1 bg-slate-100 group-hover:bg-[#F5A623]/30 transition-colors" />
                     </h4>
                     <ul className="space-y-3">
-                      {program.subjects.slice(0, 5).map((subject, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-sm group/item">
+                      {(isEditorMode ? subjects : subjects.slice(0, 5)).map((subject, idx) => (
+                        <li key={idx} className="flex items-start gap-3 text-sm group/item relative">
                           <CheckCircle2 className="w-5 h-5 text-[#F5A623] flex-shrink-0 mt-0.5" />
-                          <span className="text-slate-600 group-hover/item:text-[#2C4F5E] transition-colors">
+                          <span
+                            className="text-slate-600 group-hover/item:text-[#2C4F5E] transition-colors"
+                            data-editable={`programs.items.${index}.subjects.${idx}`}
+                          >
                             {subject}
                           </span>
+                          {isEditorMode && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDeleteSubject(index, idx, subjects)
+                              }}
+                              className="ml-auto p-1 text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover/item:opacity-100 transition-opacity z-20"
+                              title="Remove subject"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
                         </li>
                       ))}
-                      {program.subjects.length > 5 && (
-                        <li className="text-xs text-[#F5A623] font-medium pl-8 pt-1">
-                          + {program.subjects.length - 5} more subjects
+                      {isEditorMode ? (
+                        <li className="flex items-center gap-3 pt-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleAddSubject(index, subjects)
+                            }}
+                            className="flex items-center gap-2 text-sm text-[#F5A623] hover:text-[#FFB84D] font-medium z-20"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Add Subject
+                          </button>
                         </li>
+                      ) : (
+                        subjects.length > 5 && (
+                          <li className="text-xs text-[#F5A623] font-medium pl-8 pt-1">
+                            + {subjects.length - 5} {t("home.programs.moreSubjects")}
+                          </li>
+                        )
                       )}
                     </ul>
                   </div>
@@ -87,7 +147,7 @@ export function Programs() {
                   {/* Action */}
                   <div className="mt-8 pt-6 border-t border-slate-100 group-hover:border-[#F5A623]/20 transition-colors">
                     <button className="flex items-center gap-2 text-sm font-bold text-[#2C4F5E] group-hover:text-[#F5A623] transition-colors uppercase tracking-wider">
-                      Learn More
+                      {t("buttons.learnMore")}
                       <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </button>
                   </div>

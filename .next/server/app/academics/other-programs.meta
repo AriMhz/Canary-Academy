@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/academics/layout,_N_T_/academics/other-programs/layout,_N_T_/academics/other-programs/page,_N_T_/academics/other-programs/"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/academics/other-programs/__PAGE__",
+    "/academics/other-programs",
+    "/academics",
+    "/_index",
+    "/_head"
+  ]
+}

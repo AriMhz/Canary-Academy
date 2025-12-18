@@ -14,8 +14,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
 import { getAssetPath } from "@/lib/get-base-path"
+import { useLanguage } from "@/lib/i18n-context"
 
 export default function ContactPage() {
+  const { t } = useLanguage()
   const [submitted, setSubmitted] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -38,23 +40,39 @@ export default function ContactPage() {
   const contactInfo = [
     {
       icon: MapPin,
-      title: "Address",
-      details: ["Canary Academy", "Kathmandu, Nepal", "P.O. Box: XXXX"],
+      title: t("contact.info.items.0.title"),
+      details: [
+        t("contact.info.items.0.details.0"),
+        t("contact.info.items.0.details.1"),
+        t("contact.info.items.0.details.2")
+      ],
     },
     {
       icon: Phone,
-      title: "Phone",
-      details: ["+977-1-XXXXXXX (Office)", "+977-98XXXXXXXX (Mobile)", "+977-1-XXXXXXX (Fax)"],
+      title: t("contact.info.items.1.title"),
+      details: [
+        t("contact.info.items.1.details.0"),
+        t("contact.info.items.1.details.1"),
+        t("contact.info.items.1.details.2")
+      ],
     },
     {
       icon: Mail,
-      title: "Email",
-      details: ["info@canaryacademy.edu.np", "admissions@canaryacademy.edu.np", "principal@canaryacademy.edu.np"],
+      title: t("contact.info.items.2.title"),
+      details: [
+        t("contact.info.items.2.details.0"),
+        t("contact.info.items.2.details.1"),
+        t("contact.info.items.2.details.2")
+      ],
     },
     {
       icon: Clock,
-      title: "Office Hours",
-      details: ["Monday - Friday: 8:00 AM - 4:00 PM", "Saturday: 8:00 AM - 1:00 PM", "Sunday: Closed"],
+      title: t("contact.info.items.3.title"),
+      details: [
+        t("contact.info.items.3.details.0"),
+        t("contact.info.items.3.details.1"),
+        t("contact.info.items.3.details.2")
+      ],
     },
   ]
 
@@ -65,7 +83,7 @@ export default function ContactPage() {
         {/* Background Image */}
         <Image
           src={getAssetPath("/images/contact-hero-bg.jpg")}
-          alt="Contact Hero Background"
+          alt={t("contact.hero.title")}
           fill
           className="object-cover"
           priority
@@ -75,49 +93,23 @@ export default function ContactPage() {
 
         <Container className="relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">Contact Us</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{t("contact.hero.title")}</h1>
             <p className="text-xl text-white/90 leading-relaxed">
-              Get in touch with us. We're here to answer your questions and help you with the admission process.
+              {t("contact.hero.description")}
             </p>
           </div>
         </Container>
       </section>
 
-      {/* Contact Info Section */}
-      <section className="py-20 bg-background">
-        <Container>
-          <SectionHeading title="Get In Touch" subtitle="Multiple ways to reach us" />
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-            {contactInfo.map((info, index) => (
-              <Card key={index} className="hover:shadow-premium transition-all duration-300">
-                <CardContent className="p-6 text-center space-y-4">
-                  <div className="mx-auto w-14 h-14 bg-[#F5A623]/10 rounded-full flex items-center justify-center">
-                    <info.icon className="w-7 h-7 text-[#F5A623]" />
-                  </div>
-                  <h3 className="text-lg font-bold text-[#2C4F5E]">{info.title}</h3>
-                  <div className="space-y-1">
-                    {info.details.map((detail, idx) => (
-                      <p key={idx} className="text-sm text-muted-foreground leading-relaxed">
-                        {detail}
-                      </p>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* Contact Form & Map Section */}
+      {/* Main Contact Section */}
       <section className="py-20 bg-muted">
         <Container>
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div>
-              <SectionHeading title="Send Us A Message" subtitle="" centered={false} />
+              <SectionHeading title={t("contact.form.title")} subtitle="" centered={false} />
               <p className="text-muted-foreground leading-relaxed mt-4 mb-8">
-                Fill out the form below and we'll get back to you as soon as possible.
+                {t("contact.form.subtitle")}
               </p>
 
               {submitted ? (
@@ -126,16 +118,16 @@ export default function ContactPage() {
                     <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                       <CheckCircle2 className="w-10 h-10 text-green-600" />
                     </div>
-                    <h3 className="text-2xl font-bold text-[#2C4F5E]">Message Sent Successfully!</h3>
+                    <h3 className="text-2xl font-bold text-[#2C4F5E]">{t("contact.form.successTitle")}</h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      Thank you for contacting us. We'll respond to your inquiry within 24-48 hours.
+                      {t("contact.form.successText")}
                     </p>
                     <Button
                       onClick={() => setSubmitted(false)}
                       variant="outline"
                       className="border-2 border-[#2C4F5E] text-[#2C4F5E]"
                     >
-                      Send Another Message
+                      {t("contact.form.buttonAgain")}
                     </Button>
                   </CardContent>
                 </Card>
@@ -146,20 +138,20 @@ export default function ContactPage() {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="name">
-                            Full Name <span className="text-red-500">*</span>
+                            {t("contact.form.labels.name")} <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             id="name"
                             required
                             value={formData.name}
                             onChange={(e) => handleChange("name", e.target.value)}
-                            placeholder="Your name"
+                            placeholder={t("contact.form.labels.name")}
                           />
                         </div>
 
                         <div className="space-y-2">
                           <Label htmlFor="email">
-                            Email Address <span className="text-red-500">*</span>
+                            {t("contact.form.labels.email")} <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             id="email"
@@ -175,7 +167,7 @@ export default function ContactPage() {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="phone">
-                            Phone Number <span className="text-red-500">*</span>
+                            {t("contact.form.labels.phone")} <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             id="phone"
@@ -189,7 +181,7 @@ export default function ContactPage() {
 
                         <div className="space-y-2">
                           <Label htmlFor="subject">
-                            Subject <span className="text-red-500">*</span>
+                            {t("contact.form.labels.subject")} <span className="text-red-500">*</span>
                           </Label>
                           <Select
                             required
@@ -197,14 +189,14 @@ export default function ContactPage() {
                             onValueChange={(value) => handleChange("subject", value)}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Select subject" />
+                              <SelectValue placeholder={t("contact.form.labels.subject")} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="admission">Admission Inquiry</SelectItem>
-                              <SelectItem value="general">General Information</SelectItem>
-                              <SelectItem value="academics">Academic Programs</SelectItem>
-                              <SelectItem value="campus">Campus Tour</SelectItem>
-                              <SelectItem value="other">Other</SelectItem>
+                              <SelectItem value="admission">{t("contact.form.labels.subjects.admission")}</SelectItem>
+                              <SelectItem value="general">{t("contact.form.labels.subjects.general")}</SelectItem>
+                              <SelectItem value="academics">{t("contact.form.labels.subjects.academics")}</SelectItem>
+                              <SelectItem value="campus">{t("contact.form.labels.subjects.campus")}</SelectItem>
+                              <SelectItem value="other">{t("contact.form.labels.subjects.other")}</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -212,21 +204,21 @@ export default function ContactPage() {
 
                       <div className="space-y-2">
                         <Label htmlFor="message">
-                          Message <span className="text-red-500">*</span>
+                          {t("contact.form.labels.message")} <span className="text-red-500">*</span>
                         </Label>
                         <Textarea
                           id="message"
                           required
                           value={formData.message}
                           onChange={(e) => handleChange("message", e.target.value)}
-                          placeholder="Tell us how we can help you..."
+                          placeholder={t("contact.form.labels.message")}
                           rows={6}
                         />
                       </div>
 
                       <Button type="submit" size="lg" className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white">
                         <Send className="w-4 h-4 mr-2" />
-                        Send Message
+                        {t("contact.form.labels.submit")}
                       </Button>
                     </form>
                   </CardContent>
@@ -237,10 +229,9 @@ export default function ContactPage() {
             {/* Map & Additional Info */}
             <div className="space-y-8">
               <div>
-                <SectionHeading title="Visit Our Campus" subtitle="" centered={false} />
+                <SectionHeading title={t("contact.visit.title")} subtitle="" centered={false} />
                 <p className="text-muted-foreground leading-relaxed mt-4 mb-6">
-                  We welcome you to visit our campus and see firsthand the environment where your child will learn and
-                  grow. Schedule a campus tour by contacting our admissions office.
+                  {t("contact.visit.text")}
                 </p>
               </div>
 
@@ -248,7 +239,7 @@ export default function ContactPage() {
               <Card className="overflow-hidden shadow-premium">
                 <div className="relative h-[400px] bg-muted">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.6962717629455!2d85.31408931506223!3d27.69751198279836!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb19a432383e63%3A0x6f3c0b7f98e7e8d4!2sKathmandu%2C%20Nepal!5e0!3m2!1sen!2sus!4v1234567890123"
+                    src="https://maps.google.com/maps?q=Canary+Academy,+Haldibari-2,+Jhapa&t=&z=15&ie=UTF8&iwloc=&output=embed"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -259,23 +250,83 @@ export default function ContactPage() {
                 </div>
               </Card>
 
-              {/* Quick Contact Card */}
-              <Card className="bg-gradient-to-br from-[#2C4F5E] to-[#3A5F70] text-white border-0">
-                <CardContent className="p-8 space-y-4">
-                  <h3 className="text-2xl font-bold">Schedule a Campus Tour</h3>
-                  <p className="text-white/90 leading-relaxed">
-                    Experience our facilities and meet our faculty. Contact us to schedule your visit.
+            </div>
+          </div>
+
+          {/* Extended Contact Section */}
+          <div className="mt-16 max-w-5xl mx-auto space-y-8">
+            {/* Quick Contact Card */}
+            <Card className="bg-gradient-to-br from-[#2C4F5E] to-[#3A5F70] text-white border-0 overflow-hidden relative">
+              <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                <Phone className="w-64 h-64 -mr-16 -mt-16" />
+              </div>
+              <CardContent className="p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+                <div className="space-y-4 max-w-2xl text-center md:text-left">
+                  <h3 className="text-3xl font-bold">{t("contact.visit.ctaTitle")}</h3>
+                  <p className="text-white/90 text-lg leading-relaxed">
+                    {t("contact.visit.ctaText")}
                   </p>
-                  <Button size="lg" className="bg-[#F5A623] hover:bg-[#FFB84D] text-white w-full">
-                    <Phone className="w-4 h-4 mr-2" />
-                    Call Us Now
-                  </Button>
-                </CardContent>
-              </Card>
+                </div>
+                <Button asChild size="lg" className="bg-[#F5A623] hover:bg-[#FFB84D] text-white text-lg px-8 py-6 h-auto shrink-0 w-full md:w-auto">
+                  <a href="tel:9801444350">
+                    <Phone className="w-5 h-5 mr-2" />
+                    {t("contact.visit.ctaButton")}
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Get In Touch Info */}
+            <div>
+              <h3 className="text-2xl font-bold text-[#2C4F5E] mb-6 text-center">{t("contact.info.title")}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {contactInfo.map((info, index) => (
+                  <Card key={index} className="shadow-sm hover:shadow-md transition-shadow h-full">
+                    <CardContent className="p-6 flex flex-col items-center text-center gap-4 h-full">
+                      <div className="w-14 h-14 bg-[#F5A623]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <info.icon className="w-7 h-7 text-[#F5A623]" />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center">
+                        <h4 className="font-bold text-[#2C4F5E] text-lg mb-2">{info.title}</h4>
+                        <div className="space-y-1.5">
+                          {info.details.map((detail, idx) => {
+                            // Check if detail is an email
+                            const emailMatch = detail.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                            // Check if detail is a phone number (simple check for digits and dashes/plus)
+                            const phoneMatch = detail.match(/(\+?[\d-]+\d+)/);
+
+                            if (emailMatch && detail.includes("@") && detail.includes(".")) {
+                              return (
+                                <a key={idx} href={`mailto:${detail}`} className="block text-sm text-muted-foreground leading-relaxed break-words hover:text-[#F5A623] transition-colors">
+                                  {detail}
+                                </a>
+                              )
+                            } else if (phoneMatch && (detail.includes("+") || detail.match(/\d{3,}/))) {
+                              // Extract the number for the href
+                              const number = detail.replace(/[^\d+]/g, '');
+                              return (
+                                <a key={idx} href={`tel:${number}`} className="block text-sm text-muted-foreground leading-relaxed break-words hover:text-[#F5A623] transition-colors">
+                                  {detail}
+                                </a>
+                              )
+                            }
+
+                            return (
+                              <p key={idx} className="text-sm text-muted-foreground leading-relaxed break-words">
+                                {detail}
+                              </p>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         </Container>
-      </section>
-    </div>
+      </section >
+    </div >
   )
 }

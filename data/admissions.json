@@ -1,0 +1,19 @@
+[
+  {
+    "firstName": "Test",
+    "middleName": "",
+    "lastName": "ds",
+    "gender": "male",
+    "gradeApplying": "10",
+    "parentName": "ds",
+    "relationship": "father",
+    "email": "as@gmail.com",
+    "phone": "989898989",
+    "address": "test",
+    "additionalInfo": "na",
+    "agreeTerms": true,
+    "id": 1765861674718,
+    "submittedAt": "2025-12-16T05:07:54.718Z",
+    "status": "approved"
+  }
+]
