@@ -38,7 +38,7 @@ export default function AdminPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
-    if (username === "admin" && password === "password") {
+    if (username === "Canary" && password === "Canary@123+123") {
       sessionStorage.setItem("adminSession", "true")
       setIsLoggedIn(true)
       setError("")
