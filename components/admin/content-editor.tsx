@@ -36,12 +36,16 @@ export function ContentEditor() {
     }, [])
 
     const handleSave = async () => {
-        await saveCMSContent(content)
-        setHasChanges(false)
-        toast({
-            title: "Changes saved",
-            description: "Your website content has been updated successfully.",
-        })
+        setIsLoading(true) // Re-use loading state or add a saving state? Re-using might hide the form. better to just await.
+        // Actually, let's just await.
+        const success = await saveCMSContent(content)
+        if (success) {
+            setHasChanges(false)
+            toast({
+                title: "Changes saved",
+                description: "Your website content has been updated successfully.",
+            })
+        }
     }
 
     // Deep update helper

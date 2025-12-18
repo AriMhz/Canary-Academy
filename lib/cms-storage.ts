@@ -791,25 +791,28 @@ export async function fetchCMSContent(): Promise<CMSContent> {
   return defaultContent
 }
 
-export async function saveCMSContent(content: CMSContent): Promise<void> {
-  if (typeof window === "undefined") return
+export async function saveCMSContent(content: CMSContent): Promise<boolean> {
+  if (typeof window === "undefined") return false
 
   try {
-    // Save to API (filesystem)
-    await fetch('/api/content', {
+    // Save to API (database)
+    const response = await fetch('/api/content', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(content)
     })
 
-    // Also save to localStorage as backup/cache if needed, but primary is API
-    // localStorage.setItem(STORAGE_KEY, JSON.stringify(content)) 
+    if (!response.ok) {
+      throw new Error(`Failed to save: ${response.statusText}`)
+    }
 
     // Dispatch custom event to notify components of the update
     window.dispatchEvent(new Event('cms:update'))
+    return true;
   } catch (error) {
     console.error("Error saving CMS content:", error)
     alert("❌ Error Saving Content!\n\nPossible reasons:\n1. Image is too large (try compressing it to < 1MB)\n2. Internet connection issue\n\nPlease check the console for more details.")
+    return false;
   }
 }
 
