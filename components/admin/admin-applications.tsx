@@ -101,7 +101,7 @@ export function AdminApplications() {
           // The form sends: firstName, lastName, gradeApplying, parentName, email, phone...
           // The UI expects: studentName, grade, parentName, email, phone, date, status
           const mappedData = data.map((item: any) => ({
-            id: item.id,
+            id: item._id,
             studentName: `${item.firstName} ${item.lastName}`,
             grade: item.gradeApplying === 'k' ? 'Kindergarten' : `Grade ${item.gradeApplying}`,
             parentName: item.parentName,
