@@ -135,7 +135,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
                                         title: article.title,
                                         text: article.excerpt,
                                         url: shareUrl
-                                    }).catch((error) => console.log('Error sharing', error));
+                                    }).catch(() => { /* User cancelled or share failed - no action needed */ });
                                 } else {
                                     // Fallback
                                     navigator.clipboard.writeText(shareUrl);

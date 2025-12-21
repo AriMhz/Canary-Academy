@@ -1,8 +1,10 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import dbConnect from "@/lib/mongodb"
 import CMSContent from "@/models/CMSContent"
 import { defaultContent } from "@/lib/cms-storage"
+import { requireAuth } from "@/lib/auth"
 
+// GET - Public (content needs to be visible to all visitors)
 export async function GET() {
     try {
         await dbConnect()
@@ -20,9 +22,20 @@ export async function GET() {
     }
 }
 
-export async function POST(request: Request) {
+// POST - Requires authentication (admin only can modify content)
+export async function POST(request: NextRequest) {
+    // Check authentication before allowing content modification
+    const authError = requireAuth(request)
+    if (authError) return authError
+
     try {
         const data = await request.json()
+
+        // Basic validation - ensure data is an object
+        if (!data || typeof data !== 'object') {
+            return NextResponse.json({ success: false, error: 'Invalid content data' }, { status: 400 })
+        }
+
         await dbConnect()
 
         // Upsert: Create if not exists, update if exists

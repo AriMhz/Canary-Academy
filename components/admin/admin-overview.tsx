@@ -7,6 +7,7 @@ import { useCMS } from "@/lib/cms-context"
 import { FileText, ImageIcon, Users, TrendingUp, Calendar, ArrowRight, BookOpen, Clock } from "lucide-react"
 import { useLanguage } from "@/lib/i18n-context"
 import { Badge } from "@/components/ui/badge"
+import { adminFetch } from "@/lib/admin-api"
 
 interface AdminOverviewProps {
     onNavigate: (tab: string) => void
@@ -21,7 +22,7 @@ export function AdminOverview({ onNavigate }: AdminOverviewProps) {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const response = await fetch('/api/admissions')
+                const response = await adminFetch('/api/admissions')
                 if (response.ok) {
                     const data = await response.json()
                     setApplicationCount(data.length)

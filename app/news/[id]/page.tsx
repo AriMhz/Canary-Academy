@@ -134,10 +134,26 @@ export default function NewsDetailPage() {
                                     Share this article:
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button size="icon" variant="outline" className="rounded-full hover:bg-blue-50 hover:text-blue-600 border-gray-200">
+                                    <Button
+                                        size="icon"
+                                        variant="outline"
+                                        className="rounded-full hover:bg-blue-50 hover:text-blue-600 border-gray-200"
+                                        onClick={() => {
+                                            const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+                                            if (navigator.share) {
+                                                navigator.share({
+                                                    title: news.title,
+                                                    text: news.excerpt,
+                                                    url: shareUrl
+                                                }).catch(() => { });
+                                            } else {
+                                                navigator.clipboard.writeText(shareUrl);
+                                                alert('Link copied to clipboard!');
+                                            }
+                                        }}
+                                    >
                                         <Share2 className="w-4 h-4" />
                                     </Button>
-                                    {/* Add real share logic if needed */}
                                 </div>
                             </div>
                         </div>
@@ -156,7 +172,10 @@ export default function NewsDetailPage() {
                                         placeholder="Enter your email"
                                         className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:ring-offset-0 focus-visible:ring-[#F5A623]"
                                     />
-                                    <Button className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white font-semibold">
+                                    <Button
+                                        className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white font-semibold"
+                                        onClick={() => alert('Newsletter subscription coming soon! Please check back later.')}
+                                    >
                                         Subscribe Now
                                     </Button>
                                 </div>

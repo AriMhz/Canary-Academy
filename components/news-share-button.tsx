@@ -40,7 +40,7 @@ export function NewsShareButton({ title, url }: { title: string; url?: string })
                             navigator.share({
                                 title: title,
                                 url: shareUrl
-                            }).catch((error) => console.log('Error sharing', error))
+                            }).catch(() => { /* User cancelled or share failed - no action needed */ })
                         } else {
                             navigator.clipboard.writeText(shareUrl)
                             alert('Link copied to clipboard!')

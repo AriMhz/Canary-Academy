@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, FileText, ImageIcon, Calendar, BookOpen, TrendingUp, Lock, LogOut, Edit3, Layout, Settings, Globe } from "lucide-react"
+import { Users, FileText, ImageIcon, Calendar, BookOpen, TrendingUp, Lock, LogOut, Edit3, Layout, Settings, Globe, AlertTriangle } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,29 +21,171 @@ import { AdminApplications } from "@/components/admin/admin-applications"
 import { AdminArticlesManager } from "@/components/admin/admin-articles-manager"
 import { ContentEditor } from "@/components/admin/content-editor"
 import { AdminOverview } from "@/components/admin/admin-overview"
+
+// Security constants
+const MAX_LOGIN_ATTEMPTS = 5
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000 // 15 minutes
+const SESSION_EXPIRY_MS = 60 * 60 * 1000 // 1 hour
+const MAX_INPUT_LENGTH = 100
+
+// Security helper functions
+const sanitizeInput = (input: string): string => {
+  return input
+    .trim()
+    .slice(0, MAX_INPUT_LENGTH)
+    .replace(/[<>'"&]/g, '') // Remove potentially dangerous characters
+}
+
+const generateSessionToken = (): string => {
+  return `${Date.now()}-${Math.random().toString(36).substring(2, 15)}-${Math.random().toString(36).substring(2, 15)}`
+}
+
+const getLoginAttempts = (): { count: number; lockoutUntil: number | null } => {
+  try {
+    const data = sessionStorage.getItem("loginAttempts")
+    if (data) {
+      return JSON.parse(data)
+    }
+  } catch {
+    // Invalid data, reset
+  }
+  return { count: 0, lockoutUntil: null }
+}
+
+const setLoginAttempts = (count: number, lockoutUntil: number | null) => {
+  sessionStorage.setItem("loginAttempts", JSON.stringify({ count, lockoutUntil }))
+}
+
+const isSessionValid = (): boolean => {
+  try {
+    const sessionData = sessionStorage.getItem("adminSession")
+    if (sessionData) {
+      const { token, expiresAt } = JSON.parse(sessionData)
+      if (token && expiresAt && Date.now() < expiresAt) {
+        return true
+      }
+      // Session expired, clear it
+      sessionStorage.removeItem("adminSession")
+    }
+  } catch {
+    sessionStorage.removeItem("adminSession")
+  }
+  return false
+}
+
+const createSession = () => {
+  const sessionData = {
+    token: generateSessionToken(),
+    expiresAt: Date.now() + SESSION_EXPIRY_MS
+  }
+  sessionStorage.setItem("adminSession", JSON.stringify(sessionData))
+}
+
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [isLocked, setIsLocked] = useState(false)
+  const [lockoutRemaining, setLockoutRemaining] = useState(0)
+  const [attemptsRemaining, setAttemptsRemaining] = useState(MAX_LOGIN_ATTEMPTS)
   const [selectedTab, setSelectedTab] = useState("overview")
   const { language, setLanguage, t } = useLanguage()
 
+  // Check for existing valid session on mount
   useEffect(() => {
-    const session = sessionStorage.getItem("adminSession")
-    if (session === "true") {
+    if (isSessionValid()) {
       setIsLoggedIn(true)
     }
+
+    // Check lockout status
+    const { count, lockoutUntil } = getLoginAttempts()
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      setIsLocked(true)
+      setLockoutRemaining(Math.ceil((lockoutUntil - Date.now()) / 1000))
+    }
+    setAttemptsRemaining(MAX_LOGIN_ATTEMPTS - count)
   }, [])
 
-  const handleLogin = (e: React.FormEvent) => {
+  // Lockout countdown timer
+  useEffect(() => {
+    if (!isLocked) return
+
+    const timer = setInterval(() => {
+      const { lockoutUntil } = getLoginAttempts()
+      if (lockoutUntil && Date.now() < lockoutUntil) {
+        setLockoutRemaining(Math.ceil((lockoutUntil - Date.now()) / 1000))
+      } else {
+        // Lockout expired
+        setIsLocked(false)
+        setLockoutRemaining(0)
+        setLoginAttempts(0, null)
+        setAttemptsRemaining(MAX_LOGIN_ATTEMPTS)
+        setError("")
+      }
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [isLocked])
+
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (username === "Canary" && password === "Canary@123+123") {
-      sessionStorage.setItem("adminSession", "true")
-      setIsLoggedIn(true)
-      setError("")
-    } else {
-      setError("Invalid credentials")
+
+    // Check if currently locked out
+    if (isLocked) {
+      return
+    }
+
+    // Sanitize inputs
+    const sanitizedUsername = sanitizeInput(username)
+    const sanitizedPassword = sanitizeInput(password)
+
+    // Validate inputs
+    if (!sanitizedUsername || !sanitizedPassword) {
+      setError("Please enter valid credentials")
+      return
+    }
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: sanitizedUsername,
+          password: sanitizedPassword
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Successful login - store session
+        const sessionData = {
+          token: data.token,
+          expiresAt: data.expiresAt
+        }
+        sessionStorage.setItem("adminSession", JSON.stringify(sessionData))
+        setIsLoggedIn(true)
+        setError("")
+        setAttemptsRemaining(MAX_LOGIN_ATTEMPTS)
+        // Clear sensitive data
+        setUsername("")
+        setPassword("")
+      } else {
+        // Failed login
+        if (data.lockoutRemaining && data.lockoutRemaining > 0) {
+          setIsLocked(true)
+          setLockoutRemaining(data.lockoutRemaining)
+          setError("Too many failed attempts. Account temporarily locked.")
+        } else {
+          setAttemptsRemaining(data.remainingAttempts || 0)
+          setError(data.error || "Invalid credentials")
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error)
+      setError("An error occurred. Please try again.")
     }
   }
 
@@ -52,8 +194,15 @@ export default function AdminPage() {
     setIsLoggedIn(false)
     setUsername("")
     setPassword("")
+    setError("")
   }
 
+  // Format lockout time
+  const formatLockoutTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
 
 
   if (!isLoggedIn) {
@@ -69,6 +218,20 @@ export default function AdminPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
+              {/* Lockout warning banner */}
+              {isLocked && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-red-800">Account Temporarily Locked</p>
+                    <p className="text-sm text-red-600 mt-1">
+                      Too many failed login attempts. Please try again in{' '}
+                      <span className="font-mono font-bold">{formatLockoutTime(lockoutRemaining)}</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="username">{t('admin.username')}</Label>
                 <Input
@@ -76,8 +239,11 @@ export default function AdminPage() {
                   type="text"
                   placeholder="username"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setUsername(e.target.value.slice(0, MAX_INPUT_LENGTH))}
                   required
+                  disabled={isLocked}
+                  maxLength={MAX_INPUT_LENGTH}
+                  autoComplete="username"
                 />
               </div>
               <div className="space-y-2">
@@ -87,13 +253,22 @@ export default function AdminPage() {
                   type="password"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value.slice(0, MAX_INPUT_LENGTH))}
                   required
+                  disabled={isLocked}
+                  maxLength={MAX_INPUT_LENGTH}
+                  autoComplete="current-password"
                 />
               </div>
-              {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
-              <Button type="submit" className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white">
-                {t('admin.signIn')}
+              {error && !isLocked && (
+                <p className="text-sm text-red-500 font-medium">{error}</p>
+              )}
+              <Button
+                type="submit"
+                className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLocked}
+              >
+                {isLocked ? `Locked (${formatLockoutTime(lockoutRemaining)})` : t('admin.signIn')}
               </Button>
             </form>
           </CardContent>

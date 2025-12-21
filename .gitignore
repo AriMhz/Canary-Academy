@@ -1,1 +1,12 @@
 node_modules
+.next
+out
+
+# Environment variables - CRITICAL: Contains database credentials
+.env
+.env.local
+.env*.local
+
+# Test/debug files
+test-*.js
+debug-*.js

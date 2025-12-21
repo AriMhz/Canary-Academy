@@ -8,9 +8,10 @@
   "/academics/page": "app/academics/page.js",
   "/academics/regular-classes/page": "app/academics/regular-classes/page.js",
   "/academics/subjects/page": "app/academics/subjects/page.js",
-  "/admin/page": "app/admin/page.js",
   "/admissions/page": "app/admissions/page.js",
   "/api/admissions/route": "app/api/admissions/route.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/contact/route": "app/api/contact/route.js",
   "/api/content/route": "app/api/content/route.js",
   "/articles/[id]/page": "app/articles/[id]/page.js",
   "/articles/page": "app/articles/page.js",
@@ -18,8 +19,10 @@
   "/contact/page": "app/contact/page.js",
   "/faculty/page": "app/faculty/page.js",
   "/gallery/page": "app/gallery/page.js",
+  "/icon.png/route": "app/icon.png/route.js",
   "/news/[id]/page": "app/news/[id]/page.js",
   "/news/page": "app/news/page.js",
+  "/owner/page": "app/owner/page.js",
   "/page": "app/page.js",
   "/privacy/page": "app/privacy/page.js"
 }

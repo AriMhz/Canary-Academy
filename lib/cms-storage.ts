@@ -795,14 +795,34 @@ export async function saveCMSContent(content: CMSContent): Promise<boolean> {
   if (typeof window === "undefined") return false
 
   try {
-    // Save to API (database)
+    // Get auth headers from session
+    let headers: HeadersInit = { 'Content-Type': 'application/json' }
+    try {
+      const sessionData = sessionStorage.getItem('adminSession')
+      if (sessionData) {
+        const { token } = JSON.parse(sessionData)
+        if (token) {
+          headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          }
+        }
+      }
+    } catch {
+      // Session not available, continue without auth
+    }
+
+    // Save to API (database) with authentication
     const response = await fetch('/api/content', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(content)
     })
 
     if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Unauthorized. Please log in again.')
+      }
       throw new Error(`Failed to save: ${response.statusText}`)
     }
 
@@ -811,7 +831,7 @@ export async function saveCMSContent(content: CMSContent): Promise<boolean> {
     return true;
   } catch (error) {
     console.error("Error saving CMS content:", error)
-    alert("❌ Error Saving Content!\n\nPossible reasons:\n1. Image is too large (try compressing it to < 1MB)\n2. Internet connection issue\n\nPlease check the console for more details.")
+    alert("❌ Error Saving Content!\n\nPossible reasons:\n1. Not logged in as admin\n2. Image is too large (try compressing it to < 1MB)\n3. Internet connection issue\n\nPlease check the console for more details.")
     return false;
   }
 }

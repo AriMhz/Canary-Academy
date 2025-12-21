@@ -19,6 +19,8 @@ import { useLanguage } from "@/lib/i18n-context"
 export default function ContactPage() {
   const { t } = useLanguage()
   const [submitted, setSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState("")
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,10 +29,38 @@ export default function ContactPage() {
     message: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Contact form submitted:", formData)
-    setSubmitted(true)
+    setIsSubmitting(true)
+    setSubmitError("")
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setSubmitted(true)
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+        })
+      } else {
+        setSubmitError(data.error || "Failed to send message. Please try again.")
+      }
+    } catch (error) {
+      setSubmitError("An error occurred. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (field: string, value: string) => {
@@ -216,9 +246,26 @@ export default function ContactPage() {
                         />
                       </div>
 
-                      <Button type="submit" size="lg" className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white">
-                        <Send className="w-4 h-4 mr-2" />
-                        {t("contact.form.labels.submit")}
+                      {submitError && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+                          {submitError}
+                        </div>
+                      )}
+
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="w-full bg-[#F5A623] hover:bg-[#FFB84D] text-white"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>Sending...</>
+                        ) : (
+                          <>
+                            <Send className="w-4 h-4 mr-2" />
+                            {t("contact.form.labels.submit")}
+                          </>
+                        )}
                       </Button>
                     </form>
                   </CardContent>

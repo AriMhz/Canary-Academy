@@ -1,8 +1,1 @@
-{
-  "/admin/page": "app/admin/page.js",
-  "/api/content/route": "app/api/content/route.js",
-  "/articles/page": "app/articles/page.js",
-  "/news/[id]/page": "app/news/[id]/page.js",
-  "/news/page": "app/news/page.js",
-  "/page": "app/page.js"
-}
+{}

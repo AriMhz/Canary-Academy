@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Check, X, Eye, Search, Trash2 } from "lucide-react"
-
-
+import { adminFetch } from "@/lib/admin-api"
+import { AdmissionApplication, MappedApplication } from "@/lib/types"
 
 import { useState, useEffect } from "react"
 
@@ -29,23 +29,22 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export function AdminApplications() {
-  const [applications, setApplications] = useState<any[]>([])
+  const [applications, setApplications] = useState<MappedApplication[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedApp, setSelectedApp] = useState<any>(null)
+  const [selectedApp, setSelectedApp] = useState<AdmissionApplication | null>(null)
   const [showDetails, setShowDetails] = useState(false)
 
   // Delete confirmation state
-  const [deleteId, setDeleteId] = useState<string | number | null>(null)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   // We need to keep the raw data to show all details
-  const [rawData, setRawData] = useState<any[]>([])
+  const [rawData, setRawData] = useState<AdmissionApplication[]>([])
 
   const updateStatus = async (id: string | number, newStatus: string) => {
     try {
-      const response = await fetch('/api/admissions', {
+      const response = await adminFetch('/api/admissions', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, status: newStatus })
       })
 
@@ -71,7 +70,7 @@ export function AdminApplications() {
     if (!deleteId) return
 
     try {
-      const response = await fetch(`/api/admissions?id=${deleteId}`, {
+      const response = await adminFetch(`/api/admissions?id=${deleteId}`, {
         method: 'DELETE',
       })
 
@@ -93,7 +92,7 @@ export function AdminApplications() {
   useEffect(() => {
     const fetchApplications = async () => {
       try {
-        const response = await fetch('/api/admissions')
+        const response = await adminFetch('/api/admissions')
         if (response.ok) {
           const data = await response.json()
           setRawData(data)

@@ -299,8 +299,8 @@ export function Header({ forceRender = false, onNavigate }: { forceRender?: bool
                   <AccordionItem
                     key={item.name}
                     value={item.name}
-                    className={`border-b-white/10 transition-all duration-700 delay-[${index * 100}ms] ${isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
-                      } `}
+                    className={`border-b-white/10 transition-all duration-700 ${isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"}`}
+                    style={{ transitionDelay: `${index * 100}ms` }}
                   >
                     <AccordionTrigger className="text-3xl font-bold text-white hover:text-[#F5A623] hover:no-underline py-6 justify-between gap-4 group">
                       <span className="group-hover:translate-x-2 transition-transform duration-300">{item.name}</span>
@@ -323,8 +323,8 @@ export function Header({ forceRender = false, onNavigate }: { forceRender?: bool
                 ) : (
                   <div
                     key={item.name}
-                    className={`border-b border-white/10 w-full transition-all duration-700 delay-[${index * 100}ms] ${isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
-                      } `}
+                    className={`border-b border-white/10 w-full transition-all duration-700 ${isMobileMenuOpen ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"}`}
+                    style={{ transitionDelay: `${index * 100}ms` }}
                   >
                     <Link
                       href={item.href}

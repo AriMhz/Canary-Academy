@@ -30,10 +30,12 @@ export function AdmissionForm() {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setSubmitError("")
 
     try {
       const response = await fetch('/api/admissions', {
@@ -47,11 +49,11 @@ export function AdmissionForm() {
       if (response.ok) {
         setSubmitted(true)
       } else {
-        console.error('Failed to submit admission')
-        // You might want to show an error message to the user here
+        const data = await response.json().catch(() => ({}))
+        setSubmitError(data.error || "Failed to submit application. Please try again.")
       }
     } catch (error) {
-      console.error('Error submitting form:', error)
+      setSubmitError("Network error. Please check your connection and try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -291,6 +293,13 @@ export function AdmissionForm() {
               Academy&apos;s admission process. <span className="text-red-500">*</span>
             </Label>
           </div>
+
+          {/* Error Message */}
+          {submitError && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              <strong>Error:</strong> {submitError}
+            </div>
+          )}
 
           {/* Submit Button */}
           <Button

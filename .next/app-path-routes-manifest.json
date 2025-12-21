@@ -8,9 +8,10 @@
   "/academics/page": "/academics",
   "/academics/regular-classes/page": "/academics/regular-classes",
   "/academics/subjects/page": "/academics/subjects",
-  "/admin/page": "/admin",
   "/admissions/page": "/admissions",
   "/api/admissions/route": "/api/admissions",
+  "/api/auth/login/route": "/api/auth/login",
+  "/api/contact/route": "/api/contact",
   "/api/content/route": "/api/content",
   "/articles/[id]/page": "/articles/[id]",
   "/articles/page": "/articles",
@@ -18,8 +19,10 @@
   "/contact/page": "/contact",
   "/faculty/page": "/faculty",
   "/gallery/page": "/gallery",
+  "/icon.png/route": "/icon.png",
   "/news/[id]/page": "/news/[id]",
   "/news/page": "/news",
+  "/owner/page": "/owner",
   "/page": "/",
   "/privacy/page": "/privacy"
 }
