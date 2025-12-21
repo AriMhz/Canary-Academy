@@ -8,7 +8,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Save, LayoutTemplate, Settings2 } from "lucide-react"
-import { getCMSContent, saveCMSContent, fetchCMSContent, type CMSContent } from "@/lib/cms-storage"
+import { getCMSContent, saveCMSContent, saveCMSSection, fetchCMSContent, type CMSContent } from "@/lib/cms-storage"
 import { useToast } from "@/hooks/use-toast"
 import { FormField, TextInput, TextAreaInput, NumberInput, ImageInput, VideoInput, FileInput, ArrayInput } from "./form-fields"
 import { AdminArticlesManager } from "./admin-articles-manager"
@@ -29,12 +29,61 @@ export function VisualEditor() {
   }, [])
 
   const handleSave = async () => {
-    await saveCMSContent(content)
-    setHasChanges(false)
-    toast({
-      title: "Changes saved",
-      description: "Your website content has been updated successfully.",
-    })
+    let success = false
+    try {
+      if (activeTab === "home") {
+        const s1 = await saveCMSSection("hero", content.hero)
+        const s2 = await saveCMSSection("features", content.features)
+        const s3 = await saveCMSSection("programs", content.programs)
+        const s4 = await saveCMSSection("testimonials", content.testimonials)
+        // Add news if it's considered part of home in this editor? 
+        // Looking at line 196, "news" is nested under Home in Accordion.
+        // Wait, Step 197 shows AccordionItem value="news" under TabsContent value="home".
+        // So "news" IS part of HOME in VisualEditor.
+        // Note: In ContentEditor, News was separate or Articles was separate.
+        // In VisualEditor, content.news is edited under Home tab?
+        // Line 199: items={content.news}.
+        // So I MUST save news if activeTab is "home".
+        const s5 = await saveCMSSection("news", (content as any).news)
+        success = s1 && s2 && s3 && s4 && s5
+      }
+      else if (activeTab === "about") {
+        success = await saveCMSSection("about", content.about)
+      }
+      else if (activeTab === "academics") {
+        success = await saveCMSSection("academics", content.academics)
+      }
+      else if (activeTab === "admissions") {
+        success = await saveCMSSection("admissions", content.admissions)
+      }
+      else if (activeTab === "contact") {
+        success = await saveCMSSection("contact", content.contact)
+      }
+      else if (activeTab === "articles") {
+        // VisualEditor also has 'articles' tab using AdminArticlesManager
+        // AdminArticlesManager typically uses 'news' or 'articles' key.
+        // Since 'news' is already under 'home', maybe 'articles' is redundant? 
+        // Or maybe AdminArticlesManager updates 'news' too.
+        success = await saveCMSSection("news", (content as any).news)
+      } else {
+        success = await saveCMSContent(content)
+      }
+
+      if (success) {
+        setHasChanges(false)
+        toast({
+          title: "Changes saved",
+          description: "Your website content has been updated successfully.",
+        })
+      }
+    } catch (e) {
+      console.error(e)
+      toast({
+        title: "Save failed",
+        description: "Could not save content",
+        variant: "destructive"
+      })
+    }
   }
 
   // Deep update helper

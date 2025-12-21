@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { getCMSContent, saveCMSContent, type CMSContent } from "@/lib/cms-storage"
+import { getCMSContent, saveCMSContent, saveCMSSection, type CMSContent } from "@/lib/cms-storage"
 import { Save, Eye, Upload, X, Plus, Trash2, Edit2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
@@ -38,12 +38,13 @@ function ImageUpload({ currentImage, onImageChange, label = "Image" }: ImageUplo
         title: "Invalid file type",
         description: "Please upload an image file",
         variant: "destructive",
+        duration: 3000,
       })
       return
     }
 
     setIsUploading(true)
-    
+
     // Convert to base64 for storage
     const reader = new FileReader()
     reader.onloadend = () => {
@@ -54,6 +55,7 @@ function ImageUpload({ currentImage, onImageChange, label = "Image" }: ImageUplo
       toast({
         title: "Image uploaded",
         description: "Image has been uploaded successfully",
+        duration: 3000,
       })
     }
     reader.onerror = () => {
@@ -62,6 +64,7 @@ function ImageUpload({ currentImage, onImageChange, label = "Image" }: ImageUplo
         title: "Upload failed",
         description: "Failed to upload image",
         variant: "destructive",
+        duration: 3000,
       })
     }
     reader.readAsDataURL(file)
@@ -134,12 +137,13 @@ function VideoUpload({ currentVideo, onVideoChange, label = "Video" }: VideoUplo
         title: "Invalid file type",
         description: "Please upload a video file",
         variant: "destructive",
+        duration: 3000,
       })
       return
     }
 
     setIsUploading(true)
-    
+
     // Convert to base64 for storage
     const reader = new FileReader()
     reader.onloadend = () => {
@@ -150,6 +154,7 @@ function VideoUpload({ currentVideo, onVideoChange, label = "Video" }: VideoUplo
       toast({
         title: "Video uploaded",
         description: "Video has been uploaded successfully",
+        duration: 3000,
       })
     }
     reader.onerror = () => {
@@ -158,6 +163,7 @@ function VideoUpload({ currentVideo, onVideoChange, label = "Video" }: VideoUplo
         title: "Upload failed",
         description: "Failed to upload video",
         variant: "destructive",
+        duration: 3000,
       })
     }
     reader.readAsDataURL(file)
@@ -210,13 +216,33 @@ export function CMSEditor() {
     setContent(getCMSContent())
   }, [])
 
-  const handleSave = () => {
-    saveCMSContent(content)
-    setHasChanges(false)
-    toast({
-      title: "Content saved",
-      description: "Your changes have been saved successfully",
-    })
+  const handleSave = async () => {
+    let success = false
+    try {
+      // Partial updates based on active tab
+      if (activeTab === "hero") success = await saveCMSSection("hero", content.hero)
+      else if (activeTab === "features") success = await saveCMSSection("features", content.features)
+      else if (activeTab === "programs") success = await saveCMSSection("programs", content.programs)
+      else if (activeTab === "testimonials") success = await saveCMSSection("testimonials", content.testimonials)
+      else if (activeTab === "cta") success = await saveCMSSection("cta", content.cta)
+      else if (activeTab === "news") success = await saveCMSSection("news", (content as any).news)
+      else success = await saveCMSContent(content)
+
+      if (success) {
+        setHasChanges(false)
+        toast({
+          title: "Content saved",
+          description: "Your changes have been saved successfully",
+        })
+      }
+    } catch (e) {
+      console.error(e)
+      toast({
+        title: "Save failed",
+        description: "Could not save content",
+        variant: "destructive"
+      })
+    }
   }
 
   const updateContent = (section: keyof CMSContent, data: any) => {
@@ -231,11 +257,11 @@ export function CMSEditor() {
     setContent((prev) => {
       const newContent = { ...prev }
       let current: any = newContent[section]
-      
+
       for (let i = 0; i < path.length - 1; i++) {
         current = current[path[i]]
       }
-      
+
       current[path[path.length - 1]] = value
       return newContent
     })
