@@ -797,33 +797,81 @@ export async function saveCMSContent(content: CMSContent): Promise<boolean> {
   try {
     // Get auth headers from session
     let headers: HeadersInit = { 'Content-Type': 'application/json' }
+    let hasAuth = false
     try {
       const sessionData = sessionStorage.getItem('adminSession')
       if (sessionData) {
-        const { token } = JSON.parse(sessionData)
-        if (token) {
+        const { token, expiresAt } = JSON.parse(sessionData)
+        // Check if session is expired
+        if (token && expiresAt && Date.now() < expiresAt) {
           headers = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           }
+          hasAuth = true
+        } else if (token) {
+          // Session expired
+          sessionStorage.removeItem('adminSession')
+          throw new Error('Session expired. Please log in again.')
         }
       }
-    } catch {
+    } catch (e) {
+      if (e instanceof Error && e.message.includes('Session expired')) {
+        throw e
+      }
       // Session not available, continue without auth
+    }
+
+    if (!hasAuth) {
+      throw new Error('Not logged in. Please log in as admin first.')
+    }
+
+    // Check payload size before sending (Vercel serverless limit is 4.5MB)
+    const payload = JSON.stringify(content)
+    const payloadSizeMB = new Blob([payload]).size / (1024 * 1024)
+    const MAX_PAYLOAD_SIZE_MB = 4.5
+
+    if (payloadSizeMB > MAX_PAYLOAD_SIZE_MB) {
+      console.error(`Payload size: ${payloadSizeMB.toFixed(2)}MB exceeds limit of ${MAX_PAYLOAD_SIZE_MB}MB`)
+      throw new Error(
+        `Content size (${payloadSizeMB.toFixed(1)}MB) exceeds the ${MAX_PAYLOAD_SIZE_MB}MB limit.\n\n` +
+        `This is usually caused by large images embedded in the content.\n` +
+        `Please use smaller images (< 200KB each) or upload them to an external service.`
+      )
     }
 
     // Save to API (database) with authentication
     const response = await fetch('/api/content', {
       method: 'POST',
       headers,
-      body: JSON.stringify(content)
+      body: payload
     })
 
     if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error('Unauthorized. Please log in again.')
+      let errorMessage = `Server error (${response.status}): ${response.statusText}`
+      try {
+        const errorData = await response.json()
+        if (errorData.error) {
+          errorMessage = errorData.error
+        }
+      } catch {
+        // Could not parse error response
       }
-      throw new Error(`Failed to save: ${response.statusText}`)
+
+      if (response.status === 401) {
+        sessionStorage.removeItem('adminSession')
+        throw new Error('Session expired. Please log in again.')
+      }
+      if (response.status === 413) {
+        throw new Error('Content too large. Try compressing images to < 500KB each.')
+      }
+      throw new Error(errorMessage)
+    }
+
+    // Check response body for success
+    const result = await response.json()
+    if (!result.success) {
+      throw new Error(result.error || 'Unknown error occurred')
     }
 
     // Dispatch custom event to notify components of the update
@@ -831,7 +879,8 @@ export async function saveCMSContent(content: CMSContent): Promise<boolean> {
     return true;
   } catch (error) {
     console.error("Error saving CMS content:", error)
-    alert("❌ Error Saving Content!\n\nPossible reasons:\n1. Not logged in as admin\n2. Image is too large (try compressing it to < 1MB)\n3. Internet connection issue\n\nPlease check the console for more details.")
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    alert(`❌ Error Saving Content!\n\n${errorMessage}\n\nPlease check the browser console for more details.`)
     return false;
   }
 }
