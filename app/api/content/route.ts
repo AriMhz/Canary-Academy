@@ -50,7 +50,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error("Error saving CMS content:", error)
-        return NextResponse.json({ success: false, error: "Failed to save content" }, { status: 500 })
+        const errorMessage = error instanceof Error ? error.message : "Unknown error"
+        return NextResponse.json({ success: false, error: `Failed to save content: ${errorMessage}` }, { status: 500 })
     }
 }
 
@@ -60,27 +61,45 @@ export async function PATCH(request: NextRequest) {
     if (authError) return authError
 
     try {
-        const { section, data } = await request.json()
+        const body = await request.json()
+        const { section, data } = body
 
         if (!section || typeof section !== 'string') {
             return NextResponse.json({ success: false, error: 'Invalid section key' }, { status: 400 })
         }
 
+        if (data === undefined) {
+            return NextResponse.json({ success: false, error: 'No data provided' }, { status: 400 })
+        }
+
         await dbConnect()
 
-        // Use atomic update to modify only the specific field
-        // This avoids sending/oversizing the entire document
-        const updateField = `data.${section}`;
+        // First, ensure the document exists with a base data object
+        // This is needed because $set on a nested path like "data.hero" 
+        // requires the parent document to exist
+        const existing = await CMSContent.findOne({ key: "main_content" })
 
-        await CMSContent.findOneAndUpdate(
-            { key: "main_content" },
-            { $set: { [updateField]: data } },
-            { upsert: true, new: true }
-        )
+        if (!existing) {
+            // Create the document with the initial section data
+            await CMSContent.create({
+                key: "main_content",
+                data: { [section]: data }
+            })
+        } else {
+            // Use atomic update to modify only the specific field
+            const updateField = `data.${section}`;
+            await CMSContent.findOneAndUpdate(
+                { key: "main_content" },
+                { $set: { [updateField]: data } },
+                { new: true }
+            )
+        }
 
         return NextResponse.json({ success: true })
     } catch (error) {
         console.error("Error patching CMS content:", error)
-        return NextResponse.json({ success: false, error: "Failed to update content section" }, { status: 500 })
+        const errorMessage = error instanceof Error ? error.message : "Unknown error"
+        return NextResponse.json({ success: false, error: `Failed to update: ${errorMessage}` }, { status: 500 })
     }
 }
+
