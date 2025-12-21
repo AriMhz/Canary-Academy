@@ -889,15 +889,36 @@ export async function saveCMSSection(section: string, data: any): Promise<boolea
   if (typeof window === "undefined") return false
 
   try {
-    // Get headers (auth)
+    // Get auth headers from session (matching saveCMSContent logic)
     let headers: HeadersInit = { 'Content-Type': 'application/json' }
+    let hasAuth = false
     try {
       const sessionData = sessionStorage.getItem('adminSession')
       if (sessionData) {
-        const { token } = JSON.parse(sessionData)
-        if (token) headers = { ...headers, 'Authorization': `Bearer ${token}` }
+        const { token, expiresAt } = JSON.parse(sessionData)
+        // Check if session is expired
+        if (token && expiresAt && Date.now() < expiresAt) {
+          headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          }
+          hasAuth = true
+        } else if (token) {
+          // Session expired
+          sessionStorage.removeItem('adminSession')
+          throw new Error('Session expired. Please log in again.')
+        }
       }
-    } catch { }
+    } catch (e) {
+      if (e instanceof Error && e.message.includes('Session expired')) {
+        throw e
+      }
+      // Session not available, continue without auth
+    }
+
+    if (!hasAuth) {
+      throw new Error('Not logged in. Please log in as admin first.')
+    }
 
     const response = await fetch('/api/content', {
       method: 'PATCH',
@@ -906,18 +927,38 @@ export async function saveCMSSection(section: string, data: any): Promise<boolea
     })
 
     if (!response.ok) {
-      if (response.status === 413) throw new Error("Section too large")
-      throw new Error(`Server error: ${response.statusText}`)
+      let errorMessage = `Server error (${response.status}): ${response.statusText}`
+      try {
+        const errorData = await response.json()
+        if (errorData.error) {
+          errorMessage = errorData.error
+        }
+      } catch {
+        // Could not parse error response
+      }
+
+      if (response.status === 401) {
+        sessionStorage.removeItem('adminSession')
+        throw new Error('Session expired. Please log in again.')
+      }
+      if (response.status === 413) {
+        throw new Error('Section too large. Try compressing images.')
+      }
+      throw new Error(errorMessage)
     }
 
     const result = await response.json()
-    if (!result.success) throw new Error(result.error)
+    if (!result.success) {
+      throw new Error(result.error || 'Unknown error occurred')
+    }
 
     // Notify update
     window.dispatchEvent(new Event('cms:update'))
     return true
   } catch (error) {
     console.error(`Error saving section ${section}:`, error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    alert(`❌ Error Saving Content!\n\n${errorMessage}\n\nPlease check the browser console for more details.`)
     return false
   }
 }
