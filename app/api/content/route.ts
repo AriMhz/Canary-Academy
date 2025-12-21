@@ -4,6 +4,8 @@ import CMSContent from "@/models/CMSContent"
 import { defaultContent } from "@/lib/cms-storage"
 import { requireAuth } from "@/lib/auth"
 
+export const dynamic = 'force-dynamic'
+
 // GET - Public (content needs to be visible to all visitors)
 export async function GET() {
     try {
