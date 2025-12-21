@@ -51,3 +51,34 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, error: "Failed to save content" }, { status: 500 })
     }
 }
+
+// PATCH - Partial update for specific sections (avoids sending full payload)
+export async function PATCH(request: NextRequest) {
+    const authError = requireAuth(request)
+    if (authError) return authError
+
+    try {
+        const { section, data } = await request.json()
+
+        if (!section || typeof section !== 'string') {
+            return NextResponse.json({ success: false, error: 'Invalid section key' }, { status: 400 })
+        }
+
+        await dbConnect()
+
+        // Use atomic update to modify only the specific field
+        // This avoids sending/oversizing the entire document
+        const updateField = `data.${section}`;
+
+        await CMSContent.findOneAndUpdate(
+            { key: "main_content" },
+            { $set: { [updateField]: data } },
+            { upsert: true, new: true }
+        )
+
+        return NextResponse.json({ success: true })
+    } catch (error) {
+        console.error("Error patching CMS content:", error)
+        return NextResponse.json({ success: false, error: "Failed to update content section" }, { status: 500 })
+    }
+}

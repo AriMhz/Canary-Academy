@@ -7,7 +7,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Save, LayoutTemplate, Settings2, Home, BookOpen, GraduationCap, Phone, Info, FileText, ChevronRight, Check, Lock } from "lucide-react"
-import { getCMSContent, saveCMSContent, fetchCMSContent, type CMSContent } from "@/lib/cms-storage"
+import { getCMSContent, saveCMSContent, saveCMSSection, fetchCMSContent, type CMSContent } from "@/lib/cms-storage"
 import { useToast } from "@/hooks/use-toast"
 import { FormField, TextInput, TextAreaInput, NumberInput, ImageInput, VideoInput, FileInput, ArrayInput } from "./form-fields"
 import { AdminArticlesManager } from "./admin-articles-manager"
@@ -36,15 +36,57 @@ export function ContentEditor() {
     }, [])
 
     const handleSave = async () => {
-        setIsLoading(true) // Re-use loading state or add a saving state? Re-using might hide the form. better to just await.
-        // Actually, let's just await.
-        const success = await saveCMSContent(content)
-        if (success) {
-            setHasChanges(false)
+        setIsLoading(true)
+        let success = false
+
+        // Intelligent Partial Save based on Active Tab
+        // This avoids sending the huge 5MB+ payload when editing just one section
+        try {
+            if (activeTab === "home") {
+                // Save all home-related sections individually
+                const s1 = await saveCMSSection("hero", content.hero)
+                const s2 = await saveCMSSection("features", content.features)
+                const s3 = await saveCMSSection("programs", content.programs)
+                const s4 = await saveCMSSection("testimonials", content.testimonials)
+                success = s1 && s2 && s3 && s4
+            }
+            else if (activeTab === "about") {
+                success = await saveCMSSection("about", content.about)
+            }
+            else if (activeTab === "academics") {
+                success = await saveCMSSection("academics", content.academics)
+            }
+            else if (activeTab === "admissions") {
+                success = await saveCMSSection("admissions", content.admissions)
+            }
+            else if (activeTab === "contact") {
+                success = await saveCMSSection("contact", content.contact)
+            }
+            else if (activeTab === "articles") {
+                // Articles are usually stored in 'news'
+                success = await saveCMSSection("news", (content as any).news)
+            }
+            else {
+                // Fallback for unknown tabs
+                success = await saveCMSContent(content)
+            }
+
+            if (success) {
+                setHasChanges(false)
+                toast({
+                    title: "Changes saved",
+                    description: `Content for ${activeTab} updated successfully.`,
+                })
+            }
+        } catch (error) {
+            console.error("Save failed", error)
             toast({
-                title: "Changes saved",
-                description: "Your website content has been updated successfully.",
+                title: "Save failed",
+                description: "There was an error saving your changes.",
+                variant: "destructive"
             })
+        } finally {
+            setIsLoading(false)
         }
     }
 

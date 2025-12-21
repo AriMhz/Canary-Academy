@@ -110,9 +110,13 @@ export function CMSProvider({
       }
       current[path[path.length - 1]] = value
 
-      // Save changes
+      // Save changes efficiently (Partial Update)
+      const section = path[0] // e.g. "about", "hero", "news"
+      const sectionData = newContent[section as keyof CMSContent]
+
       import("./cms-storage").then(mod => {
-        mod.saveCMSContent(newContent)
+        // Only save the section that changed
+        mod.saveCMSSection(section, sectionData)
       })
 
       return newContent

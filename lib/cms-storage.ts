@@ -885,10 +885,51 @@ export async function saveCMSContent(content: CMSContent): Promise<boolean> {
   }
 }
 
+export async function saveCMSSection(section: string, data: any): Promise<boolean> {
+  if (typeof window === "undefined") return false
+
+  try {
+    // Get headers (auth)
+    let headers: HeadersInit = { 'Content-Type': 'application/json' }
+    try {
+      const sessionData = sessionStorage.getItem('adminSession')
+      if (sessionData) {
+        const { token } = JSON.parse(sessionData)
+        if (token) headers = { ...headers, 'Authorization': `Bearer ${token}` }
+      }
+    } catch { }
+
+    const response = await fetch('/api/content', {
+      method: 'PATCH',
+      headers,
+      body: JSON.stringify({ section, data })
+    })
+
+    if (!response.ok) {
+      if (response.status === 413) throw new Error("Section too large")
+      throw new Error(`Server error: ${response.statusText}`)
+    }
+
+    const result = await response.json()
+    if (!result.success) throw new Error(result.error)
+
+    // Notify update
+    window.dispatchEvent(new Event('cms:update'))
+    return true
+  } catch (error) {
+    console.error(`Error saving section ${section}:`, error)
+    return false
+  }
+}
+
 export function updateCMSContent(section: keyof CMSContent, data: any): void {
   const content = getCMSContent()
+  // Update local state first for immediate UI feedback
   content[section] = { ...content[section], ...data } as any
-  saveCMSContent(content)
+
+  // Save specific section mainly
+  // We prefer partial update to avoid payload size limits
+  saveCMSSection(section, content[section])
 }
 
 export function resetCMSContent(): void {
