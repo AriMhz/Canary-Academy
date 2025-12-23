@@ -144,9 +144,13 @@ export function Footer() {
               />
             </div>
             <div>
-              <div className="text-lg font-bold text-[#F5A623] mb-1">Information Officer</div>
-              <a href="tel:+9779801444350" className="text-base font-medium text-white hover:text-[#F5A623] transition-colors block">
+              <div className="text-lg font-bold text-[#F5A623] mb-1">Man Kumar Begha</div>
+              <div className="text-sm text-white/80 mb-2">Vice-Principal</div>
+              <a href="tel:+9779801444350" className="text-base font-medium text-white hover:text-[#F5A623] transition-colors block mb-1">
                 +977 9801444350
+              </a>
+              <a href="mailto:canaryacademy56@gmail.com" className="text-sm font-medium text-white/80 hover:text-[#F5A623] transition-colors block break-all">
+                canaryacademy56@gmail.com
               </a>
             </div>
           </div>

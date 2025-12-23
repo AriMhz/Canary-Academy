@@ -33,3 +33,4 @@ Import trace:
 [00:13:47.065] Browser WARN    Image with src "/images/information-officer.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
 [00:14:07.017] Server  LOG      ✓ Compiled in 71ms
+[01:04:06.435] Server  LOG      ✓ Compiled in 159ms
