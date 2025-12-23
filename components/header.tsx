@@ -123,12 +123,12 @@ export function Header({ forceRender = false, onNavigate }: { forceRender?: bool
         <div className="flex items-center justify-between h-20 relative">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-12 h-12 transition-transform duration-300 group-hover:scale-105 bg-white rounded-full p-1.5 shadow-md">
+            <div className="relative w-16 h-16 transition-transform duration-300 group-hover:scale-105 bg-white rounded-full shadow-md flex items-center justify-center overflow-hidden">
               <Image
                 src={getAssetPath("/images/school-20logo-20canary-20academy.png")}
                 alt="Canary Academy Logo"
                 fill
-                className="object-contain p-0.5"
+                className="object-contain p-1"
               />
             </div>
             <div className="hidden sm:block">

@@ -39,12 +39,12 @@ export function Footer() {
           {/* Brand Section */}
           <div className="space-y-4 lg:col-span-2">
             <div className="flex items-center gap-3">
-              <div className="relative w-12 h-12 bg-white rounded-full p-1.5 shadow-md">
+              <div className="relative w-16 h-16 bg-white rounded-full shadow-md flex items-center justify-center overflow-hidden">
                 <Image
                   src={getAssetPath("/images/school-20logo-20canary-20academy.png")}
                   alt="Canary Academy Logo"
                   fill
-                  className="object-contain p-0.5"
+                  className="object-contain p-1"
                 />
               </div>
               <div>
