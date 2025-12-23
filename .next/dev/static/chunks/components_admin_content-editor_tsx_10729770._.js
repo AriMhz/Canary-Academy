@@ -22,6 +22,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lu
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$454$2e$0_react$40$19$2e$2$2e$0$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$text$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileText$3e$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/lucide-react@0.454.0_react@19.2.0/node_modules/lucide-react/dist/esm/icons/file-text.js [app-client] (ecmascript) <export default as FileText>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$454$2e$0_react$40$19$2e$2$2e$0$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/lucide-react@0.454.0_react@19.2.0/node_modules/lucide-react/dist/esm/icons/chevron-right.js [app-client] (ecmascript) <export default as ChevronRight>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$454$2e$0_react$40$19$2e$2$2e$0$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Check$3e$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/lucide-react@0.454.0_react@19.2.0/node_modules/lucide-react/dist/esm/icons/check.js [app-client] (ecmascript) <export default as Check>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$454$2e$0_react$40$19$2e$2$2e$0$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/lucide-react@0.454.0_react@19.2.0/node_modules/lucide-react/dist/esm/icons/lock.js [app-client] (ecmascript) <export default as Lock>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/cms-storage.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$hooks$2f$use$2d$toast$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/hooks/use-toast.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/admin/form-fields.tsx [app-client] (ecmascript)");
@@ -67,12 +68,50 @@ function ContentEditor() {
         }
     }["ContentEditor.useEffect"], []);
     const handleSave = async ()=>{
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSContent"])(content);
-        setHasChanges(false);
-        toast({
-            title: "Changes saved",
-            description: "Your website content has been updated successfully."
-        });
+        setIsLoading(true);
+        let success = false;
+        // Intelligent Partial Save based on Active Tab
+        // This avoids sending the huge 5MB+ payload when editing just one section
+        try {
+            if (activeTab === "home") {
+                // Save all home-related sections individually
+                const s1 = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("hero", content.hero);
+                const s2 = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("features", content.features);
+                const s3 = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("programs", content.programs);
+                const s4 = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("testimonials", content.testimonials);
+                success = s1 && s2 && s3 && s4;
+            } else if (activeTab === "about") {
+                success = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("about", content.about);
+            } else if (activeTab === "academics") {
+                success = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("academics", content.academics);
+            } else if (activeTab === "admissions") {
+                success = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("admissions", content.admissions);
+            } else if (activeTab === "contact") {
+                success = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("contact", content.contact);
+            } else if (activeTab === "articles") {
+                // Articles are usually stored in 'news'
+                success = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSSection"])("news", content.news);
+            } else {
+                // Fallback for unknown tabs
+                success = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$cms$2d$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["saveCMSContent"])(content);
+            }
+            if (success) {
+                setHasChanges(false);
+                toast({
+                    title: "Changes saved",
+                    description: `Content for ${activeTab} updated successfully.`
+                });
+            }
+        } catch (error) {
+            console.error("Save failed", error);
+            toast({
+                title: "Save failed",
+                description: "There was an error saving your changes.",
+                variant: "destructive"
+            });
+        } finally{
+            setIsLoading(false);
+        }
     };
     // Deep update helper
     const updateContent = (path, value)=>{
@@ -148,7 +187,7 @@ function ContentEditor() {
             children: "Loading editor..."
         }, void 0, false, {
             fileName: "[project]/components/admin/content-editor.tsx",
-            lineNumber: 90,
+            lineNumber: 136,
             columnNumber: 16
         }, this);
     }
@@ -169,19 +208,19 @@ function ContentEditor() {
                                     className: "w-5 h-5"
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                    lineNumber: 102,
+                                    lineNumber: 148,
                                     columnNumber: 25
                                 }, this),
                                 "Editor"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/content-editor.tsx",
-                            lineNumber: 101,
+                            lineNumber: 147,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/content-editor.tsx",
-                        lineNumber: 100,
+                        lineNumber: 146,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -196,7 +235,7 @@ function ContentEditor() {
                                             className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])("w-4 h-4", activeTab === item.id ? "text-[#F5A623]" : "text-gray-400 group-hover:text-[#2C4F5E]")
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 120,
+                                            lineNumber: 166,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -205,35 +244,35 @@ function ContentEditor() {
                                                 children: item.label
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 122,
+                                                lineNumber: 168,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 121,
+                                            lineNumber: 167,
                                             columnNumber: 33
                                         }, this),
                                         activeTab === item.id && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$454$2e$0_react$40$19$2e$2$2e$0$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronRight$3e$__["ChevronRight"], {
                                             className: "w-4 h-4 text-white/50"
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 125,
+                                            lineNumber: 171,
                                             columnNumber: 59
                                         }, this)
                                     ]
                                 }, item.id, true, {
                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                    lineNumber: 110,
+                                    lineNumber: 156,
                                     columnNumber: 29
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/components/admin/content-editor.tsx",
-                            lineNumber: 108,
+                            lineNumber: 154,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/content-editor.tsx",
-                        lineNumber: 107,
+                        lineNumber: 153,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -248,7 +287,7 @@ function ContentEditor() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                        lineNumber: 145,
+                                        lineNumber: 191,
                                         columnNumber: 33
                                     }, this),
                                     " Save Changes"
@@ -259,7 +298,7 @@ function ContentEditor() {
                                         className: "h-4 w-4 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                        lineNumber: 149,
+                                        lineNumber: 195,
                                         columnNumber: 33
                                     }, this),
                                     " Saved"
@@ -267,18 +306,18 @@ function ContentEditor() {
                             }, void 0, true)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/content-editor.tsx",
-                            lineNumber: 133,
+                            lineNumber: 179,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/content-editor.tsx",
-                        lineNumber: 132,
+                        lineNumber: 178,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/content-editor.tsx",
-                lineNumber: 99,
+                lineNumber: 145,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -299,7 +338,7 @@ function ContentEditor() {
                                         children: "/"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                        lineNumber: 164,
+                                        lineNumber: 210,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -307,23 +346,23 @@ function ContentEditor() {
                                         children: "Edit content"
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                        lineNumber: 165,
+                                        lineNumber: 211,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                lineNumber: 161,
+                                lineNumber: 207,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/components/admin/content-editor.tsx",
-                            lineNumber: 160,
+                            lineNumber: 206,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/content-editor.tsx",
-                        lineNumber: 159,
+                        lineNumber: 205,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -357,7 +396,7 @@ function ContentEditor() {
                                                                             children: "01"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 183,
+                                                                            lineNumber: 229,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -365,18 +404,18 @@ function ContentEditor() {
                                                                             children: "Hero Section"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 184,
+                                                                            lineNumber: 230,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 182,
+                                                                    lineNumber: 228,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 181,
+                                                                lineNumber: 227,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -394,12 +433,12 @@ function ContentEditor() {
                                                                                     ])
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                    lineNumber: 189,
+                                                                                    lineNumber: 235,
                                                                                     columnNumber: 87
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 189,
+                                                                                lineNumber: 235,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -411,18 +450,18 @@ function ContentEditor() {
                                                                                     ])
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                    lineNumber: 190,
+                                                                                    lineNumber: 236,
                                                                                     columnNumber: 87
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 190,
+                                                                                lineNumber: 236,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 188,
+                                                                        lineNumber: 234,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -435,12 +474,12 @@ function ContentEditor() {
                                                                             rows: 2
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 192,
+                                                                            lineNumber: 238,
                                                                             columnNumber: 83
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 192,
+                                                                        lineNumber: 238,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -453,40 +492,53 @@ function ContentEditor() {
                                                                             rows: 3
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 193,
+                                                                            lineNumber: 239,
                                                                             columnNumber: 81
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 193,
+                                                                        lineNumber: 239,
                                                                         columnNumber: 53
                                                                     }, this),
-                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
-                                                                        label: "Background Video",
-                                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["VideoInput"], {
-                                                                            ...bind([
-                                                                                "hero",
-                                                                                "backgroundVideo"
-                                                                            ]),
-                                                                            onUpload: (f)=>handleUpload(f, (v)=>updateContent([
-                                                                                        "hero",
-                                                                                        "backgroundVideo"
-                                                                                    ], v))
-                                                                        }, void 0, false, {
-                                                                            fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 196,
-                                                                            columnNumber: 57
-                                                                        }, this)
-                                                                    }, void 0, false, {
+                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                        className: "p-3 bg-gray-50 border rounded-lg",
+                                                                        children: [
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                                                                className: "text-sm font-medium text-gray-500 block mb-1",
+                                                                                children: "Background Video"
+                                                                            }, void 0, false, {
+                                                                                fileName: "[project]/components/admin/content-editor.tsx",
+                                                                                lineNumber: 242,
+                                                                                columnNumber: 57
+                                                                            }, this),
+                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                                                className: "text-sm text-gray-600 italic flex items-center gap-2",
+                                                                                children: [
+                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$lucide$2d$react$40$0$2e$454$2e$0_react$40$19$2e$2$2e$0$2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$lock$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Lock$3e$__["Lock"], {
+                                                                                        className: "w-3 h-3"
+                                                                                    }, void 0, false, {
+                                                                                        fileName: "[project]/components/admin/content-editor.tsx",
+                                                                                        lineNumber: 244,
+                                                                                        columnNumber: 61
+                                                                                    }, this),
+                                                                                    "Fixed (Cannot be changed via Admin)"
+                                                                                ]
+                                                                            }, void 0, true, {
+                                                                                fileName: "[project]/components/admin/content-editor.tsx",
+                                                                                lineNumber: 243,
+                                                                                columnNumber: 57
+                                                                            }, this)
+                                                                        ]
+                                                                    }, void 0, true, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 195,
+                                                                        lineNumber: 241,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {
                                                                         className: "my-4"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 199,
+                                                                        lineNumber: 249,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -497,7 +549,7 @@ function ContentEditor() {
                                                                                 children: "Key Statistics"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 201,
+                                                                                lineNumber: 251,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -510,7 +562,7 @@ function ContentEditor() {
                                                                                                 children: k
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 205,
+                                                                                                lineNumber: 255,
                                                                                                 columnNumber: 69
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -525,7 +577,7 @@ function ContentEditor() {
                                                                                                 className: "bg-white"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 206,
+                                                                                                lineNumber: 256,
                                                                                                 columnNumber: 69
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -540,51 +592,51 @@ function ContentEditor() {
                                                                                                 className: "bg-white"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 207,
+                                                                                                lineNumber: 257,
                                                                                                 columnNumber: 69
                                                                                             }, this)
                                                                                         ]
                                                                                     }, k, true, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 204,
+                                                                                        lineNumber: 254,
                                                                                         columnNumber: 65
                                                                                     }, this))
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 202,
+                                                                                lineNumber: 252,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 200,
+                                                                        lineNumber: 250,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 187,
+                                                                lineNumber: 233,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 180,
+                                                        lineNumber: 226,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 179,
+                                                    lineNumber: 225,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 178,
+                                                lineNumber: 224,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 177,
+                                            lineNumber: 223,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -609,7 +661,7 @@ function ContentEditor() {
                                                                             children: "02"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 225,
+                                                                            lineNumber: 275,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -617,18 +669,18 @@ function ContentEditor() {
                                                                             children: "Features"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 226,
+                                                                            lineNumber: 276,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 224,
+                                                                    lineNumber: 274,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 223,
+                                                                lineNumber: 273,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -643,12 +695,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 230,
+                                                                            lineNumber: 280,
                                                                             columnNumber: 86
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 230,
+                                                                        lineNumber: 280,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -660,17 +712,17 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 231,
+                                                                            lineNumber: 281,
                                                                             columnNumber: 89
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 231,
+                                                                        lineNumber: 281,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 232,
+                                                                        lineNumber: 282,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -707,7 +759,7 @@ function ContentEditor() {
                                                                                         className: "font-medium"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 240,
+                                                                                        lineNumber: 290,
                                                                                         columnNumber: 65
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextAreaInput"], {
@@ -721,7 +773,7 @@ function ContentEditor() {
                                                                                         placeholder: "Description"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 241,
+                                                                                        lineNumber: 291,
                                                                                         columnNumber: 65
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ImageInput"], {
@@ -740,45 +792,45 @@ function ContentEditor() {
                                                                                                 ], v))
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 242,
+                                                                                        lineNumber: 292,
                                                                                         columnNumber: 65
                                                                                     }, void 0)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 239,
+                                                                                lineNumber: 289,
                                                                                 columnNumber: 61
                                                                             }, void 0)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 233,
+                                                                        lineNumber: 283,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 229,
+                                                                lineNumber: 279,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 222,
+                                                        lineNumber: 272,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 221,
+                                                    lineNumber: 271,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 220,
+                                                lineNumber: 270,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 219,
+                                            lineNumber: 269,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -803,7 +855,7 @@ function ContentEditor() {
                                                                             children: "03"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 258,
+                                                                            lineNumber: 308,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -811,18 +863,18 @@ function ContentEditor() {
                                                                             children: "Programs"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 259,
+                                                                            lineNumber: 309,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 257,
+                                                                    lineNumber: 307,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 256,
+                                                                lineNumber: 306,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -837,12 +889,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 263,
+                                                                            lineNumber: 313,
                                                                             columnNumber: 78
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 263,
+                                                                        lineNumber: 313,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -854,17 +906,17 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 264,
+                                                                            lineNumber: 314,
                                                                             columnNumber: 81
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 264,
+                                                                        lineNumber: 314,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 265,
+                                                                        lineNumber: 315,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -900,7 +952,7 @@ function ContentEditor() {
                                                                                         className: "font-medium"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 268,
+                                                                                        lineNumber: 318,
                                                                                         columnNumber: 61
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextAreaInput"], {
@@ -914,7 +966,7 @@ function ContentEditor() {
                                                                                         placeholder: "Description"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 269,
+                                                                                        lineNumber: 319,
                                                                                         columnNumber: 61
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextAreaInput"], {
@@ -929,45 +981,45 @@ function ContentEditor() {
                                                                                         placeholder: "Subjects (one per line)"
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 270,
+                                                                                        lineNumber: 320,
                                                                                         columnNumber: 61
                                                                                     }, void 0)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 267,
+                                                                                lineNumber: 317,
                                                                                 columnNumber: 57
                                                                             }, void 0)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 266,
+                                                                        lineNumber: 316,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 262,
+                                                                lineNumber: 312,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 255,
+                                                        lineNumber: 305,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 254,
+                                                    lineNumber: 304,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 253,
+                                                lineNumber: 303,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 252,
+                                            lineNumber: 302,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -992,7 +1044,7 @@ function ContentEditor() {
                                                                             children: "04"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 286,
+                                                                            lineNumber: 336,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1000,18 +1052,18 @@ function ContentEditor() {
                                                                             children: "Testimonials"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 287,
+                                                                            lineNumber: 337,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 285,
+                                                                    lineNumber: 335,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 284,
+                                                                lineNumber: 334,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -1026,17 +1078,17 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 291,
+                                                                            lineNumber: 341,
                                                                             columnNumber: 86
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 291,
+                                                                        lineNumber: 341,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 292,
+                                                                        lineNumber: 342,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -1076,7 +1128,7 @@ function ContentEditor() {
                                                                                                 className: "font-medium"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 296,
+                                                                                                lineNumber: 346,
                                                                                                 columnNumber: 65
                                                                                             }, void 0),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -1090,13 +1142,13 @@ function ContentEditor() {
                                                                                                 placeholder: "Role (e.g., Parent)"
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 297,
+                                                                                                lineNumber: 347,
                                                                                                 columnNumber: 65
                                                                                             }, void 0)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 295,
+                                                                                        lineNumber: 345,
                                                                                         columnNumber: 61
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextAreaInput"], {
@@ -1110,51 +1162,51 @@ function ContentEditor() {
                                                                                         placeholder: "Testimonial content..."
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 299,
+                                                                                        lineNumber: 349,
                                                                                         columnNumber: 61
                                                                                     }, void 0)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 294,
+                                                                                lineNumber: 344,
                                                                                 columnNumber: 57
                                                                             }, void 0)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 293,
+                                                                        lineNumber: 343,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 290,
+                                                                lineNumber: 340,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 283,
+                                                        lineNumber: 333,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 282,
+                                                    lineNumber: 332,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 281,
+                                                lineNumber: 331,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 280,
+                                            lineNumber: 330,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                    lineNumber: 175,
+                                    lineNumber: 221,
                                     columnNumber: 29
                                 }, this),
                                 activeTab === "about" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1170,7 +1222,7 @@ function ContentEditor() {
                                                         children: "Hero Section"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 315,
+                                                        lineNumber: 365,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1183,12 +1235,12 @@ function ContentEditor() {
                                                             ])
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 316,
+                                                            lineNumber: 366,
                                                             columnNumber: 66
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 316,
+                                                        lineNumber: 366,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1202,12 +1254,12 @@ function ContentEditor() {
                                                             rows: 3
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 317,
+                                                            lineNumber: 367,
                                                             columnNumber: 72
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 317,
+                                                        lineNumber: 367,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1225,23 +1277,23 @@ function ContentEditor() {
                                                                     ], v))
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 318,
+                                                            lineNumber: 368,
                                                             columnNumber: 77
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 318,
+                                                        lineNumber: 368,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 314,
+                                                lineNumber: 364,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 313,
+                                            lineNumber: 363,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1254,7 +1306,7 @@ function ContentEditor() {
                                                         children: "Our Story"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 325,
+                                                        lineNumber: 375,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1267,12 +1319,12 @@ function ContentEditor() {
                                                             ])
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 326,
+                                                            lineNumber: 376,
                                                             columnNumber: 66
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 326,
+                                                        lineNumber: 376,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1285,12 +1337,12 @@ function ContentEditor() {
                                                             ])
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 327,
+                                                            lineNumber: 377,
                                                             columnNumber: 69
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 327,
+                                                        lineNumber: 377,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1307,12 +1359,12 @@ function ContentEditor() {
                                                                     rows: 6
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 329,
+                                                                    lineNumber: 379,
                                                                     columnNumber: 86
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 329,
+                                                                lineNumber: 379,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1326,12 +1378,12 @@ function ContentEditor() {
                                                                     rows: 6
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 330,
+                                                                    lineNumber: 380,
                                                                     columnNumber: 86
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 330,
+                                                                lineNumber: 380,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1346,12 +1398,12 @@ function ContentEditor() {
                                                                     placeholder: "Optional: Override static translation"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 331,
+                                                                    lineNumber: 381,
                                                                     columnNumber: 85
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 331,
+                                                                lineNumber: 381,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1366,18 +1418,18 @@ function ContentEditor() {
                                                                     placeholder: "Optional: Override static translation"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 332,
+                                                                    lineNumber: 382,
                                                                     columnNumber: 85
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 332,
+                                                                lineNumber: 382,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 328,
+                                                        lineNumber: 378,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1390,12 +1442,12 @@ function ContentEditor() {
                                                             ])
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 334,
+                                                            lineNumber: 384,
                                                             columnNumber: 74
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 334,
+                                                        lineNumber: 384,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1413,23 +1465,23 @@ function ContentEditor() {
                                                                     ], v))
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 335,
+                                                            lineNumber: 385,
                                                             columnNumber: 72
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 335,
+                                                        lineNumber: 385,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 324,
+                                                lineNumber: 374,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 323,
+                                            lineNumber: 373,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1449,7 +1501,7 @@ function ContentEditor() {
                                                                     children: "School Management Committee (SMC)"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 344,
+                                                                    lineNumber: 394,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -1466,12 +1518,12 @@ function ContentEditor() {
                                                                                 ])
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 346,
+                                                                                lineNumber: 396,
                                                                                 columnNumber: 78
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 346,
+                                                                            lineNumber: 396,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1486,17 +1538,17 @@ function ContentEditor() {
                                                                                 rows: 2
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 347,
+                                                                                lineNumber: 397,
                                                                                 columnNumber: 84
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 347,
+                                                                            lineNumber: 397,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 348,
+                                                                            lineNumber: 398,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -1540,7 +1592,7 @@ function ContentEditor() {
                                                                                             className: "font-medium"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 351,
+                                                                                            lineNumber: 401,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -1556,7 +1608,7 @@ function ContentEditor() {
                                                                                             placeholder: "Designation"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 352,
+                                                                                            lineNumber: 402,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1575,7 +1627,7 @@ function ContentEditor() {
                                                                                                     placeholder: "Phone"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 354,
+                                                                                                    lineNumber: 404,
                                                                                                     columnNumber: 65
                                                                                                 }, void 0),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -1591,13 +1643,13 @@ function ContentEditor() {
                                                                                                     placeholder: "Email"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 355,
+                                                                                                    lineNumber: 405,
                                                                                                     columnNumber: 65
                                                                                                 }, void 0)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 353,
+                                                                                            lineNumber: 403,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ImageInput"], {
@@ -1620,30 +1672,30 @@ function ContentEditor() {
                                                                                                     ], v))
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 357,
+                                                                                            lineNumber: 407,
                                                                                             columnNumber: 61
                                                                                         }, void 0)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                    lineNumber: 350,
+                                                                                    lineNumber: 400,
                                                                                     columnNumber: 57
                                                                                 }, void 0)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 349,
+                                                                            lineNumber: 399,
                                                                             columnNumber: 53
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 345,
+                                                                    lineNumber: 395,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 343,
+                                                            lineNumber: 393,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionItem"], {
@@ -1654,7 +1706,7 @@ function ContentEditor() {
                                                                     children: "School Operation Committee (SOC)"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 363,
+                                                                    lineNumber: 413,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -1671,12 +1723,12 @@ function ContentEditor() {
                                                                                 ])
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 366,
+                                                                                lineNumber: 416,
                                                                                 columnNumber: 78
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 366,
+                                                                            lineNumber: 416,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1691,17 +1743,17 @@ function ContentEditor() {
                                                                                 rows: 2
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 367,
+                                                                                lineNumber: 417,
                                                                                 columnNumber: 84
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 367,
+                                                                            lineNumber: 417,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 368,
+                                                                            lineNumber: 418,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -1745,7 +1797,7 @@ function ContentEditor() {
                                                                                             className: "font-medium"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 371,
+                                                                                            lineNumber: 421,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -1761,7 +1813,7 @@ function ContentEditor() {
                                                                                             placeholder: "Designation"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 372,
+                                                                                            lineNumber: 422,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1780,7 +1832,7 @@ function ContentEditor() {
                                                                                                     placeholder: "Phone"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 374,
+                                                                                                    lineNumber: 424,
                                                                                                     columnNumber: 65
                                                                                                 }, void 0),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -1796,13 +1848,13 @@ function ContentEditor() {
                                                                                                     placeholder: "Email"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 375,
+                                                                                                    lineNumber: 425,
                                                                                                     columnNumber: 65
                                                                                                 }, void 0)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 373,
+                                                                                            lineNumber: 423,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ImageInput"], {
@@ -1825,30 +1877,30 @@ function ContentEditor() {
                                                                                                     ], v))
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 377,
+                                                                                            lineNumber: 427,
                                                                                             columnNumber: 61
                                                                                         }, void 0)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                    lineNumber: 370,
+                                                                                    lineNumber: 420,
                                                                                     columnNumber: 57
                                                                                 }, void 0)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 369,
+                                                                            lineNumber: 419,
                                                                             columnNumber: 53
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 364,
+                                                                    lineNumber: 414,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 362,
+                                                            lineNumber: 412,
                                                             columnNumber: 45
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionItem"], {
@@ -1859,7 +1911,7 @@ function ContentEditor() {
                                                                     children: "Parent Teacher Association (TPA)"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 383,
+                                                                    lineNumber: 433,
                                                                     columnNumber: 49
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -1876,12 +1928,12 @@ function ContentEditor() {
                                                                                 ])
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 385,
+                                                                                lineNumber: 435,
                                                                                 columnNumber: 78
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 385,
+                                                                            lineNumber: 435,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1896,17 +1948,17 @@ function ContentEditor() {
                                                                                 rows: 2
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 386,
+                                                                                lineNumber: 436,
                                                                                 columnNumber: 84
                                                                             }, this)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 386,
+                                                                            lineNumber: 436,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 387,
+                                                                            lineNumber: 437,
                                                                             columnNumber: 53
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -1950,7 +2002,7 @@ function ContentEditor() {
                                                                                             className: "font-medium"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 390,
+                                                                                            lineNumber: 440,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -1966,7 +2018,7 @@ function ContentEditor() {
                                                                                             placeholder: "Designation"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 391,
+                                                                                            lineNumber: 441,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1985,7 +2037,7 @@ function ContentEditor() {
                                                                                                     placeholder: "Phone"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 393,
+                                                                                                    lineNumber: 443,
                                                                                                     columnNumber: 65
                                                                                                 }, void 0),
                                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TextInput"], {
@@ -2001,13 +2053,13 @@ function ContentEditor() {
                                                                                                     placeholder: "Email"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 394,
+                                                                                                    lineNumber: 444,
                                                                                                     columnNumber: 65
                                                                                                 }, void 0)
                                                                                             ]
                                                                                         }, void 0, true, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 392,
+                                                                                            lineNumber: 442,
                                                                                             columnNumber: 61
                                                                                         }, void 0),
                                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ImageInput"], {
@@ -2030,46 +2082,46 @@ function ContentEditor() {
                                                                                                     ], v))
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 396,
+                                                                                            lineNumber: 446,
                                                                                             columnNumber: 61
                                                                                         }, void 0)
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                    lineNumber: 389,
+                                                                                    lineNumber: 439,
                                                                                     columnNumber: 57
                                                                                 }, void 0)
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 388,
+                                                                            lineNumber: 438,
                                                                             columnNumber: 53
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 384,
+                                                                    lineNumber: 434,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 382,
+                                                            lineNumber: 432,
                                                             columnNumber: 45
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 342,
+                                                    lineNumber: 392,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 341,
+                                                lineNumber: 391,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 340,
+                                            lineNumber: 390,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2082,7 +2134,7 @@ function ContentEditor() {
                                                         children: "Organizational Structure"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 408,
+                                                        lineNumber: 458,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2095,12 +2147,12 @@ function ContentEditor() {
                                                             ])
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 409,
+                                                            lineNumber: 459,
                                                             columnNumber: 66
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 409,
+                                                        lineNumber: 459,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2114,12 +2166,12 @@ function ContentEditor() {
                                                             rows: 3
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 410,
+                                                            lineNumber: 460,
                                                             columnNumber: 72
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 410,
+                                                        lineNumber: 460,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2137,29 +2189,29 @@ function ContentEditor() {
                                                                     ], v))
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 411,
+                                                            lineNumber: 461,
                                                             columnNumber: 76
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 411,
+                                                        lineNumber: 461,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 407,
+                                                lineNumber: 457,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 406,
+                                            lineNumber: 456,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                    lineNumber: 311,
+                                    lineNumber: 361,
                                     columnNumber: 29
                                 }, this),
                                 activeTab === "academics" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2175,7 +2227,7 @@ function ContentEditor() {
                                                         children: "Subjects"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 422,
+                                                        lineNumber: 472,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2188,12 +2240,12 @@ function ContentEditor() {
                                                             ])
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 423,
+                                                            lineNumber: 473,
                                                             columnNumber: 66
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 423,
+                                                        lineNumber: 473,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2207,17 +2259,17 @@ function ContentEditor() {
                                                             rows: 2
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 424,
+                                                            lineNumber: 474,
                                                             columnNumber: 72
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 424,
+                                                        lineNumber: 474,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 425,
+                                                        lineNumber: 475,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -2256,7 +2308,7 @@ function ContentEditor() {
                                                                             placeholder: "Subject Name"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 429,
+                                                                            lineNumber: 479,
                                                                             columnNumber: 53
                                                                         }, void 0),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ImageInput"], {
@@ -2277,34 +2329,34 @@ function ContentEditor() {
                                                                                     ], v))
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 430,
+                                                                            lineNumber: 480,
                                                                             columnNumber: 53
                                                                         }, void 0)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 428,
+                                                                    lineNumber: 478,
                                                                     columnNumber: 49
                                                                 }, void 0)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 427,
+                                                                lineNumber: 477,
                                                                 columnNumber: 45
                                                             }, void 0)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 426,
+                                                        lineNumber: 476,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 421,
+                                                lineNumber: 471,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 420,
+                                            lineNumber: 470,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2317,7 +2369,7 @@ function ContentEditor() {
                                                         children: "Academic Calendar"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 440,
+                                                        lineNumber: 490,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2330,12 +2382,12 @@ function ContentEditor() {
                                                             ])
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 441,
+                                                            lineNumber: 491,
                                                             columnNumber: 66
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 441,
+                                                        lineNumber: 491,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2349,17 +2401,17 @@ function ContentEditor() {
                                                             rows: 2
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 442,
+                                                            lineNumber: 492,
                                                             columnNumber: 72
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 442,
+                                                        lineNumber: 492,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 443,
+                                                        lineNumber: 493,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2380,29 +2432,29 @@ function ContentEditor() {
                                                             accept: "image/*,.pdf"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 445,
+                                                            lineNumber: 495,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 444,
+                                                        lineNumber: 494,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 439,
+                                                lineNumber: 489,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 438,
+                                            lineNumber: 488,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                    lineNumber: 418,
+                                    lineNumber: 468,
                                     columnNumber: 29
                                 }, this),
                                 activeTab === "contact" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2418,7 +2470,7 @@ function ContentEditor() {
                                                         children: "Hero Section"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 464,
+                                                        lineNumber: 514,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2431,12 +2483,12 @@ function ContentEditor() {
                                                             ])
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 465,
+                                                            lineNumber: 515,
                                                             columnNumber: 66
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 465,
+                                                        lineNumber: 515,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2450,12 +2502,12 @@ function ContentEditor() {
                                                             rows: 2
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 466,
+                                                            lineNumber: 516,
                                                             columnNumber: 69
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 466,
+                                                        lineNumber: 516,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2474,23 +2526,23 @@ function ContentEditor() {
                                                                     ], v))
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 468,
+                                                            lineNumber: 518,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 467,
+                                                        lineNumber: 517,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 463,
+                                                lineNumber: 513,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 462,
+                                            lineNumber: 512,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2503,7 +2555,7 @@ function ContentEditor() {
                                                         children: "Contact Details"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 478,
+                                                        lineNumber: 528,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2517,12 +2569,12 @@ function ContentEditor() {
                                                             placeholder: "School address"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 480,
+                                                            lineNumber: 530,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 479,
+                                                        lineNumber: 529,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2539,12 +2591,12 @@ function ContentEditor() {
                                                                     placeholder: "+977-61-123456"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 484,
+                                                                    lineNumber: 534,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 483,
+                                                                lineNumber: 533,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2558,23 +2610,23 @@ function ContentEditor() {
                                                                     placeholder: "info@school.edu.np"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 487,
+                                                                    lineNumber: 537,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 486,
+                                                                lineNumber: 536,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 482,
+                                                        lineNumber: 532,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 490,
+                                                        lineNumber: 540,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2589,29 +2641,29 @@ function ContentEditor() {
                                                             placeholder: "Paste Google Maps embed URL here"
                                                         }, void 0, false, {
                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                            lineNumber: 492,
+                                                            lineNumber: 542,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 491,
+                                                        lineNumber: 541,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 477,
+                                                lineNumber: 527,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 476,
+                                            lineNumber: 526,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                    lineNumber: 461,
+                                    lineNumber: 511,
                                     columnNumber: 29
                                 }, this),
                                 activeTab === "admissions" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2639,7 +2691,7 @@ function ContentEditor() {
                                                                             children: "01"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 508,
+                                                                            lineNumber: 558,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2647,18 +2699,18 @@ function ContentEditor() {
                                                                             children: "Hero Section"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 509,
+                                                                            lineNumber: 559,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 507,
+                                                                    lineNumber: 557,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 506,
+                                                                lineNumber: 556,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -2674,12 +2726,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 513,
+                                                                            lineNumber: 563,
                                                                             columnNumber: 78
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 513,
+                                                                        lineNumber: 563,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2693,12 +2745,12 @@ function ContentEditor() {
                                                                             rows: 2
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 514,
+                                                                            lineNumber: 564,
                                                                             columnNumber: 81
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 514,
+                                                                        lineNumber: 564,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2717,39 +2769,39 @@ function ContentEditor() {
                                                                                     ], v))
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 516,
+                                                                            lineNumber: 566,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 515,
+                                                                        lineNumber: 565,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 512,
+                                                                lineNumber: 562,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 505,
+                                                        lineNumber: 555,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 504,
+                                                    lineNumber: 554,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 503,
+                                                lineNumber: 553,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 502,
+                                            lineNumber: 552,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2774,7 +2826,7 @@ function ContentEditor() {
                                                                             children: "02"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 535,
+                                                                            lineNumber: 585,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2782,18 +2834,18 @@ function ContentEditor() {
                                                                             children: "Admission Process"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 536,
+                                                                            lineNumber: 586,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 534,
+                                                                    lineNumber: 584,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 533,
+                                                                lineNumber: 583,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -2809,12 +2861,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 540,
+                                                                            lineNumber: 590,
                                                                             columnNumber: 78
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 540,
+                                                                        lineNumber: 590,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2827,17 +2879,17 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 541,
+                                                                            lineNumber: 591,
                                                                             columnNumber: 81
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 541,
+                                                                        lineNumber: 591,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 542,
+                                                                        lineNumber: 592,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -2880,12 +2932,12 @@ function ContentEditor() {
                                                                                                         ], v)
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 552,
+                                                                                                    lineNumber: 602,
                                                                                                     columnNumber: 73
                                                                                                 }, void 0)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 551,
+                                                                                                lineNumber: 601,
                                                                                                 columnNumber: 69
                                                                                             }, void 0),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2902,18 +2954,18 @@ function ContentEditor() {
                                                                                                     placeholder: "FileText, Clock, Users..."
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 555,
+                                                                                                    lineNumber: 605,
                                                                                                     columnNumber: 73
                                                                                                 }, void 0)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 554,
+                                                                                                lineNumber: 604,
                                                                                                 columnNumber: 69
                                                                                             }, void 0)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 550,
+                                                                                        lineNumber: 600,
                                                                                         columnNumber: 65
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2929,12 +2981,12 @@ function ContentEditor() {
                                                                                                 ], v)
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 559,
+                                                                                            lineNumber: 609,
                                                                                             columnNumber: 69
                                                                                         }, void 0)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 558,
+                                                                                        lineNumber: 608,
                                                                                         columnNumber: 65
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -2951,50 +3003,50 @@ function ContentEditor() {
                                                                                             rows: 2
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 562,
+                                                                                            lineNumber: 612,
                                                                                             columnNumber: 69
                                                                                         }, void 0)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 561,
+                                                                                        lineNumber: 611,
                                                                                         columnNumber: 65
                                                                                     }, void 0)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 549,
+                                                                                lineNumber: 599,
                                                                                 columnNumber: 61
                                                                             }, void 0)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 543,
+                                                                        lineNumber: 593,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 539,
+                                                                lineNumber: 589,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 532,
+                                                        lineNumber: 582,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 531,
+                                                    lineNumber: 581,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 530,
+                                                lineNumber: 580,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 529,
+                                            lineNumber: 579,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3020,7 +3072,7 @@ function ContentEditor() {
                                                                             children: "03"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 580,
+                                                                            lineNumber: 630,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3028,18 +3080,18 @@ function ContentEditor() {
                                                                             children: "Scholarships & Financial Aid"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 581,
+                                                                            lineNumber: 631,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 579,
+                                                                    lineNumber: 629,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 578,
+                                                                lineNumber: 628,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -3055,12 +3107,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 585,
+                                                                            lineNumber: 635,
                                                                             columnNumber: 78
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 585,
+                                                                        lineNumber: 635,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3073,12 +3125,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 586,
+                                                                            lineNumber: 636,
                                                                             columnNumber: 81
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 586,
+                                                                        lineNumber: 636,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3091,12 +3143,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 587,
+                                                                            lineNumber: 637,
                                                                             columnNumber: 83
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 587,
+                                                                        lineNumber: 637,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3109,12 +3161,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 588,
+                                                                            lineNumber: 638,
                                                                             columnNumber: 83
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 588,
+                                                                        lineNumber: 638,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3128,12 +3180,12 @@ function ContentEditor() {
                                                                             rows: 3
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 589,
+                                                                            lineNumber: 639,
                                                                             columnNumber: 96
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 589,
+                                                                        lineNumber: 639,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3147,17 +3199,17 @@ function ContentEditor() {
                                                                             rows: 3
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 590,
+                                                                            lineNumber: 640,
                                                                             columnNumber: 96
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 590,
+                                                                        lineNumber: 640,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 591,
+                                                                        lineNumber: 641,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3170,12 +3222,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 592,
+                                                                            lineNumber: 642,
                                                                             columnNumber: 92
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 592,
+                                                                        lineNumber: 642,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -3217,12 +3269,12 @@ function ContentEditor() {
                                                                                                         ], v)
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 602,
+                                                                                                    lineNumber: 652,
                                                                                                     columnNumber: 73
                                                                                                 }, void 0)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 601,
+                                                                                                lineNumber: 651,
                                                                                                 columnNumber: 69
                                                                                             }, void 0),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3239,18 +3291,18 @@ function ContentEditor() {
                                                                                                     placeholder: "FileText, Users..."
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 605,
+                                                                                                    lineNumber: 655,
                                                                                                     columnNumber: 73
                                                                                                 }, void 0)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 604,
+                                                                                                lineNumber: 654,
                                                                                                 columnNumber: 69
                                                                                             }, void 0)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 600,
+                                                                                        lineNumber: 650,
                                                                                         columnNumber: 65
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3267,23 +3319,23 @@ function ContentEditor() {
                                                                                             rows: 2
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 609,
+                                                                                            lineNumber: 659,
                                                                                             columnNumber: 69
                                                                                         }, void 0)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 608,
+                                                                                        lineNumber: 658,
                                                                                         columnNumber: 65
                                                                                     }, void 0)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 599,
+                                                                                lineNumber: 649,
                                                                                 columnNumber: 61
                                                                             }, void 0)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 593,
+                                                                        lineNumber: 643,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3296,39 +3348,39 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 614,
+                                                                            lineNumber: 664,
                                                                             columnNumber: 84
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 614,
+                                                                        lineNumber: 664,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 584,
+                                                                lineNumber: 634,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 577,
+                                                        lineNumber: 627,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 576,
+                                                    lineNumber: 626,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 575,
+                                                lineNumber: 625,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 574,
+                                            lineNumber: 624,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3353,7 +3405,7 @@ function ContentEditor() {
                                                                             children: "04"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 628,
+                                                                            lineNumber: 678,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3361,18 +3413,18 @@ function ContentEditor() {
                                                                             children: "Required Documents"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 629,
+                                                                            lineNumber: 679,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 627,
+                                                                    lineNumber: 677,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 626,
+                                                                lineNumber: 676,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -3388,12 +3440,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 633,
+                                                                            lineNumber: 683,
                                                                             columnNumber: 78
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 633,
+                                                                        lineNumber: 683,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3407,17 +3459,17 @@ function ContentEditor() {
                                                                             rows: 2
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 634,
+                                                                            lineNumber: 684,
                                                                             columnNumber: 84
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 634,
+                                                                        lineNumber: 684,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 635,
+                                                                        lineNumber: 685,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3433,39 +3485,39 @@ function ContentEditor() {
                                                                             placeholder: "Birth Certificate School Leaving Certificate ..."
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 637,
+                                                                            lineNumber: 687,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 636,
+                                                                        lineNumber: 686,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 632,
+                                                                lineNumber: 682,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 625,
+                                                        lineNumber: 675,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 624,
+                                                    lineNumber: 674,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 623,
+                                                lineNumber: 673,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 622,
+                                            lineNumber: 672,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3490,7 +3542,7 @@ function ContentEditor() {
                                                                             children: "05"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 657,
+                                                                            lineNumber: 707,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3498,18 +3550,18 @@ function ContentEditor() {
                                                                             children: "Fee Structure"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 658,
+                                                                            lineNumber: 708,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 656,
+                                                                    lineNumber: 706,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 655,
+                                                                lineNumber: 705,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -3525,12 +3577,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 662,
+                                                                            lineNumber: 712,
                                                                             columnNumber: 78
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 662,
+                                                                        lineNumber: 712,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3544,17 +3596,17 @@ function ContentEditor() {
                                                                             rows: 2
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 663,
+                                                                            lineNumber: 713,
                                                                             columnNumber: 84
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 663,
+                                                                        lineNumber: 713,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 664,
+                                                                        lineNumber: 714,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ArrayInput"], {
@@ -3594,12 +3646,12 @@ function ContentEditor() {
                                                                                             placeholder: "Primary (K-5)"
                                                                                         }, void 0, false, {
                                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                            lineNumber: 673,
+                                                                                            lineNumber: 723,
                                                                                             columnNumber: 69
                                                                                         }, void 0)
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 672,
+                                                                                        lineNumber: 722,
                                                                                         columnNumber: 65
                                                                                     }, void 0),
                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3619,12 +3671,12 @@ function ContentEditor() {
                                                                                                     placeholder: "NPR 15,000"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 677,
+                                                                                                    lineNumber: 727,
                                                                                                     columnNumber: 73
                                                                                                 }, void 0)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 676,
+                                                                                                lineNumber: 726,
                                                                                                 columnNumber: 69
                                                                                             }, void 0),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3641,29 +3693,29 @@ function ContentEditor() {
                                                                                                     placeholder: "NPR 8,000"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                    lineNumber: 680,
+                                                                                                    lineNumber: 730,
                                                                                                     columnNumber: 73
                                                                                                 }, void 0)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                                lineNumber: 679,
+                                                                                                lineNumber: 729,
                                                                                                 columnNumber: 69
                                                                                             }, void 0)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                        lineNumber: 675,
+                                                                                        lineNumber: 725,
                                                                                         columnNumber: 65
                                                                                     }, void 0)
                                                                                 ]
                                                                             }, void 0, true, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 671,
+                                                                                lineNumber: 721,
                                                                                 columnNumber: 61
                                                                             }, void 0)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 665,
+                                                                        lineNumber: 715,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3677,39 +3729,39 @@ function ContentEditor() {
                                                                             rows: 2
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 686,
+                                                                            lineNumber: 736,
                                                                             columnNumber: 83
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 686,
+                                                                        lineNumber: 736,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 661,
+                                                                lineNumber: 711,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 654,
+                                                        lineNumber: 704,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 653,
+                                                    lineNumber: 703,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 652,
+                                                lineNumber: 702,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 651,
+                                            lineNumber: 701,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3734,7 +3786,7 @@ function ContentEditor() {
                                                                             children: "06"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 700,
+                                                                            lineNumber: 750,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3742,18 +3794,18 @@ function ContentEditor() {
                                                                             children: "Application Form (Apply Online)"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 701,
+                                                                            lineNumber: 751,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 699,
+                                                                    lineNumber: 749,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 698,
+                                                                lineNumber: 748,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -3769,12 +3821,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 705,
+                                                                            lineNumber: 755,
                                                                             columnNumber: 83
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 705,
+                                                                        lineNumber: 755,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3788,39 +3840,39 @@ function ContentEditor() {
                                                                             rows: 2
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 706,
+                                                                            lineNumber: 756,
                                                                             columnNumber: 86
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 706,
+                                                                        lineNumber: 756,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 704,
+                                                                lineNumber: 754,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 697,
+                                                        lineNumber: 747,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 696,
+                                                    lineNumber: 746,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 695,
+                                                lineNumber: 745,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 694,
+                                            lineNumber: 744,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -3845,7 +3897,7 @@ function ContentEditor() {
                                                                             children: "07"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 720,
+                                                                            lineNumber: 770,
                                                                             columnNumber: 57
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3853,18 +3905,18 @@ function ContentEditor() {
                                                                             children: "Call to Action (Have Questions?)"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 721,
+                                                                            lineNumber: 771,
                                                                             columnNumber: 57
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                    lineNumber: 719,
+                                                                    lineNumber: 769,
                                                                     columnNumber: 53
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 718,
+                                                                lineNumber: 768,
                                                                 columnNumber: 49
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$accordion$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AccordionContent"], {
@@ -3880,12 +3932,12 @@ function ContentEditor() {
                                                                             ])
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 725,
+                                                                            lineNumber: 775,
                                                                             columnNumber: 82
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 725,
+                                                                        lineNumber: 775,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3899,12 +3951,12 @@ function ContentEditor() {
                                                                             rows: 2
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                                                            lineNumber: 726,
+                                                                            lineNumber: 776,
                                                                             columnNumber: 88
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 726,
+                                                                        lineNumber: 776,
                                                                         columnNumber: 53
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3920,12 +3972,12 @@ function ContentEditor() {
                                                                                     ])
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                    lineNumber: 728,
+                                                                                    lineNumber: 778,
                                                                                     columnNumber: 96
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 728,
+                                                                                lineNumber: 778,
                                                                                 columnNumber: 57
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$admin$2f$form$2d$fields$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["FormField"], {
@@ -3938,51 +3990,51 @@ function ContentEditor() {
                                                                                     ])
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                    lineNumber: 729,
+                                                                                    lineNumber: 779,
                                                                                     columnNumber: 93
                                                                                 }, this)
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                                lineNumber: 729,
+                                                                                lineNumber: 779,
                                                                                 columnNumber: 57
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                                        lineNumber: 727,
+                                                                        lineNumber: 777,
                                                                         columnNumber: 53
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                                lineNumber: 724,
+                                                                lineNumber: 774,
                                                                 columnNumber: 49
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                                        lineNumber: 717,
+                                                        lineNumber: 767,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                                    lineNumber: 716,
+                                                    lineNumber: 766,
                                                     columnNumber: 41
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 715,
+                                                lineNumber: 765,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 714,
+                                            lineNumber: 764,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                    lineNumber: 500,
+                                    lineNumber: 550,
                                     columnNumber: 29
                                 }, this),
                                 activeTab === "articles" && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$10_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3996,45 +4048,45 @@ function ContentEditor() {
                                                 updateContent: updateContent
                                             }, void 0, false, {
                                                 fileName: "[project]/components/admin/content-editor.tsx",
-                                                lineNumber: 744,
+                                                lineNumber: 794,
                                                 columnNumber: 41
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/components/admin/content-editor.tsx",
-                                            lineNumber: 743,
+                                            lineNumber: 793,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/components/admin/content-editor.tsx",
-                                        lineNumber: 742,
+                                        lineNumber: 792,
                                         columnNumber: 33
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/components/admin/content-editor.tsx",
-                                    lineNumber: 741,
+                                    lineNumber: 791,
                                     columnNumber: 29
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/admin/content-editor.tsx",
-                            lineNumber: 172,
+                            lineNumber: 218,
                             columnNumber: 21
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/components/admin/content-editor.tsx",
-                        lineNumber: 171,
+                        lineNumber: 217,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/admin/content-editor.tsx",
-                lineNumber: 157,
+                lineNumber: 203,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/components/admin/content-editor.tsx",
-        lineNumber: 96,
+        lineNumber: 142,
         columnNumber: 9
     }, this));
 }

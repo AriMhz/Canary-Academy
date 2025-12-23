@@ -35,9 +35,9 @@ export function Footer() {
   return (
     <footer className="bg-[#2C4F5E] text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
-          <div className="space-y-4">
+          <div className="space-y-4 lg:col-span-2">
             <div className="flex items-center gap-3">
               <div className="relative w-12 h-12 bg-white rounded-full p-1.5 shadow-md">
                 <Image
@@ -52,7 +52,7 @@ export function Footer() {
                 <div className="text-xs text-[#F5A623] font-medium tracking-wide">{t('slogan')}</div>
               </div>
             </div>
-            <p className="text-sm text-white/80 leading-relaxed">
+            <p className="text-sm text-white/80 leading-relaxed max-w-sm">
               {t('footer.text')}
             </p>
           </div>
@@ -62,20 +62,6 @@ export function Footer() {
             <h3 className="text-lg font-semibold mb-4">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2">
               {footerLinks.quickLinks.map((link) => (
-                <li key={link.name}>
-                  <Link href={link.href} className="text-sm text-white/80 hover:text-[#F5A623] transition-colors">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">{t('footer.resources')}</h3>
-            <ul className="space-y-2">
-              {footerLinks.resources.map((link) => (
                 <li key={link.name}>
                   <Link href={link.href} className="text-sm text-white/80 hover:text-[#F5A623] transition-colors">
                     {link.name}
@@ -115,7 +101,7 @@ export function Footer() {
             </ul>
 
             {/* Social Media */}
-            <div className="flex items-center gap-3 mt-4">
+            <div className="flex items-center gap-3 mt-6">
               <a
                 href="https://www.facebook.com/Canaryacademy"
                 target="_blank"
@@ -145,6 +131,25 @@ export function Footer() {
               </a>
             </div>
           </div>
+
+          {/* Information Officer */}
+          <div className="flex flex-col items-center text-center">
+            <h4 className="text-lg font-bold text-white uppercase tracking-wider mb-4">Information Officer</h4>
+            <div className="relative w-40 h-40 rounded-lg overflow-hidden border-4 border-white/10 shadow-xl mb-4 group hover:border-[#F5A623] transition-colors duration-300">
+              <Image
+                src={getAssetPath("/images/information-officer.jpg")}
+                alt="Information Officer"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div>
+              <div className="text-lg font-bold text-[#F5A623] mb-1">Information Officer</div>
+              <a href="tel:+9779801444350" className="text-base font-medium text-white hover:text-[#F5A623] transition-colors block">
+                +977 9801444350
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Bottom Bar */}
@@ -155,6 +160,6 @@ export function Footer() {
           </div>
         </div>
       </div>
-    </footer>
+    </footer >
   )
 }

@@ -1,1 +1,35 @@
-[00:00:01.075] Server  LOG      ✓ Ready in 718ms
+[00:00:02.680] Server  LOG      ✓ Ready in 1842ms
+[00:00:07.106] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:06:42.284] Server  LOG      ✓ Compiled in 191ms
+[00:06:59.598] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:08:50.186] Server  LOG      ✓ Compiled in 115ms
+[00:08:50.507] Browser ERROR   ./components/footer.tsx:117:16
+Parsing ecmascript source code failed
+  115 |             </ul>
+  116 |
+> 117 |           </ul>
+      |                ^
+> 118 |
+      | ^
+> 119 |           {/* Information Officer */}
+      | ^^^^^^^^^^^
+  120 |           <div className="mt-8 pt-6 border-t border-white/10 flex flex-col items-center text-center">
+  121 |             <h4 className="text-lg font-bold text-white uppercase tracking-wider mb-4">Information Officer</h4>
+  122 |             <div className="relative w-48 h-48 rounded-lg overflow-hidden border-4 border-white/10 shadow-xl mb-4">
+
+Expected '</', got 'jsx text (
+
+          )'
+
+Import trace:
+  Server Component:
+    ./components/footer.tsx
+    ./app/layout.tsx
+[00:09:22.404] Server  LOG      ✓ Compiled in 121ms
+[00:11:26.440] Server  LOG      ✓ Compiled in 177ms
+[00:13:35.473] Server  LOG      ✓ Compiled in 68ms
+[00:13:38.138] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:46.853] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:47.065] Browser WARN    Image with src "/images/information-officer.jpg" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:14:07.017] Server  LOG      ✓ Compiled in 71ms
