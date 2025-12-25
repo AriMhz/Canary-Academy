@@ -14,9 +14,7 @@ export const metadata: Metadata = {
   title: "Canary Academy - Igniting Minds, Inspiring Happiness",
   description: "Canary Academy is a premier educational institution in Nepal committed to holistic development and academic excellence.",
   icons: {
-    icon: process.env.NODE_ENV === "production"
-      ? "/Canary-Academy-demo/images/school-20logo-20canary-20academy.png"
-      : "/images/school-20logo-20canary-20academy.png",
+    icon: "/images/school-20logo-20canary-20academy.png",
   },
 }
 
