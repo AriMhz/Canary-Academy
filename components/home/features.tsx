@@ -12,12 +12,14 @@ import { useCMS } from "@/lib/cms-context"
 
 export function Features() {
   const [activeIndex, setActiveIndex] = useState(0)
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const { content } = useCMS()
 
   const featureData = [
     {
       ...content.features.items[0], // Qualified Faculty
+      title: (language === 'np' && content.features.items[0]?.title_np) ? content.features.items[0].title_np : content.features.items[0]?.title,
+      description: (language === 'np' && content.features.items[0]?.description_np) ? content.features.items[0].description_np : content.features.items[0]?.description,
       // Use CMS image if available, fallback to code default
       image: content.features.items[0]?.image || getAssetPath("/features/qualified faculity.jpg"),
       color: "from-[#F5A623] to-[#E08E00]",
@@ -25,18 +27,24 @@ export function Features() {
     },
     {
       ...content.features.items[1], // Modern Curriculum
+      title: (language === 'np' && content.features.items[1]?.title_np) ? content.features.items[1].title_np : content.features.items[1]?.title,
+      description: (language === 'np' && content.features.items[1]?.description_np) ? content.features.items[1].description_np : content.features.items[1]?.description,
       image: content.features.items[1]?.image || getAssetPath("/features/modern curruculumn.jpg"),
       color: "from-[#4A90E2] to-[#0056D2]",
       icon: BookOpen
     },
     {
       ...content.features.items[2], // Facilities
+      title: (language === 'np' && content.features.items[2]?.title_np) ? content.features.items[2].title_np : content.features.items[2]?.title,
+      description: (language === 'np' && content.features.items[2]?.description_np) ? content.features.items[2].description_np : content.features.items[2]?.description,
       image: content.features.items[2]?.image || getAssetPath("/features/trophies.jpg"),
       color: "from-[#50E3C2] to-[#2C4F5E]",
       icon: School
     },
     {
       ...content.features.items[3], // Extracurricular
+      title: (language === 'np' && content.features.items[3]?.title_np) ? content.features.items[3].title_np : content.features.items[3]?.title,
+      description: (language === 'np' && content.features.items[3]?.description_np) ? content.features.items[3].description_np : content.features.items[3]?.description,
       image: content.features.items[3]?.image || getAssetPath("/features/extra activities.jpg"),
       color: "from-[#FF5F6D] to-[#FFC371]",
       icon: Trophy
@@ -57,8 +65,8 @@ export function Features() {
     <section id="features-section" className="py-24 bg-white overflow-hidden transition-colors duration-500">
       <Container>
         <SectionHeading
-          title={content.features.title} // Use CMS title
-          subtitle={content.features.subtitle} // Use CMS subtitle
+          title={(language === 'np' && content.features.title_np) ? content.features.title_np : content.features.title} // Use CMS title
+          subtitle={(language === 'np' && content.features.subtitle_np) ? content.features.subtitle_np : content.features.subtitle} // Use CMS subtitle
           className="mb-16 lg:mb-20"
           data-editable-title="features.title"
           data-editable-subtitle="features.subtitle"
@@ -97,9 +105,9 @@ export function Features() {
                     {activeFeature.description}
                   </p>
 
-                  <div className="inline-flex items-center text-[#F5A623] font-semibold uppercase tracking-wider cursor-pointer hover:gap-2 transition-all pt-2">
+                  {/* <div className="inline-flex items-center text-[#F5A623] font-semibold uppercase tracking-wider cursor-pointer hover:gap-2 transition-all pt-2">
                     {t("buttons.learnMore")} <ArrowRight className="ml-2 w-4 h-4" />
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Navigation Tabs */}

@@ -34,8 +34,11 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
     // Form state
     const [formData, setFormData] = useState({
         title: "",
+        title_np: "",
         excerpt: "",
+        excerpt_np: "",
         content: "",
+        content_np: "",
         author: "",
         category: "",
         date: new Date().toISOString().split('T')[0],
@@ -46,8 +49,11 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
     const resetForm = () => {
         setFormData({
             title: "",
+            title_np: "",
             excerpt: "",
+            excerpt_np: "",
             content: "",
+            content_np: "",
             author: "",
             category: "",
             date: new Date().toISOString().split('T')[0],
@@ -69,9 +75,12 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
         setEditingArticle(article)
         setFormData({
             title: article.title,
+            title_np: article.title_np || "",
             // Use existing content as excerpt if excerpt is missing, for backward compatibility
-            excerpt: article.content ? article.content.substring(0, 100) + "..." : "",
+            excerpt: article.excerpt || (article.content ? article.content.substring(0, 100) + "..." : ""),
+            excerpt_np: article.excerpt_np || "",
             content: article.content,
+            content_np: article.content_np || "",
             author: article.author,
             category: article.category || "Education", // Default category if not present
             date: article.date,
@@ -100,7 +109,11 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
                     ? {
                         ...a,
                         title: formData.title,
+                        title_np: formData.title_np,
                         content: formData.content,
+                        content_np: formData.content_np,
+                        excerpt: formData.excerpt,
+                        excerpt_np: formData.excerpt_np,
                         author: formData.author,
                         date: formData.date,
                         image: formData.image,
@@ -117,7 +130,11 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
             const newArticle = {
                 id: Date.now(),
                 title: formData.title,
+                title_np: formData.title_np,
                 content: formData.content,
+                content_np: formData.content_np,
+                excerpt: formData.excerpt,
+                excerpt_np: formData.excerpt_np,
                 author: formData.author,
                 date: formData.date,
                 image: formData.image,
@@ -161,11 +178,19 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
                         <div className="grid gap-4 py-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>{t("admin.articles.form.title")}</Label>
+                                    <Label>{t("admin.articles.form.title")} (En)</Label>
                                     <Input
                                         value={formData.title}
                                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                         placeholder="Article Title"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>{t("admin.articles.form.title")} (Np)</Label>
+                                    <Input
+                                        value={(formData as any).title_np || ""}
+                                        onChange={(e) => setFormData({ ...formData, title_np: e.target.value } as any)}
+                                        placeholder="Optional"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -247,14 +272,46 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label>{t("admin.articles.form.content")}</Label>
-                                <Textarea
-                                    value={formData.content}
-                                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                    placeholder="Write your article content here..."
-                                    className="min-h-[200px]"
-                                />
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Excerpt (En)</Label>
+                                    <Textarea
+                                        value={formData.excerpt}
+                                        onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                                        placeholder="Short summary..."
+                                        rows={3}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Excerpt (Np)</Label>
+                                    <Textarea
+                                        value={(formData as any).excerpt_np || ""}
+                                        onChange={(e) => setFormData({ ...formData, excerpt_np: e.target.value } as any)}
+                                        placeholder="Optional"
+                                        rows={3}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>{t("admin.articles.form.content")} (En)</Label>
+                                    <Textarea
+                                        value={formData.content}
+                                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                                        placeholder="Write your article content here..."
+                                        className="min-h-[200px]"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>{t("admin.articles.form.content")} (Np)</Label>
+                                    <Textarea
+                                        value={(formData as any).content_np || ""}
+                                        onChange={(e) => setFormData({ ...formData, content_np: e.target.value } as any)}
+                                        placeholder="Optional..."
+                                        className="min-h-[200px]"
+                                    />
+                                </div>
                             </div>
                         </div>
 

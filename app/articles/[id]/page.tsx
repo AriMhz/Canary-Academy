@@ -8,13 +8,19 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useCMS } from "@/lib/cms-context"
+import { useLanguage } from "@/lib/i18n-context"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 
 export default function ArticleDetailPage() {
     const params = useParams()
     const id = params?.id
+    const { language, t } = useLanguage()
     const { content } = useCMS()
+
+    const getBilingual = (en?: string, np?: string) => {
+        return language === 'np' ? (np || en) : en
+    }
 
     // Find article in CMS content
     const article = content.articles.find((a) => a.id.toString() === id)
@@ -44,7 +50,7 @@ export default function ArticleDetailPage() {
                         width="100%"
                         height="100%"
                         src={`https://www.youtube.com/embed/${article.videoUrl.split('youtu.be/')[1]?.split('?')[0] || article.videoUrl.split('v=')[1]?.split('&')[0]}?autoplay=1&mute=1&loop=1&playlist=${article.videoUrl.split('youtu.be/')[1]?.split('?')[0] || article.videoUrl.split('v=')[1]?.split('&')[0]}`}
-                        title={article.title}
+                        title={getBilingual(article.title, (article as any).title_np)}
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
@@ -53,7 +59,7 @@ export default function ArticleDetailPage() {
                 ) : (
                     <Image
                         src={article.image || "/placeholder.svg"}
-                        alt={article.title}
+                        alt={getBilingual(article.title, (article as any).title_np) || "Article Image"}
                         fill
                         className="object-cover"
                         priority
@@ -73,7 +79,7 @@ export default function ArticleDetailPage() {
                         </div>
 
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight">
-                            {article.title}
+                            {getBilingual(article.title, (article as any).title_np)}
                         </h1>
 
                         <div className="flex flex-wrap items-center gap-8 text-white/90 border-t border-white/20 pt-6">
@@ -114,11 +120,11 @@ export default function ArticleDetailPage() {
                         <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
                             <article className="prose prose-lg max-w-none text-slate-600 prose-headings:text-[#2C4F5E] prose-a:text-[#F5A623] prose-img:rounded-2xl">
                                 <p className="text-xl md:text-2xl text-[#2C4F5E] font-medium leading-relaxed mb-8 border-l-4 border-[#F5A623] pl-6 italic bg-slate-50 py-4 pr-4 rounded-r-lg">
-                                    {article.excerpt}
+                                    {getBilingual(article.excerpt, (article as any).excerpt_np)}
                                 </p>
 
                                 <div className="whitespace-pre-wrap leading-relaxed">
-                                    {article.content}
+                                    {getBilingual(article.content, (article as any).content_np)}
                                 </div>
 
                                 {article.videoUrl && (
@@ -127,7 +133,7 @@ export default function ArticleDetailPage() {
                                             width="100%"
                                             height="100%"
                                             src={`https://www.youtube.com/embed/${article.videoUrl.split('youtu.be/')[1]?.split('?')[0] || article.videoUrl.split('v=')[1]?.split('&')[0]}`}
-                                            title={article.title}
+                                            title={getBilingual(article.title, (article as any).title_np)}
                                             frameBorder="0"
                                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                             allowFullScreen
@@ -204,7 +210,7 @@ export default function ArticleDetailPage() {
                                         <div className="relative h-48 overflow-hidden">
                                             <Image
                                                 src={item.image || "/placeholder.svg"}
-                                                alt={item.title}
+                                                alt={getBilingual(item.title, (item as any).title_np) || "Related Article"}
                                                 fill
                                                 className="object-cover group-hover:scale-110 transition-transform duration-500"
                                             />
@@ -219,7 +225,7 @@ export default function ArticleDetailPage() {
                                                 {new Date(item.date).toLocaleDateString()}
                                             </div>
                                             <h3 className="text-lg font-bold text-[#2C4F5E] group-hover:text-[#F5A623] transition-colors line-clamp-2 leading-snug">
-                                                {item.title}
+                                                {getBilingual(item.title, (item as any).title_np)}
                                             </h3>
                                         </CardHeader>
                                     </Card>

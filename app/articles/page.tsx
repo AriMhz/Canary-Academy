@@ -11,8 +11,12 @@ import { useCMS } from "@/lib/cms-context"
 import { ArticleCard } from "@/components/article-card"
 
 export default function ArticlesPage() {
-    const { t } = useLanguage()
+    const { language, t } = useLanguage()
     const { content } = useCMS()
+
+    const getBilingual = (en?: string, np?: string) => {
+        return language === 'np' ? (np || en) : en
+    }
 
     const categories = [
         t("articles.categories.0") || "All",
@@ -90,9 +94,18 @@ export default function ArticlesPage() {
 
                     {/* Articles Grid - 2 Columns */}
                     <div className="grid md:grid-cols-2 gap-8 items-start">
-                        {filteredArticles.map((article) => (
-                            <ArticleCard key={article.id} article={article as any} />
-                        ))}
+                        {filteredArticles.map((article) => {
+                            // Use helper to get localized version of article for the card
+                            const localizedArticle = {
+                                ...article,
+                                title: getBilingual(article.title, (article as any).title_np) || "",
+                                excerpt: getBilingual(article.excerpt, (article as any).excerpt_np) || "",
+                                date: article.date,
+                                category: article.category,
+                                image: article.image
+                            }
+                            return <ArticleCard key={article.id} article={localizedArticle as any} />
+                        })}
                     </div>
 
                     {filteredArticles.length === 0 && (

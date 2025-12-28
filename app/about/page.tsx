@@ -9,6 +9,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { getAssetPath } from "@/lib/get-base-path"
 import { useCMS } from "@/lib/cms-context"
+import { useLanguage } from "@/lib/i18n-context"
 
 const valueIcons = [Award, Heart, Users, BookOpen]
 
@@ -23,14 +24,15 @@ function getImageSrc(imagePath: string | undefined, fallback: string): string {
 
 export default function AboutPage() {
   const { content } = useCMS()
+  const { language } = useLanguage()
   const about = content.about
 
   // Admin edits content in their current language (English or Nepali)
   // Whatever they save in admin panel shows on the website
   const values = (about.values?.items || []).map((item: any, index: number) => ({
     icon: valueIcons[index] || Award,
-    title: item.title,
-    description: item.description,
+    title: (language === 'np' && item.title_np) ? item.title_np : item.title,
+    description: (language === 'np' && item.description_np) ? item.description_np : item.description,
   }))
 
   const milestones = about.journey?.milestones || []
@@ -52,9 +54,9 @@ export default function AboutPage() {
 
         <Container className="relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{about.hero.title}</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{(language === 'np' && about.hero.title_np) ? about.hero.title_np : about.hero.title}</h1>
             <p className="text-xl text-white/90 leading-relaxed">
-              {about.hero.description}
+              {(language === 'np' && about.hero.description_np) ? about.hero.description_np : about.hero.description}
             </p>
           </div>
         </Container>
@@ -72,32 +74,32 @@ export default function AboutPage() {
             <div className="space-y-8 relative z-10 order-2 lg:order-1">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#F5A623]/10 rounded-full w-fit">
                 <Target className="w-4 h-4 text-[#F5A623]" />
-                <span className="text-sm font-semibold text-[#F5A623] tracking-wide uppercase">{about.story.badge}</span>
+                <span className="text-sm font-semibold text-[#F5A623] tracking-wide uppercase">{(language === 'np' && about.story.badge_np) ? about.story.badge_np : about.story.badge}</span>
               </div>
 
               <SectionHeading
-                title={about.story.title}
-                subtitle={about.story.subtitle}
+                title={(language === 'np' && about.story.title_np) ? about.story.title_np : about.story.title}
+                subtitle={(language === 'np' && about.story.subtitle_np) ? about.story.subtitle_np : about.story.subtitle}
                 centered={false}
                 className="mb-0"
               />
 
               <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground leading-relaxed">
-                <p>
-                  {about.story.paragraph1}
+                <p className="text-justify">
+                  {(language === 'np' && about.story.paragraph1_np) ? about.story.paragraph1_np : about.story.paragraph1}
                 </p>
-                <p>
-                  {about.story.paragraph2}
+                <p className="text-justify">
+                  {(language === 'np' && about.story.paragraph2_np) ? about.story.paragraph2_np : about.story.paragraph2}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-8 pt-4">
                   <div className="space-y-1">
                     <div className="text-3xl font-bold text-[#2C4F5E]">{about.story.stats.experience.value}</div>
-                    <div className="text-sm text-muted-foreground font-medium">{about.story.stats.experience.label}</div>
+                    <div className="text-sm text-muted-foreground font-medium">{(language === 'np' && about.story.stats.experience.label_np) ? about.story.stats.experience.label_np : about.story.stats.experience.label}</div>
                   </div>
                   <div className="hidden sm:block w-px h-12 bg-border" />
                   <div className="space-y-1">
                     <div className="text-3xl font-bold text-[#2C4F5E]">{about.story.stats.graduates.value}</div>
-                    <div className="text-sm text-muted-foreground font-medium">{about.story.stats.graduates.label}</div>
+                    <div className="text-sm text-muted-foreground font-medium">{(language === 'np' && about.story.stats.graduates.label_np) ? about.story.stats.graduates.label_np : about.story.stats.graduates.label}</div>
                   </div>
                 </div>
               </div>
@@ -116,7 +118,7 @@ export default function AboutPage() {
                 {/* Floating Badge */}
                 <div className="absolute bottom-8 left-8 bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-premium border border-white/20 max-w-[200px]">
                   <p className="text-[#2C4F5E] font-serif italic text-lg leading-tight">
-                    "{about.story.imageCaption}"
+                    "{(language === 'np' && about.story.imageCaption_np) ? about.story.imageCaption_np : about.story.imageCaption}"
                   </p>
                 </div>
               </div>
@@ -136,9 +138,9 @@ export default function AboutPage() {
             <Card className="border-2 border-[#F5A623]/20 shadow-premium">
               <CardContent className="p-8 space-y-4">
                 <Eye className="w-12 h-12 text-[#F5A623]" />
-                <h3 className="text-2xl font-bold text-[#2C4F5E]">{about.vision.title}</h3>
+                <h3 className="text-2xl font-bold text-[#2C4F5E]">{(language === 'np' && about.vision.title_np) ? about.vision.title_np : about.vision.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  {about.vision.description}
+                  {(language === 'np' && about.vision.description_np) ? about.vision.description_np : about.vision.description}
                 </p>
               </CardContent>
             </Card>
@@ -146,9 +148,9 @@ export default function AboutPage() {
             <Card className="border-2 border-[#F5A623]/20 shadow-premium">
               <CardContent className="p-8 space-y-4">
                 <Target className="w-12 h-12 text-[#F5A623]" />
-                <h3 className="text-2xl font-bold text-[#2C4F5E]">{about.mission.title}</h3>
+                <h3 className="text-2xl font-bold text-[#2C4F5E]">{(language === 'np' && about.mission.title_np) ? about.mission.title_np : about.mission.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  {about.mission.description}
+                  {(language === 'np' && about.mission.description_np) ? about.mission.description_np : about.mission.description}
                 </p>
               </CardContent>
             </Card>
@@ -160,8 +162,8 @@ export default function AboutPage() {
       <section className="py-20 bg-background">
         <Container>
           <SectionHeading
-            title={about.values.title}
-            subtitle={about.values.subtitle}
+            title={(language === 'np' && about.values.title_np) ? about.values.title_np : about.values.title}
+            subtitle={(language === 'np' && about.values.subtitle_np) ? about.values.subtitle_np : about.values.subtitle}
           />
           <div className="grid md:grid-cols-2 gap-8 mt-16 max-w-4xl mx-auto">
             {values.map((value, index) => (
@@ -196,20 +198,20 @@ export default function AboutPage() {
       {/* Timeline */}
       <section className="py-20 bg-muted">
         <Container>
-          <SectionHeading title={about.journey.title} subtitle={about.journey.subtitle} />
+          <SectionHeading title={(language === 'np' && about.journey.title_np) ? about.journey.title_np : about.journey.title} subtitle={(language === 'np' && about.journey.subtitle_np) ? about.journey.subtitle_np : about.journey.subtitle} />
           <div className="mt-16 max-w-5xl mx-auto relative">
             {/* Central Line */}
             <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-[#F5A623]/30 -translate-x-1/2" />
 
             <div className="space-y-12">
-              {milestones.map((milestone, index) => (
+              {milestones.map((milestone: any, index: number) => (
                 <div key={index} className={`relative flex flex-col md:flex-row gap-8 items-center ${index % 2 === 0 ? "md:flex-row-reverse" : ""}`}>
                   {/* Content Side */}
                   <div className="flex-1 w-full md:w-1/2 pl-12 md:pl-0">
                     <div className={`bg-card p-6 rounded-2xl shadow-lg border-l-4 border-[#F5A623] hover:shadow-premium transition-all duration-300 hover:-translate-y-1 group ${index % 2 === 0 ? "md:text-right md:border-l-0 md:border-r-4" : ""}`}>
                       <div className="text-3xl font-bold text-[#F5A623] mb-2">{milestone.year}</div>
                       <p className="text-lg text-foreground/80 leading-relaxed group-hover:text-foreground transition-colors">
-                        {milestone.event}
+                        {(language === 'np' && milestone.event_np) ? milestone.event_np : milestone.event}
                       </p>
                     </div>
                   </div>
@@ -231,12 +233,12 @@ export default function AboutPage() {
       <section className="py-16 bg-background">
         <Container>
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-[#2C4F5E] mb-6">{about.team.title}</h2>
+            <h2 className="text-3xl font-bold text-[#2C4F5E] mb-6">{(language === 'np' && about.team.title_np) ? about.team.title_np : about.team.title}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-              {about.team.description}
+              {(language === 'np' && about.team.description_np) ? about.team.description_np : about.team.description}
             </p>
             <Button asChild size="lg" className="bg-[#F5A623] hover:bg-[#FFB84D] text-white px-8 text-lg h-12 rounded-full">
-              <Link href="/about/committee">{about.team.button}</Link>
+              <Link href="/about/committee">{(language === 'np' && about.team.button_np) ? about.team.button_np : about.team.button}</Link>
             </Button>
           </div>
         </Container>

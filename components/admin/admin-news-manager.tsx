@@ -26,10 +26,13 @@ export function AdminNewsManager() {
   const [editingItem, setEditingItem] = useState<number | null>(null)
   const [formData, setFormData] = useState({
     title: "",
+    title_np: "",
     category: "",
     date: "",
     excerpt: "",
+    excerpt_np: "",
     content: "",
+    content_np: "",
     image: "",
   })
 
@@ -64,17 +67,20 @@ export function AdminNewsManager() {
     const newItem = {
       id: Date.now(),
       title: formData.title,
+      title_np: formData.title_np,
       category: formData.category,
       date: formData.date,
       excerpt: formData.excerpt,
+      excerpt_np: formData.excerpt_np,
       content: formData.content,
+      content_np: formData.content_np,
       image: formData.image || "/placeholder.svg",
     }
     const updatedNews = [...news, newItem]
     setNews(updatedNews)
     setHasChanges(true)
 
-    setFormData({ title: "", category: "", date: "", excerpt: "", content: "", image: "" })
+    setFormData({ title: "", title_np: "", category: "", date: "", excerpt: "", excerpt_np: "", content: "", content_np: "", image: "" })
     setShowForm(false)
     toast({
       title: "News post added",
@@ -96,10 +102,13 @@ export function AdminNewsManager() {
     setEditingItem(item.id)
     setFormData({
       title: item.title,
+      title_np: (item as any).title_np || "",
       category: item.category,
       date: item.date,
       excerpt: item.excerpt,
+      excerpt_np: (item as any).excerpt_np || "",
       content: (item as any).content || "",
+      content_np: (item as any).content_np || "",
       image: item.image,
     })
   }
@@ -115,8 +124,10 @@ export function AdminNewsManager() {
     setNews(updatedNews)
     setHasChanges(true)
 
+    setHasChanges(true)
+
     setEditingItem(null)
-    setFormData({ title: "", category: "", date: "", excerpt: "", content: "", image: "" })
+    setFormData({ title: "", title_np: "", category: "", date: "", excerpt: "", excerpt_np: "", content: "", content_np: "", image: "" })
     toast({
       title: "News updated",
       description: "Post updated. Don't forget to save changes.",
@@ -178,13 +189,22 @@ export function AdminNewsManager() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="title">Post Title</Label>
+                      <Label htmlFor="title">Post Title (En)</Label>
                       <Input
                         id="title"
                         required
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         placeholder="Enter post title"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="title_np">Post Title (Np)</Label>
+                      <Input
+                        id="title_np"
+                        value={(formData as any).title_np || ""}
+                        onChange={(e) => setFormData({ ...formData, title_np: e.target.value } as any)}
+                        placeholder="Optional"
                       />
                     </div>
 
@@ -218,27 +238,51 @@ export function AdminNewsManager() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="excerpt">Excerpt</Label>
-                    <Textarea
-                      id="excerpt"
-                      required
-                      value={formData.excerpt}
-                      onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                      placeholder="Brief description of the post"
-                      rows={3}
-                    />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="excerpt">Excerpt (En)</Label>
+                      <Textarea
+                        id="excerpt"
+                        required
+                        value={formData.excerpt}
+                        onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                        placeholder="Brief description of the post"
+                        rows={3}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="excerpt_np">Excerpt (Np)</Label>
+                      <Textarea
+                        id="excerpt_np"
+                        value={(formData as any).excerpt_np || ""}
+                        onChange={(e) => setFormData({ ...formData, excerpt_np: e.target.value } as any)}
+                        placeholder="Optional"
+                        rows={3}
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="content">Full Content</Label>
-                    <Textarea
-                      id="content"
-                      value={formData.content}
-                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                      placeholder="Full article content..."
-                      rows={6}
-                    />
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="content">Full Content (En)</Label>
+                      <Textarea
+                        id="content"
+                        value={formData.content}
+                        onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                        placeholder="Full article content..."
+                        rows={6}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="content_np">Full Content (Np)</Label>
+                      <Textarea
+                        id="content_np"
+                        value={(formData as any).content_np || ""}
+                        onChange={(e) => setFormData({ ...formData, content_np: e.target.value } as any)}
+                        placeholder="Optional"
+                        rows={6}
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -343,11 +387,19 @@ export function AdminNewsManager() {
           <form onSubmit={handleUpdate} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Post Title</Label>
+                <Label>Post Title (En)</Label>
                 <Input
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Post Title (Np)</Label>
+                <Input
+                  value={(formData as any).title_np || ""}
+                  onChange={(e) => setFormData({ ...formData, title_np: e.target.value } as any)}
+                  placeholder="Optional"
                 />
               </div>
               <div className="space-y-2">
@@ -377,23 +429,45 @@ export function AdminNewsManager() {
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               />
             </div>
-            <div className="space-y-2">
-              <Label>Excerpt</Label>
-              <Textarea
-                required
-                value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                rows={3}
-              />
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Excerpt (En)</Label>
+                <Textarea
+                  required
+                  value={formData.excerpt}
+                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                  rows={3}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Excerpt (Np)</Label>
+                <Textarea
+                  value={(formData as any).excerpt_np || ""}
+                  onChange={(e) => setFormData({ ...formData, excerpt_np: e.target.value } as any)}
+                  rows={3}
+                  placeholder="Optional"
+                />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Full Content</Label>
-              <Textarea
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                rows={6}
-              />
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Full Content (En)</Label>
+                <Textarea
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  rows={6}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Full Content (Np)</Label>
+                <Textarea
+                  value={(formData as any).content_np || ""}
+                  onChange={(e) => setFormData({ ...formData, content_np: e.target.value } as any)}
+                  rows={6}
+                  placeholder="Optional"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Image URL or Upload</Label>
