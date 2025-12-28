@@ -25,7 +25,7 @@ export function SectionHeading({
         </span>
       </h2>
       {subtitle && (
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg text-foreground/80 max-w-2xl mx-auto leading-relaxed font-semibold">
           <span className="inline-block" data-editable={dataEditableSubtitle}>
             {subtitle}
           </span>

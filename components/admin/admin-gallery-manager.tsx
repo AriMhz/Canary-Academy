@@ -25,6 +25,7 @@ export function AdminGalleryManager() {
   const [editingItem, setEditingItem] = useState<number | null>(null)
   const [formData, setFormData] = useState({
     title: "",
+    title_np: "",
     category: "",
     image: "",
   })
@@ -51,6 +52,7 @@ export function AdminGalleryManager() {
     const newItem = {
       id: Date.now(),
       title: formData.title || "Untitled",
+      title_np: formData.title_np,
       category: formData.category || "General",
       image: formData.image || "/placeholder.svg",
     }
@@ -58,7 +60,7 @@ export function AdminGalleryManager() {
     setGallery([...gallery, newItem])
     setHasChanges(true)
 
-    setFormData({ title: "", category: "", image: "" })
+    setFormData({ title: "", title_np: "", category: "", image: "" })
     setShowUpload(false)
     toast({
       title: "Image added",
@@ -79,6 +81,7 @@ export function AdminGalleryManager() {
     setEditingItem(item.id)
     setFormData({
       title: item.title,
+      title_np: (item as any).title_np || "",
       category: item.category,
       image: item.image,
     })
@@ -97,7 +100,7 @@ export function AdminGalleryManager() {
     setHasChanges(true)
 
     setEditingItem(null)
-    setFormData({ title: "", category: "", image: "" })
+    setFormData({ title: "", title_np: "", category: "", image: "" })
     toast({
       title: "Image updated",
       description: "Image details updated. Don't forget to save changes.",
@@ -158,11 +161,19 @@ export function AdminGalleryManager() {
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Title</Label>
+                    <Label>Title (En)</Label>
                     <Input
                       value={formData.title}
                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                       placeholder="Image title"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Title (Np)</Label>
+                    <Input
+                      value={(formData as any).title_np || ""}
+                      onChange={(e) => setFormData({ ...formData, title_np: e.target.value } as any)}
+                      placeholder="Optional"
                     />
                   </div>
                   <div className="space-y-2">
@@ -271,10 +282,18 @@ export function AdminGalleryManager() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Title</Label>
+              <Label>Title (En)</Label>
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Title (Np)</Label>
+              <Input
+                value={(formData as any).title_np || ""}
+                onChange={(e) => setFormData({ ...formData, title_np: e.target.value } as any)}
+                placeholder="Optional"
               />
             </div>
             <div className="space-y-2">

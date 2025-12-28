@@ -18,6 +18,10 @@ export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
 
+  const getBilingual = (en?: string, np?: string) => {
+    return language === 'np' ? (np || en) : en
+  }
+
   // Use gallery from CMS context
   const galleryImages = content.gallery || []
 
@@ -94,7 +98,7 @@ export default function GalleryPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <Badge className="bg-[#F5A623] hover:bg-[#FFB84D] text-white mb-2">{image.category}</Badge>
-                    <h3 className="text-lg font-bold text-white">{image.title}</h3>
+                    <h3 className="text-lg font-bold text-white">{getBilingual(image.title, (image as any).title_np)}</h3>
                   </div>
                 </div>
               </Card>
@@ -135,7 +139,7 @@ export default function GalleryPage() {
               <Badge className="bg-[#F5A623] hover:bg-[#FFB84D] text-white mb-2">
                 {filteredImages[selectedImage].category}
               </Badge>
-              <h3 className="text-2xl font-bold text-white">{filteredImages[selectedImage].title}</h3>
+              <h3 className="text-2xl font-bold text-white">{getBilingual(filteredImages[selectedImage].title, (filteredImages[selectedImage] as any).title_np)}</h3>
             </div>
           </div>
 

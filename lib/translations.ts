@@ -305,7 +305,57 @@ export const translations = {
             },
             form: {
                 title: "Apply Online",
-                subtitle: "Fill out the form below to start your admission journey"
+                subtitle: "Fill out the form below to start your admission journey",
+                labels: {
+                    studentInfo: "Student Information",
+                    firstName: "First Name",
+                    middleName: "Middle Name",
+                    lastName: "Last Name",
+                    gender: "Gender",
+                    selectGender: "Select gender",
+                    grade: "Grade Applying For",
+                    selectGrade: "Select grade",
+                    parentInfo: "Parent/Guardian Information",
+                    fullName: "Full Name",
+                    relationship: "Relationship",
+                    selectRelationship: "Select relationship",
+                    email: "Email Address",
+                    phone: "Phone Number",
+                    address: "Residential Address",
+                    additionalInfo: "Additional Information",
+                    specialReq: "Any special requirements or information we should know?",
+                    terms: "I confirm that the information provided is accurate and I agree to the terms and conditions of Canary Academy's admission process."
+                },
+                placeholders: {
+                    firstName: "First Name",
+                    middleName: "Middle Name",
+                    lastName: "Last Name",
+                    parentName: "Enter parent/guardian name",
+                    address: "Enter complete address",
+                    email: "your.email@example.com",
+                    phone: "+977-XXX-XXXXXXX",
+                    specialReq: "Medical conditions, learning needs, etc."
+                },
+                options: {
+                    male: "Male",
+                    female: "Female",
+                    other: "Other",
+                    father: "Father",
+                    mother: "Mother",
+                    guardian: "Legal Guardian",
+                    kindergarten: "Kindergarten",
+                    grade: "Grade"
+                },
+                buttons: {
+                    submit: "Submit Application",
+                    submitting: "Submitting...",
+                    submitAnother: "Submit Another Application"
+                },
+                success: {
+                    title: "Application Submitted Successfully!",
+                    message: "Thank you for your interest in Canary Academy. We have received your application and will contact you within 2-3 business days with the next steps."
+                },
+                helper: "After submission, you will receive a confirmation email with further instructions."
             },
             cta: {
                 title: "Have Questions?",
@@ -603,7 +653,7 @@ export const translations = {
         },
     },
     np: {
-        slogan: "दिमाग प्रज्वलित गर्दै, खुसी प्रेरित गर्दै",
+        slogan: "Igniting Minds, Inspiring Happiness",
         applyNow: "अहिले आवेदन दिनुहोस्",
         nav: {
             home: "गृहपृष्ठ",
@@ -906,7 +956,57 @@ export const translations = {
             },
             form: {
                 title: "अनलाइन आवेदन दिनुहोस्",
-                subtitle: "तपाईंको भर्ना यात्रा सुरु गर्न तलको फारम भर्नुहोस्"
+                subtitle: "तपाईंको भर्ना यात्रा सुरु गर्न तलको फारम भर्नुहोस्",
+                labels: {
+                    studentInfo: "विद्यार्थी जानकारी",
+                    firstName: "पहिलो नाम",
+                    middleName: "बीचको नाम",
+                    lastName: "थर",
+                    gender: "लिङ्ग",
+                    selectGender: "लिङ्ग छान्नुहोस्",
+                    grade: "भर्ना हुन चाहेको कक्षा",
+                    selectGrade: "कक्षा छान्नुहोस्",
+                    parentInfo: "अभिभावक/संरक्षक जानकारी",
+                    fullName: "पूरा नाम",
+                    relationship: "नाता",
+                    selectRelationship: "नाता छान्नुहोस्",
+                    email: "इमेल ठेगाना",
+                    phone: "फोन नम्बर",
+                    address: "आवासीय ठेगाना",
+                    additionalInfo: "थप जानकारी",
+                    specialReq: "के हामीले थाहा पाउनुपर्ने कुनै विशेष आवश्यकता वा जानकारी छ?",
+                    terms: "म पुष्टि गर्दछु कि प्रदान गरिएको जानकारी सही छ र म क्यानरी एकेडेमीको भर्ना प्रक्रियाका सर्तहरू र नियमहरूसँग सहमत छु।"
+                },
+                placeholders: {
+                    firstName: "पहिलो नाम",
+                    middleName: "बीचको नाम",
+                    lastName: "थर",
+                    parentName: "अभिभावक/संरक्षकको नाम प्रविष्ट गर्नुहोस्",
+                    address: "पूरा ठेगाना प्रविष्ट गर्नुहोस्",
+                    email: "tapaiko.email@example.com",
+                    phone: "+९७७-XXX-XXXXXXX",
+                    specialReq: "स्वास्थ्य अवस्था, सिकाइ आवश्यकताहरू, आदि।"
+                },
+                options: {
+                    male: "पुरुष",
+                    female: "महिला",
+                    other: "अन्य",
+                    father: "बुबा",
+                    mother: "आमा",
+                    guardian: "कानूनी संरक्षक",
+                    kindergarten: "किन्डरगार्टन",
+                    grade: "कक्षा"
+                },
+                buttons: {
+                    submit: "आवेदन बुझाउनुहोस्",
+                    submitting: "बुझाउँदै...",
+                    submitAnother: "अर्को आवेदन बुझाउनुहोस्"
+                },
+                success: {
+                    title: "आवेदन सफलतापूर्वक बुझाइयो!",
+                    message: "क्यानरी एकेडेमीमा तपाईंको रुचिको लागि धन्यवाद। हामीले तपाईंको आवेदन प्राप्त गरेका छौं र अर्को चरणहरूको लागि २-३ कार्य दिन भित्र सम्पर्क गर्नेछौं।"
+                },
+                helper: "बुझाए पछि, तपाईंले थप निर्देशनहरूको साथ पुष्टिकरण इमेल प्राप्त गर्नुहुनेछ।"
             },
             cta: {
                 title: "केही प्रश्नहरू छन्?",
