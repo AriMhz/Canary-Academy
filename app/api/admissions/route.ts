@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         const data = await request.json();
 
         // Validate required fields
-        const requiredFields = ['firstName', 'lastName', 'gradeApplying', 'parentName', 'email', 'phone'];
+        const requiredFields = ['firstName', 'lastName', 'gradeApplying', 'parentName', 'email', 'phone', 'gender', 'relationship', 'address'];
         for (const field of requiredFields) {
             if (!data[field] || typeof data[field] !== 'string' || !data[field].trim()) {
                 return NextResponse.json({
@@ -124,18 +124,30 @@ export async function POST(request: NextRequest) {
         // Sanitize all string inputs
         const sanitizedData = {
             firstName: sanitizeString(data.firstName, 100),
+            middleName: data.middleName ? sanitizeString(data.middleName, 100) : undefined,
             lastName: sanitizeString(data.lastName, 100),
+            gender: sanitizeString(data.gender, 20),
             gradeApplying: sanitizeString(data.gradeApplying, 20),
             parentName: sanitizeString(data.parentName, 200),
+            relationship: sanitizeString(data.relationship, 50),
             email: sanitizeString(data.email, 254),
             phone: sanitizeString(data.phone, 20),
+            address: sanitizeString(data.address, 500),
+            additionalInfo: data.additionalInfo ? sanitizeString(data.additionalInfo, 1000) : undefined,
             agreeTerms: Boolean(data.agreeTerms),
             status: 'pending', // Always set to pending for new submissions
             submittedAt: new Date(),
         };
 
+        console.log("Saving Admission Data:", sanitizedData);
+
         await dbConnect();
+
+        // Ensure schema is fresh (debug) - NO, can't easily do that here without importing model differently.
         const newAdmission = await Admission.create(sanitizedData);
+
+        console.log("Saved Admission Result:", newAdmission.toObject());
+
         return NextResponse.json({ success: true, data: { id: newAdmission._id } });
     } catch (error) {
         console.error('Error saving admission:', error);

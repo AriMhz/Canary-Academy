@@ -185,7 +185,7 @@ export function AdminApplications() {
                     variant="outline"
                     className="border-[#2C4F5E] text-[#2C4F5E] bg-transparent"
                     onClick={() => {
-                      const fullDetails = rawData.find(d => d.id === app.id);
+                      const fullDetails = rawData.find((d: any) => d._id === app.id);
                       setSelectedApp(fullDetails || app);
                       setShowDetails(true);
                     }}
@@ -242,7 +242,6 @@ export function AdminApplications() {
               <div className="flex justify-between items-center border-b pb-4">
                 <div>
                   <h3 className="text-xl font-bold text-[#2C4F5E]">{selectedApp.firstName} {selectedApp.lastName}</h3>
-                  <p className="text-muted-foreground">Ref ID: {selectedApp.id}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge
@@ -260,7 +259,7 @@ export function AdminApplications() {
                     size="icon"
                     variant="ghost"
                     className="text-red-500 hover:text-red-700 hover:bg-red-100 h-8 w-8"
-                    onClick={() => confirmDelete(selectedApp.id)}
+                    onClick={() => confirmDelete(selectedApp.id!)}
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -272,10 +271,10 @@ export function AdminApplications() {
                   <h4 className="font-semibold border-b pb-1">Student Info</h4>
                   <div className="grid grid-cols-3 gap-2 text-sm">
                     <span className="text-muted-foreground col-span-1">Full Name:</span>
-                    <span className="col-span-2 font-medium">{selectedApp.firstName} {selectedApp.middleName} {selectedApp.lastName}</span>
+                    <span className="col-span-2 font-medium">{selectedApp.firstName} {selectedApp.middleName ? selectedApp.middleName + ' ' : ''}{selectedApp.lastName}</span>
 
                     <span className="text-muted-foreground col-span-1">Gender:</span>
-                    <span className="col-span-2 font-medium capitalize">{selectedApp.gender}</span>
+                    <span className="col-span-2 font-medium capitalize">{selectedApp.gender || "—"}</span>
 
                     <span className="text-muted-foreground col-span-1">Grade:</span>
                     <span className="col-span-2 font-medium">{selectedApp.gradeApplying === 'k' ? 'Kindergarten' : `Grade ${selectedApp.gradeApplying}`}</span>
@@ -289,7 +288,7 @@ export function AdminApplications() {
                     <span className="col-span-2 font-medium">{selectedApp.parentName}</span>
 
                     <span className="text-muted-foreground col-span-1">Relation:</span>
-                    <span className="col-span-2 font-medium capitalize">{selectedApp.relationship}</span>
+                    <span className="col-span-2 font-medium capitalize">{selectedApp.relationship || "—"}</span>
 
                     <span className="text-muted-foreground col-span-1">Phone:</span>
                     <span className="col-span-2 font-medium">{selectedApp.phone}</span>

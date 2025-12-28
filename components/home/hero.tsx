@@ -11,7 +11,7 @@ import { useCMS } from "@/lib/cms-context"
 
 export function Hero() {
   const [isVisible, setIsVisible] = useState(false)
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const { content } = useCMS()
 
   useEffect(() => {
@@ -47,27 +47,27 @@ export function Hero() {
               className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm"
             >
               <Award className="w-4 h-4 text-[#F5A623]" />
-              <span>{content.hero.badge}</span>
+              <span>{(language === 'np' && content.hero.badge_np) ? content.hero.badge_np : content.hero.badge}</span>
             </div>
 
             <h1
               data-editable="hero.title"
               className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-tight text-balance"
             >
-              {content.hero.title}
+              {(language === 'np' && content.hero.title_np) ? content.hero.title_np : content.hero.title}
             </h1>
 
             <p
               data-editable="hero.subtitle"
               className="text-lg sm:text-xl text-[#F5A623] leading-relaxed max-w-2xl"
             >
-              {content.hero.subtitle}
+              {(language === 'np' && content.hero.subtitle_np) ? content.hero.subtitle_np : content.hero.subtitle}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-start">
               <Button asChild size="lg" className="bg-[#F5A623] hover:bg-[#FFB84D] text-white text-base px-8 h-12">
                 <Link href="/admissions" data-editable="hero.cta">
-                  {content.hero.cta}
+                  {(language === 'np' && content.hero.cta_np) ? content.hero.cta_np : content.hero.cta}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
@@ -97,7 +97,9 @@ export function Hero() {
                     <div className="text-xl lg:text-2xl font-bold text-white" data-editable="hero.stats.yearsExp.value">
                       <CountUp end={content.hero.stats.yearsExp.value} suffix="+" />
                     </div>
-                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.yearsExp.label">{content.hero.stats.yearsExp.label}</div>
+                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.yearsExp.label">
+                      {(language === 'np' && content.hero.stats.yearsExp.label_np) ? content.hero.stats.yearsExp.label_np : content.hero.stats.yearsExp.label}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -111,7 +113,9 @@ export function Hero() {
                     <div className="text-xl lg:text-2xl font-bold text-white" data-editable="hero.stats.teachers.value">
                       <CountUp end={content.hero.stats.teachers.value} suffix="+" />
                     </div>
-                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.teachers.label">{content.hero.stats.teachers.label}</div>
+                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.teachers.label">
+                      {(language === 'np' && content.hero.stats.teachers.label_np) ? content.hero.stats.teachers.label_np : content.hero.stats.teachers.label}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -125,7 +129,9 @@ export function Hero() {
                     <div className="text-xl lg:text-2xl font-bold text-white" data-editable="hero.stats.students.value">
                       <CountUp end={content.hero.stats.students.value} suffix="+" />
                     </div>
-                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.students.label">{content.hero.stats.students.label}</div>
+                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.students.label">
+                      {(language === 'np' && content.hero.stats.students.label_np) ? content.hero.stats.students.label_np : content.hero.stats.students.label}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -139,7 +145,9 @@ export function Hero() {
                     <div className="text-xl lg:text-2xl font-bold text-white" data-editable="hero.stats.alumni.value">
                       <CountUp end={content.hero.stats.alumni.value} suffix="+" />
                     </div>
-                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.alumni.label">{content.hero.stats.alumni.label}</div>
+                    <div className="text-xs lg:text-sm text-white/80" data-editable="hero.stats.alumni.label">
+                      {(language === 'np' && content.hero.stats.alumni.label_np) ? content.hero.stats.alumni.label_np : content.hero.stats.alumni.label}
+                    </div>
                   </div>
                 </div>
               </div>

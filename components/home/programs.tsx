@@ -8,7 +8,7 @@ import { useCMS } from "@/lib/cms-context"
 
 export function Programs() {
   const { content, isEditorMode, updateContent } = useCMS()
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
 
   const getIcon = (level: string) => {
     if (level.includes("Primary")) return BookOpen
@@ -28,15 +28,27 @@ export function Programs() {
 
   const handleAddSubject = (programIndex: number, currentSubjects: string[]) => {
     if (updateContent) {
-      const newSubjects = [...currentSubjects, "New Subject"]
-      updateContent(["programs", "items", programIndex.toString(), "subjects"], newSubjects)
+      if (language === 'np') {
+        const currentNp = content.programs.items[programIndex].subjects_np || [];
+        const newSubjects = [...currentNp, "नयाँ विषय"];
+        updateContent(["programs", "items", programIndex.toString(), "subjects_np"], newSubjects)
+      } else {
+        const newSubjects = [...currentSubjects, "New Subject"]
+        updateContent(["programs", "items", programIndex.toString(), "subjects"], newSubjects)
+      }
     }
   }
 
   const handleDeleteSubject = (programIndex: number, subjectIndex: number, currentSubjects: string[]) => {
     if (updateContent) {
-      const newSubjects = currentSubjects.filter((_, idx) => idx !== subjectIndex)
-      updateContent(["programs", "items", programIndex.toString(), "subjects"], newSubjects)
+      if (language === 'np') {
+        const currentNp = content.programs.items[programIndex].subjects_np || [];
+        const newSubjects = currentNp.filter((_, idx) => idx !== subjectIndex)
+        updateContent(["programs", "items", programIndex.toString(), "subjects_np"], newSubjects)
+      } else {
+        const newSubjects = currentSubjects.filter((_, idx) => idx !== subjectIndex)
+        updateContent(["programs", "items", programIndex.toString(), "subjects"], newSubjects)
+      }
     }
   }
 
@@ -48,8 +60,8 @@ export function Programs() {
 
       <Container>
         <SectionHeading
-          title={content.programs.title}
-          subtitle={content.programs.subtitle}
+          title={(language === 'np' && content.programs.title_np) ? content.programs.title_np : content.programs.title}
+          subtitle={(language === 'np' && content.programs.subtitle_np) ? content.programs.subtitle_np : content.programs.subtitle}
           className="mb-16 lg:mb-20"
           data-editable-title="programs.title"
           data-editable-subtitle="programs.subtitle"
@@ -58,7 +70,14 @@ export function Programs() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-8">
           {content.programs.items.map((program, index) => {
             const Icon = getIcon(program.level)
-            const subjects = program.subjects
+            // Determine which subjects array to use based on language
+            const subjects = (language === 'np' && program.subjects_np && program.subjects_np.length > 0)
+              ? program.subjects_np
+              : program.subjects;
+
+            // Determine text fields based on language
+            const level = (language === 'np' && program.level_np) ? program.level_np : program.level;
+            const description = (language === 'np' && program.description_np) ? program.description_np : program.description;
 
             return (
               <div
@@ -81,13 +100,13 @@ export function Programs() {
                       className="text-2xl font-bold text-[#2C4F5E] mb-3 group-hover:text-[#F5A623] transition-colors duration-300"
                       data-editable={`programs.items.${index}.level`}
                     >
-                      {program.level}
+                      {level}
                     </h3>
                     <p
                       className="text-muted-foreground leading-relaxed"
                       data-editable={`programs.items.${index}.description`}
                     >
-                      {program.description}
+                      {description}
                     </p>
                   </div>
 
