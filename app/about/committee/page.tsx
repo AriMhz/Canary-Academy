@@ -9,6 +9,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useCMS } from "@/lib/cms-context"
+import { useLanguage } from "@/lib/i18n-context"
 
 // Helper function to get image source
 function getImageSrc(imagePath: string | undefined, fallback: string = ""): string {
@@ -21,14 +22,15 @@ function getImageSrc(imagePath: string | undefined, fallback: string = ""): stri
 
 export default function CommitteePage() {
     const { content } = useCMS()
+    const { language } = useLanguage()
     const committee = content.about.committee
 
     // Get members from CMS with auto-incremented serial numbers
-    const getMembersWithSN = (members: Array<{ name: string; designation: string; image: string; phone?: string; email?: string }>) => {
+    const getMembersWithSN = (members: any[]) => {
         return members.map((member, index) => ({
             sn: index + 1,
-            name: member.name,
-            designation: member.designation,
+            name: (language === 'np' && member.name_np) ? member.name_np : member.name,
+            designation: (language === 'np' && member.designation_np) ? member.designation_np : member.designation,
             photo: member.image || null,
             phone: member.phone,
             email: member.email
@@ -107,8 +109,12 @@ export default function CommitteePage() {
             {/* Header Section */}
             <header className="bg-[#2C4F5E] text-white py-16 mb-10">
                 <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold mb-4 font-heading">Committees</h1>
-                    <p className="text-lg text-gray-200 max-w-2xl mx-auto">Meet our dedicated committee members working for the school's progress.</p>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4 font-heading">{language === 'np' ? 'समितिहरू' : 'Committees'}</h1>
+                    <p className="text-lg text-gray-200 max-w-2xl mx-auto">
+                        {language === 'np'
+                            ? 'विद्यालयको प्रगतिको लागि समर्पित हाम्रा समिति सदस्यहरूलाई भेट्नुहोस्।'
+                            : "Meet our dedicated committee members working for the school's progress."}
+                    </p>
                 </div>
             </header>
 
@@ -119,42 +125,42 @@ export default function CommitteePage() {
                             value="smc"
                             className="bg-white border hover:bg-gray-50 data-[state=active]:bg-[#F5A623] data-[state=active]:text-white data-[state=active]:border-[#F5A623] h-14 text-base font-semibold shadow-sm transition-all rounded-lg"
                         >
-                            {committee.smc?.title || "SMC"}
+                            {(language === 'np' && committee.smc?.title_np) ? committee.smc.title_np : (committee.smc?.title || "SMC")}
                         </TabsTrigger>
                         <TabsTrigger
                             value="soc"
                             className="bg-white border hover:bg-gray-50 data-[state=active]:bg-[#F5A623] data-[state=active]:text-white data-[state=active]:border-[#F5A623] h-14 text-base font-semibold shadow-sm transition-all rounded-lg"
                         >
-                            {committee.soc?.title || "SOC"}
+                            {(language === 'np' && committee.soc?.title_np) ? committee.soc.title_np : (committee.soc?.title || "SOC")}
                         </TabsTrigger>
                         <TabsTrigger
                             value="tpa"
                             className="bg-white border hover:bg-gray-50 data-[state=active]:bg-[#F5A623] data-[state=active]:text-white data-[state=active]:border-[#F5A623] h-14 text-base font-semibold shadow-sm transition-all rounded-lg"
                         >
-                            {committee.tpa?.title || "TPA"}
+                            {(language === 'np' && committee.tpa?.title_np) ? committee.tpa.title_np : (committee.tpa?.title || "TPA")}
                         </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="smc" className="mt-0 focus-visible:ring-0">
                         <CommitteeSection
-                            title={committee.smc?.title || "School Management Committee"}
-                            description={committee.smc?.description || "Leaders guiding our strategic vision."}
+                            title={(language === 'np' && committee.smc?.title_np) ? committee.smc.title_np : (committee.smc?.title || "School Management Committee")}
+                            description={(language === 'np' && committee.smc?.description_np) ? committee.smc.description_np : (committee.smc?.description || "Leaders guiding our strategic vision.")}
                             members={smcMembers}
                         />
                     </TabsContent>
 
                     <TabsContent value="soc" className="mt-0 focus-visible:ring-0">
                         <CommitteeSection
-                            title={committee.soc?.title || "School Operation Committee"}
-                            description={committee.soc?.description || "Ensuring smooth daily operations."}
+                            title={(language === 'np' && committee.soc?.title_np) ? committee.soc.title_np : (committee.soc?.title || "School Operation Committee")}
+                            description={(language === 'np' && committee.soc?.description_np) ? committee.soc.description_np : (committee.soc?.description || "Ensuring smooth daily operations.")}
                             members={socMembers}
                         />
                     </TabsContent>
 
                     <TabsContent value="tpa" className="mt-0 focus-visible:ring-0">
                         <CommitteeSection
-                            title={committee.tpa?.title || "Parent Teacher Association"}
-                            description={committee.tpa?.description || "Building bridges between home and school."}
+                            title={(language === 'np' && committee.tpa?.title_np) ? committee.tpa.title_np : (committee.tpa?.title || "Parent Teacher Association")}
+                            description={(language === 'np' && committee.tpa?.description_np) ? committee.tpa.description_np : (committee.tpa?.description || "Building bridges between home and school.")}
                             members={tpaMembers}
                         />
                     </TabsContent>

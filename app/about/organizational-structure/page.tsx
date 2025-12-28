@@ -6,6 +6,7 @@ import { User } from "lucide-react"
 import Image from "next/image"
 import { getAssetPath } from "@/lib/get-base-path"
 import { useCMS } from "@/lib/cms-context"
+import { useLanguage } from "@/lib/i18n-context"
 
 // Helper function to get image source
 function getImageSrc(imagePath: string | undefined, fallback: string = ""): string {
@@ -41,6 +42,7 @@ const HorizontalConnector = () => (
 
 export default function OrganizationalStructurePage() {
     const { content } = useCMS()
+    const { language } = useLanguage()
     const orgStructure = content.about.orgStructure
 
     return (
@@ -57,9 +59,9 @@ export default function OrganizationalStructurePage() {
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
                 <Container className="relative z-10">
                     <div className="max-w-3xl mx-auto text-center space-y-6">
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{orgStructure?.title || "Organizational Structure"}</h1>
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{(language === 'np' && orgStructure?.title_np) ? orgStructure.title_np : (orgStructure?.title || "Organizational Structure")}</h1>
                         <p className="text-xl text-white/90 leading-relaxed">
-                            {orgStructure?.description || "How our school is organized."}
+                            {(language === 'np' && orgStructure?.description_np) ? orgStructure.description_np : (orgStructure?.description || "How our school is organized.")}
                         </p>
                     </div>
                 </Container>
