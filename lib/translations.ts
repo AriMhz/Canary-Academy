@@ -653,7 +653,7 @@ export const translations = {
         },
     },
     np: {
-        slogan: "Igniting Minds, Inspiring Happiness",
+        slogan: "शिक्षाको जगमा खुशीको खोजी",
         applyNow: "अहिले आवेदन दिनुहोस्",
         nav: {
             home: "गृहपृष्ठ",
