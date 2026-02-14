@@ -15,9 +15,20 @@ import { MapPin, Phone, Mail, Clock, Send, CheckCircle2 } from "lucide-react"
 import Image from "next/image"
 import { getAssetPath } from "@/lib/get-base-path"
 import { useLanguage } from "@/lib/i18n-context"
+import { useCMS } from "@/lib/cms-context"
 
 export default function ContactPage() {
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
+  const { content } = useCMS()
+
+  const getBilingual = (en?: string, np?: string) => {
+    return language === 'np' ? (np || en) : en
+  }
+
+  const getBilingualList = (enList: string[], npList?: string[]) => {
+    return language === 'np' && npList && npList.length > 0 ? npList : enList
+  }
+
   const [submitted, setSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState("")
@@ -28,6 +39,12 @@ export default function ContactPage() {
     subject: "",
     message: "",
   })
+
+  const IconMap: Record<string, any> = {
+    MapPin, Phone, Mail, Clock
+  }
+
+  const getIcon = (name: string) => IconMap[name] || MapPin
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,38 +84,41 @@ export default function ContactPage() {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const contactInfo = [
+  // Use CMS content for cards or fallback to translation structure
+  // We need to adapt the structure because CMS likely stores flat arrays or simplified objects
+  // Ideally, content.contact.details.cards should be an array of { icon, title, items: [] }
+  const contactCards = (content.contact?.details?.cards || []).length > 0 ? content.contact?.details?.cards : [
     {
-      icon: MapPin,
+      icon: "MapPin",
       title: t("contact.info.items.0.title"),
-      details: [
+      items: [
         t("contact.info.items.0.details.0"),
         t("contact.info.items.0.details.1"),
         t("contact.info.items.0.details.2")
       ],
     },
     {
-      icon: Phone,
+      icon: "Phone",
       title: t("contact.info.items.1.title"),
-      details: [
+      items: [
         t("contact.info.items.1.details.0"),
         t("contact.info.items.1.details.1"),
         t("contact.info.items.1.details.2")
       ],
     },
     {
-      icon: Mail,
+      icon: "Mail",
       title: t("contact.info.items.2.title"),
-      details: [
+      items: [
         t("contact.info.items.2.details.0"),
         t("contact.info.items.2.details.1"),
         t("contact.info.items.2.details.2")
       ],
     },
     {
-      icon: Clock,
+      icon: "Clock",
       title: t("contact.info.items.3.title"),
-      details: [
+      items: [
         t("contact.info.items.3.details.0"),
         t("contact.info.items.3.details.1"),
         t("contact.info.items.3.details.2")
@@ -106,14 +126,30 @@ export default function ContactPage() {
     },
   ]
 
+  // Helper to safely extract map URL whether user pastes just the link or the full iframe code
+  const getMapSrc = (input: string | undefined) => {
+    if (!input) return "https://maps.google.com/maps?q=Canary+Academy,+Haldibari-2,+Jhapa&t=&z=15&ie=UTF8&iwloc=&output=embed"
+
+    // Check if input is an iframe string
+    if (input.includes("<iframe") && input.includes("src=")) {
+      const match = input.match(/src=["'](.*?)["']/)
+      if (match && match[1]) {
+        return match[1]
+      }
+    }
+
+    // Return original input if likely a URL, or fallback if too short
+    return input.length > 10 ? input : "https://maps.google.com/maps?q=Canary+Academy,+Haldibari-2,+Jhapa&t=&z=15&ie=UTF8&iwloc=&output=embed"
+  }
+
   return (
     <div className="pt-20">
       {/* Hero Section */}
       <section className="relative py-20 text-white overflow-hidden">
         {/* Background Image */}
         <Image
-          src={getAssetPath("/images/contact-hero-bg.jpg")}
-          alt={t("contact.hero.title")}
+          src={content.contact?.hero?.image || getAssetPath("/images/contact-hero-bg.jpg")}
+          alt={getBilingual(content.contact?.hero?.title, content.contact?.hero?.title_np) || t("contact.hero.title")}
           fill
           className="object-cover"
           priority
@@ -123,9 +159,11 @@ export default function ContactPage() {
 
         <Container className="relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">{t("contact.hero.title")}</h1>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold">
+              {getBilingual(content.contact?.hero?.title, content.contact?.hero?.title_np) || t("contact.hero.title")}
+            </h1>
             <p className="text-xl text-white/90 leading-relaxed">
-              {t("contact.hero.description")}
+              {getBilingual(content.contact?.hero?.subtitle, content.contact?.hero?.subtitle_np) || t("contact.hero.description")}
             </p>
           </div>
         </Container>
@@ -286,13 +324,14 @@ export default function ContactPage() {
               <Card className="overflow-hidden shadow-premium">
                 <div className="relative h-[400px] bg-muted">
                   <iframe
-                    src="https://maps.google.com/maps?q=Canary+Academy,+Haldibari-2,+Jhapa&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    src={getMapSrc(content.contact?.info?.mapUrl)}
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
                     title="Canary Academy Location"
+                    referrerPolicy="no-referrer-when-downgrade"
                   />
                 </div>
               </Card>
@@ -309,15 +348,17 @@ export default function ContactPage() {
               </div>
               <CardContent className="p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
                 <div className="space-y-4 max-w-2xl text-center md:text-left">
-                  <h3 className="text-3xl font-bold">{t("contact.visit.ctaTitle")}</h3>
+                  <h3 className="text-3xl font-bold">
+                    {getBilingual(content.contact?.cta?.title, content.contact?.cta?.title_np) || t("contact.visit.ctaTitle")}
+                  </h3>
                   <p className="text-white/90 text-lg leading-relaxed">
-                    {t("contact.visit.ctaText")}
+                    {getBilingual(content.contact?.cta?.text, content.contact?.cta?.text_np) || t("contact.visit.ctaText")}
                   </p>
                 </div>
                 <Button asChild size="lg" className="bg-[#F5A623] hover:bg-[#FFB84D] text-white text-lg px-8 py-6 h-auto shrink-0 w-full md:w-auto">
-                  <a href="tel:9801444350">
+                  <a href={`tel:${content.contact?.info?.phone || "9801444350"}`}>
                     <Phone className="w-5 h-5 mr-2" />
-                    {t("contact.visit.ctaButton")}
+                    {getBilingual(content.contact?.cta?.buttonText, content.contact?.cta?.buttonText_np) || content.contact?.info?.phone || t("contact.visit.ctaButton")}
                   </a>
                 </Button>
               </CardContent>
@@ -325,50 +366,57 @@ export default function ContactPage() {
 
             {/* Get In Touch Info */}
             <div>
-              <h3 className="text-2xl font-bold text-[#2C4F5E] mb-6 text-center">{t("contact.info.title")}</h3>
+              <h3 className="text-2xl font-bold text-[#2C4F5E] mb-6 text-center">
+                {getBilingual(content.contact?.details?.title, content.contact?.details?.title_np) || t("contact.info.title")}
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {contactInfo.map((info, index) => (
-                  <Card key={index} className="shadow-sm hover:shadow-md transition-shadow h-full">
-                    <CardContent className="p-6 flex flex-col items-center text-center gap-4 h-full">
-                      <div className="w-14 h-14 bg-[#F5A623]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                        <info.icon className="w-7 h-7 text-[#F5A623]" />
-                      </div>
-                      <div className="flex-1 flex flex-col justify-center">
-                        <h4 className="font-bold text-[#2C4F5E] text-lg mb-2">{info.title}</h4>
-                        <div className="space-y-1.5">
-                          {info.details.map((detail, idx) => {
-                            // Check if detail is an email
-                            const emailMatch = detail.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
-                            // Check if detail is a phone number (simple check for digits and dashes/plus)
-                            const phoneMatch = detail.match(/(\+?[\d-]+\d+)/);
-
-                            if (emailMatch && detail.includes("@") && detail.includes(".")) {
-                              return (
-                                <a key={idx} href={`mailto:${detail}`} className="block text-sm text-muted-foreground leading-relaxed break-words hover:text-[#F5A623] transition-colors">
-                                  {detail}
-                                </a>
-                              )
-                            } else if (phoneMatch && (detail.includes("+") || detail.match(/\d{3,}/))) {
-                              // Extract the number for the href
-                              const number = detail.replace(/[^\d+]/g, '');
-                              return (
-                                <a key={idx} href={`tel:${number}`} className="block text-sm text-muted-foreground leading-relaxed break-words hover:text-[#F5A623] transition-colors">
-                                  {detail}
-                                </a>
-                              )
-                            }
-
-                            return (
-                              <p key={idx} className="text-sm text-muted-foreground leading-relaxed break-words">
-                                {detail}
-                              </p>
-                            )
-                          })}
+                {contactCards.map((info: any, index: number) => {
+                  const Icon = getIcon(info.icon)
+                  return (
+                    <Card key={index} className="shadow-sm hover:shadow-md transition-shadow h-full">
+                      <CardContent className="p-6 flex flex-col items-center text-center gap-4 h-full">
+                        <div className="w-14 h-14 bg-[#F5A623]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-7 h-7 text-[#F5A623]" />
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                        <div className="flex-1 flex flex-col justify-center">
+                          <h4 className="font-bold text-[#2C4F5E] text-lg mb-2">
+                            {getBilingual(info.title, info.title_np)}
+                          </h4>
+                          <div className="space-y-1.5">
+                            {getBilingualList(info.items, info.items_np)?.map((detail: string, idx: number) => {
+                              // Check if detail is an email
+                              const emailMatch = detail.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/);
+                              // Check if detail is a phone number (simple check for digits and dashes/plus)
+                              const phoneMatch = detail.match(/(\+?[\d-]+\d+)/);
+
+                              if (emailMatch && detail.includes("@") && detail.includes(".")) {
+                                return (
+                                  <a key={idx} href={`mailto:${detail}`} className="block text-sm text-muted-foreground leading-relaxed break-words hover:text-[#F5A623] transition-colors">
+                                    {detail}
+                                  </a>
+                                )
+                              } else if (phoneMatch && (detail.includes("+") || detail.match(/\d{3,}/))) {
+                                // Extract the number for the href
+                                const number = detail.replace(/[^\d+]/g, '');
+                                return (
+                                  <a key={idx} href={`tel:${number}`} className="block text-sm text-muted-foreground leading-relaxed break-words hover:text-[#F5A623] transition-colors">
+                                    {detail}
+                                  </a>
+                                )
+                              }
+
+                              return (
+                                <p key={idx} className="text-sm text-muted-foreground leading-relaxed break-words">
+                                  {detail}
+                                </p>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
               </div>
             </div>
           </div>

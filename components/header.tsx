@@ -347,7 +347,7 @@ export function Header({ forceRender = false, onNavigate }: { forceRender?: bool
                 asChild
                 className="bg-[#F5A623] hover:bg-[#FFB84D] text-white w-full h-14 text-xl font-bold shadow-[0_0_20px_rgba(245,166,35,0.3)] hover:shadow-[0_0_30px_rgba(245,166,35,0.5)] transition-all duration-300"
               >
-                <Link href="/admissions">Apply Now</Link>
+                <Link href="/admissions" onClick={() => setIsMobileMenuOpen(false)}>Apply Now</Link>
               </Button>
             </div>
 

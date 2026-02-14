@@ -168,8 +168,8 @@ export function AdminOverview({ onNavigate }: AdminOverviewProps) {
                         <CardContent>
                             <div className="space-y-4">
                                 {recentApplications.length > 0 ? (
-                                    recentApplications.map((app) => (
-                                        <div key={app.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
+                                    recentApplications.map((app, index) => (
+                                        <div key={app._id || app.id || index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors">
                                             <div className="min-w-0">
                                                 <p className="font-semibold text-sm truncate">{app.firstName} {app.lastName}</p>
                                                 <p className="text-xs text-muted-foreground truncate">{new Date(app.submittedAt).toLocaleDateString()}</p>

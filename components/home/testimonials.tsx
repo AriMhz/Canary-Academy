@@ -9,7 +9,7 @@ import { useCMS } from "@/lib/cms-context"
 
 export function Testimonials() {
   const { content, isEditorMode } = useCMS()
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
 
   return (
     <section className="py-24 bg-white relative overflow-hidden">
@@ -21,8 +21,8 @@ export function Testimonials() {
 
       <Container>
         <SectionHeading
-          title={content.testimonials.title}
-          subtitle={content.testimonials.subtitle}
+          title={(language === 'np' && content.testimonials.title_np) ? content.testimonials.title_np : content.testimonials.title}
+          subtitle={(language === 'np' && content.testimonials.subtitle_np) ? content.testimonials.subtitle_np : content.testimonials.subtitle}
           className="mb-16 lg:mb-20"
           data-editable-title="testimonials.title"
           data-editable-subtitle="testimonials.subtitle"
@@ -52,7 +52,7 @@ export function Testimonials() {
                   className="text-lg text-white/90 leading-relaxed italic"
                   data-editable={`testimonials.items.${index}.content`}
                 >
-                  "{testimonial.content}"
+                  "{(language === 'np' && testimonial.content_np) ? testimonial.content_np : testimonial.content}"
                 </p>
 
                 <div className="mt-auto flex items-center gap-4 pt-4 border-t border-white/10">
@@ -66,13 +66,13 @@ export function Testimonials() {
                       className="font-bold text-white group-hover:text-[#F5A623] transition-colors"
                       data-editable={`testimonials.items.${index}.name`}
                     >
-                      {testimonial.name}
+                      {(language === 'np' && testimonial.name_np) ? testimonial.name_np : testimonial.name}
                     </h4>
                     <p
                       className="text-sm text-white/60"
                       data-editable={`testimonials.items.${index}.role`}
                     >
-                      {testimonial.role}
+                      {(language === 'np' && testimonial.role_np) ? testimonial.role_np : testimonial.role}
                     </p>
                   </div>
                 </div>

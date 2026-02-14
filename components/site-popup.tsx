@@ -5,15 +5,16 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getAssetPath } from "@/lib/get-base-path"
+import { useCMS } from "@/lib/cms-context"
 
 export function SitePopup() {
     const [isOpen, setIsOpen] = useState(false)
     const pathname = usePathname()
+    const { content } = useCMS()
 
     useEffect(() => {
-        // Only show on home page
-        if (pathname !== "/") return
+        // Only show content if active and on home page
+        if (pathname !== "/" || !content.popup?.isActive) return
 
         // Check if popup has already been seen in this session
         const hasSeenPopup = sessionStorage.getItem("hasSeenPopup")
@@ -26,13 +27,13 @@ export function SitePopup() {
             }, 500)
             return () => clearTimeout(timer)
         }
-    }, [pathname])
+    }, [pathname, content.popup?.isActive])
 
     const handleClose = () => {
         setIsOpen(false)
     }
 
-    if (!isOpen) return null
+    if (!isOpen || !content.popup?.isActive) return null
 
     return (
         <div
@@ -40,7 +41,7 @@ export function SitePopup() {
             onClick={handleClose}
         >
             <div
-                className="relative w-full max-w-lg md:max-w-xl rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 cursor-default"
+                className="relative w-full max-w-lg md:max-w-xl rounded-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 cursor-default bg-white"
                 onClick={(e) => e.stopPropagation()}
             >
 
@@ -56,15 +57,17 @@ export function SitePopup() {
                 </Button>
 
                 {/* Image */}
-                <Image
-                    src={getAssetPath("/images/popup-ad.jpg")}
-                    alt="School Admission 2025-2026"
-                    width={0}
-                    height={0}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="w-full h-auto"
-                    priority
-                />
+                <div className="relative w-full h-auto min-h-[400px]">
+                    <Image
+                        src={content.popup.image || "/placeholder.svg"}
+                        alt="Announcement"
+                        width={600}
+                        height={600}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="w-full h-auto object-cover"
+                        priority
+                    />
+                </div>
             </div>
         </div>
     )

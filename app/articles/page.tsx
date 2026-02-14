@@ -94,18 +94,9 @@ export default function ArticlesPage() {
 
                     {/* Articles Grid - 2 Columns */}
                     <div className="grid md:grid-cols-2 gap-8 items-start">
-                        {filteredArticles.map((article) => {
-                            // Use helper to get localized version of article for the card
-                            const localizedArticle = {
-                                ...article,
-                                title: getBilingual(article.title, (article as any).title_np) || "",
-                                excerpt: getBilingual(article.excerpt, (article as any).excerpt_np) || "",
-                                date: article.date,
-                                category: article.category,
-                                image: article.image
-                            }
-                            return <ArticleCard key={article.id} article={localizedArticle as any} />
-                        })}
+                        {filteredArticles.map((article) => (
+                            <ArticleCard key={article.id} article={article} />
+                        ))}
                     </div>
 
                     {filteredArticles.length === 0 && (

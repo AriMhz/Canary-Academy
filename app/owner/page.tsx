@@ -21,6 +21,8 @@ import { AdminApplications } from "@/components/admin/admin-applications"
 import { AdminArticlesManager } from "@/components/admin/admin-articles-manager"
 import { ContentEditor } from "@/components/admin/content-editor"
 import { AdminOverview } from "@/components/admin/admin-overview"
+import { AdminPopupManager } from "@/components/admin/admin-popup-manager"
+import { MessageSquare } from "lucide-react"
 
 // Security constants
 const MAX_LOGIN_ATTEMPTS = 5
@@ -370,6 +372,13 @@ export default function AdminPage() {
                   <BookOpen className="w-4 h-4 md:w-5 md:h-5" />
                   <span className="font-medium">{t('admin.tabs.articles')}</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="popup"
+                  className="flex flex-col md:flex-row items-center justify-center gap-2 py-3 md:py-4 data-[state=active]:bg-[#F5A623]/10 data-[state=active]:text-[#F5A623] data-[state=active]:shadow-none transition-all duration-300 rounded-lg"
+                >
+                  <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="font-medium">Popup</span>
+                </TabsTrigger>
               </TabsList>
             </div>
           </Container>
@@ -404,6 +413,11 @@ export default function AdminPage() {
             {/* Gallery Tab */}
             <TabsContent value="gallery">
               <AdminGalleryManager />
+            </TabsContent>
+
+            {/* Popup Tab */}
+            <TabsContent value="popup">
+              <AdminPopupManager />
             </TabsContent>
           </Container>
         </Tabs>
