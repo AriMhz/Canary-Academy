@@ -12,20 +12,28 @@ interface ArticleCardProps {
     article: {
         id: number
         title: string
+        title_np?: string
         content: string
+        content_np?: string
         author: string
         date: string
         image: string
         videoUrl?: string
         excerpt: string
+        excerpt_np?: string
         category?: string
     }
 }
 
 export function ArticleCard({ article }: ArticleCardProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const [isExpanded, setIsExpanded] = useState(false)
     const [shareCount, setShareCount] = useState(0)
+
+    // Language-aware content
+    const displayTitle = (language === 'np' && article.title_np) ? article.title_np : article.title
+    const displayExcerpt = (language === 'np' && article.excerpt_np) ? article.excerpt_np : article.excerpt
+    const displayContent = (language === 'np' && article.content_np) ? article.content_np : article.content
 
     return (
         <Card className="overflow-hidden bg-white border border-border/40 shadow-sm hover:shadow-md transition-shadow duration-300 h-full flex flex-col">
@@ -37,7 +45,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
                             width="100%"
                             height="100%"
                             src={`https://www.youtube.com/embed/${article.videoUrl.split('youtu.be/')[1]?.split('?')[0] || article.videoUrl.split('v=')[1]?.split('&')[0]}`}
-                            title={article.title}
+                            title={displayTitle}
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
@@ -46,7 +54,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
                     ) : (
                         <Image
                             src={article.image}
-                            alt={article.title}
+                            alt={displayTitle}
                             fill
                             className="object-cover"
                         />
@@ -71,7 +79,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
                 <h2 className="text-xl md:text-2xl font-bold text-[#2C4F5E] mb-3 leading-tight hover:text-[#F5A623] transition-colors">
                     <a href={`/articles/${article.id}`} className="hover:underline decoration-2 underline-offset-4">
-                        {article.title}
+                        {displayTitle}
                     </a>
                 </h2>
 
@@ -90,13 +98,13 @@ export function ArticleCard({ article }: ArticleCardProps) {
             <CardContent className="p-6 pt-0 flex-grow flex flex-col">
                 {/* Excerpt */}
                 <p className="text-base text-foreground/80 leading-relaxed font-medium mb-4 mt-2">
-                    {article.excerpt}
+                    {displayExcerpt}
                 </p>
 
                 {/* Main Content - Prose with logical truncation */}
                 <div className={`prose prose-sm max-w-none text-foreground prose-headings:text-[#2C4F5E] prose-a:text-[#F5A623] prose-img:rounded-xl prose-strong:text-[#2C4F5E] ${!isExpanded ? 'line-clamp-3' : ''}`}>
                     <div className="whitespace-pre-wrap">
-                        {article.content}
+                        {displayContent}
                     </div>
                 </div>
 
@@ -132,8 +140,8 @@ export function ArticleCard({ article }: ArticleCardProps) {
 
                                 if (navigator.share) {
                                     navigator.share({
-                                        title: article.title,
-                                        text: article.excerpt,
+                                        title: displayTitle,
+                                        text: displayExcerpt,
                                         url: shareUrl
                                     }).catch(() => { /* User cancelled or share failed - no action needed */ });
                                 } else {
@@ -170,7 +178,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
                         variant="ghost"
                         size="icon"
                         className="h-10 w-10 hover:bg-gray-100 hover:text-black text-muted-foreground transition-colors"
-                        onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/articles/${article.id}` : '')}`, '_blank', 'width=600,height=400')}
+                        onClick={() => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(displayTitle)}&url=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/articles/${article.id}` : '')}`, '_blank', 'width=600,height=400')}
                         title="Share on X"
                     >
                         <Twitter className="w-6 h-6" />

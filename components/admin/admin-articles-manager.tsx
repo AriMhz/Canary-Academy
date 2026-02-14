@@ -29,7 +29,7 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
 
     const [editingArticle, setEditingArticle] = useState<CMSContent["articles"][0] | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
 
     // Form state
     const [formData, setFormData] = useState({
@@ -375,9 +375,9 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
                                         {article.author}
                                     </span>
                                 </div>
-                                <h3 className="font-bold text-[#2C4F5E] line-clamp-1 mb-2">{article.title}</h3>
+                                <h3 className="font-bold text-[#2C4F5E] line-clamp-1 mb-2">{(language === 'np' && article.title_np) ? article.title_np : article.title}</h3>
                                 <p className="text-sm text-muted-foreground line-clamp-2">
-                                    {article.content}
+                                    {(language === 'np' && article.content_np) ? article.content_np : article.content}
                                 </p>
                             </CardContent>
                         </Card>
