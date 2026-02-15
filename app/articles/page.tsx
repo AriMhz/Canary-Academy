@@ -18,28 +18,23 @@ export default function ArticlesPage() {
         return language === 'np' ? (np || en) : en
     }
 
-    const categories = [
-        t("articles.categories.0") || "All",
-        t("articles.categories.1") || "Education",
-        t("articles.categories.2") || "Parenting",
-        t("articles.categories.3") || "Student Life",
-        t("articles.categories.4") || "Health"
-    ]
+    // English category keys used for filtering (articles store category in English)
+    const categoryKeys = ["All", "Education", "Parenting", "Student Life", "Health"]
 
-    const [selectedCategory, setSelectedCategory] = useState(categories[0])
+    // Translated category names for display
+    const categories = categoryKeys.map((_, i) => t(`articles.categories.${i}`) || categoryKeys[i])
+
+    const [selectedIndex, setSelectedIndex] = useState(0)
 
     const articlesData = content.articles || []
 
-    // Filter logic
-    // Using simple category match for now. In real app, might want to normalize keys.
-    const filteredArticles = selectedCategory === (t("articles.categories.0") || "All")
+    // Filter using English category key so it works regardless of display language
+    const selectedKey = categoryKeys[selectedIndex]
+    const filteredArticles = selectedKey === "All"
         ? articlesData
-        : articlesData.filter(article => {
-            // Try to match category vaguely since user enters text
-            // Or if article has a specific category field
-            return (article as any).category === selectedCategory ||
-                (article as any).category?.toLowerCase() === selectedCategory.toLowerCase()
-        })
+        : articlesData.filter(article =>
+            article.category?.toLowerCase() === selectedKey.toLowerCase()
+        )
 
 
     return (
@@ -76,13 +71,13 @@ export default function ArticlesPage() {
                 <Container>
                     {/* Category Filter */}
                     <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-                        {categories.map((category) => (
+                        {categories.map((category, index) => (
                             <Button
                                 key={category}
-                                onClick={() => setSelectedCategory(category)}
-                                variant={selectedCategory === category ? "default" : "outline"}
+                                onClick={() => setSelectedIndex(index)}
+                                variant={selectedIndex === index ? "default" : "outline"}
                                 className={
-                                    selectedCategory === category
+                                    selectedIndex === index
                                         ? "bg-[#F5A623] hover:bg-[#FFB84D] text-white"
                                         : "border text-[#2C4F5E] hover:bg-[#2C4F5E] hover:text-white bg-white"
                                 }
