@@ -12,6 +12,7 @@ import { Save, Eye, Upload, X, Plus, Trash2, Edit2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { compressImageToWebP } from "@/lib/image-compression"
 
 interface ImageUploadProps {
   currentImage: string
@@ -45,29 +46,33 @@ function ImageUpload({ currentImage, onImageChange, label = "Image" }: ImageUplo
 
     setIsUploading(true)
 
-    // Convert to base64 for storage
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const base64String = reader.result as string
-      setPreview(base64String)
-      onImageChange(base64String)
+    try {
+      const result = await compressImageToWebP(file, {
+        maxWidth: 1600,
+        maxHeight: 1600,
+        quality: 0.8,
+        maxSizeBytes: 180 * 1024,
+      })
+      setPreview(result.dataUrl)
+      onImageChange(result.dataUrl)
       setIsUploading(false)
       toast({
-        title: "Image uploaded",
-        description: "Image has been uploaded successfully",
+        title: "⚡ Auto-compressed to WebP",
+        description: `${result.originalSizeKB} KB → ${result.compressedSizeKB} KB (${result.savedPercent}% smaller)`,
         duration: 3000,
       })
-    }
-    reader.onerror = () => {
+    } catch (err) {
+      console.error("Compression error:", err)
       setIsUploading(false)
       toast({
         title: "Upload failed",
-        description: "Failed to upload image",
+        description: "Failed to compress image",
         variant: "destructive",
         duration: 3000,
       })
+    } finally {
+      e.target.value = ""
     }
-    reader.readAsDataURL(file)
   }
 
   const handleUrlChange = (url: string) => {

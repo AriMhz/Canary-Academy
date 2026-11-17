@@ -457,12 +457,7 @@ export const defaultContent: CMSContent = {
     contactUs: "Contact Us",
   },
   news: [],
-  gallery: galleryImages.map((item) => ({
-    id: item.id,
-    title: item.title,
-    category: item.category,
-    image: item.image,
-  })),
+  gallery: [],
   popup: {
     isActive: false,
     image: "/images/popup-ad.jpg"

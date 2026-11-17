@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast"
 import { FormField, TextInput, TextAreaInput, NumberInput, ImageInput, VideoInput, FileInput, ArrayInput } from "./form-fields"
 import { AdminArticlesManager } from "./admin-articles-manager"
 import { cn } from "@/lib/utils"
+import { compressImageToWebP } from "@/lib/image-compression"
 
 export function ContentEditor() {
     const { toast } = useToast()
@@ -114,8 +115,21 @@ export function ContentEditor() {
         onChange: (val: any) => updateContent(path, val),
     })
 
-    // File Upload Handling
-    const handleUpload = (file: File, callback: (result: string) => void) => {
+    // File Upload Handling with automatic WebP compression
+    const handleUpload = async (file: File, callback: (result: string) => void) => {
+        if (file.type.startsWith("image/")) {
+            try {
+                const res = await compressImageToWebP(file, { maxWidth: 1600, quality: 0.8 })
+                callback(res.dataUrl)
+                toast({
+                    title: "⚡ Image converted to WebP",
+                    description: `${res.originalSizeKB} KB → ${res.compressedSizeKB} KB (${res.savedPercent}% smaller)`,
+                })
+                return
+            } catch (err) {
+                console.error("Compression error:", err)
+            }
+        }
         const reader = new FileReader()
         reader.onloadend = () => {
             callback(reader.result as string)

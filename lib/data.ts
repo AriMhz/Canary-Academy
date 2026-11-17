@@ -116,44 +116,13 @@ export const facultyData = [
   },
 ]
 
-export const galleryImages = [
-  {
-    id: 1,
-    title: "School Campus",
-    category: "Campus",
-    image: getAssetPath("/modern-school-exterior.png"),
-  },
-  {
-    id: 2,
-    title: "Science Laboratory",
-    category: "Facilities",
-    image: getAssetPath("/school-science-laboratory.png"),
-  },
-  {
-    id: 3,
-    title: "Library",
-    category: "Facilities",
-    image: getAssetPath("/school-library-students.jpg"),
-  },
-  {
-    id: 4,
-    title: "Sports Day",
-    category: "Events",
-    image: getAssetPath("/school-sports-event.png"),
-  },
-  {
-    id: 5,
-    title: "Annual Function",
-    category: "Events",
-    image: getAssetPath("/school-annual-function-stage.jpg"),
-  },
-  {
-    id: 6,
-    title: "Classroom",
-    category: "Facilities",
-    image: getAssetPath("/modern-classroom-students.jpg"),
-  },
-]
+export const galleryImages: Array<{
+  id: number
+  title: string
+  title_np?: string
+  category: string
+  image: string
+}> = []
 
 export const programs = [
   {

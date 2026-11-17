@@ -4,12 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Upload, Trash2, Edit2, Plus, ImageIcon } from "lucide-react"
+import { Upload, Trash2, Edit2, Plus, ImageIcon, Loader2, Sparkles } from "lucide-react"
 import { useCMS } from "@/lib/cms-context"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { compressImageToWebP, optimizeImageList, formatFileSize, getBase64Size } from "@/lib/image-compression"
 
 const CATEGORIES = ["Campus", "Facilities", "Events"]
 
@@ -23,6 +24,8 @@ export function AdminGalleryManager() {
 
   const [showUpload, setShowUpload] = useState(false)
   const [editingItem, setEditingItem] = useState<number | null>(null)
+  const [isCompressing, setIsCompressing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [formData, setFormData] = useState({
     title: "",
     title_np: "",
@@ -37,14 +40,39 @@ export function AdminGalleryManager() {
     }
   }, [content.gallery, hasChanges])
 
-  const handleSave = () => {
-    if (updateContent) {
-      updateContent(["gallery"], gallery)
+  const handleSave = async () => {
+    if (!updateContent) return
+    setIsSaving(true)
+    try {
+      // Auto-compress any uncompressed or heavy images already in the gallery
+      const { items: optimizedGallery, optimizedCount } = await optimizeImageList(gallery, {
+        maxWidth: 1600,
+        maxHeight: 1600,
+        quality: 0.8,
+        maxSizeBytes: 180 * 1024,
+      })
+
+      if (optimizedCount > 0) {
+        setGallery(optimizedGallery)
+      }
+
+      updateContent(["gallery"], optimizedGallery)
       setHasChanges(false)
       toast({
         title: "Gallery updated",
-        description: "Your changes have been saved successfully",
+        description: optimizedCount > 0
+          ? `Saved successfully (${optimizedCount} images auto-compressed to WebP)`
+          : "Your changes have been saved successfully",
       })
+    } catch (error) {
+      console.error("Save error:", error)
+      toast({
+        title: "Error saving gallery",
+        description: "An error occurred while saving. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -107,7 +135,7 @@ export function AdminGalleryManager() {
     })
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -120,16 +148,33 @@ export function AdminGalleryManager() {
       return
     }
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const base64String = reader.result as string
-      setFormData({ ...formData, image: base64String })
-      toast({
-        title: "Image uploaded",
-        description: "Image has been uploaded successfully",
+    setIsCompressing(true)
+    try {
+      // Automatically convert image to WebP and compress to low KB
+      const result = await compressImageToWebP(file, {
+        maxWidth: 1600,
+        maxHeight: 1600,
+        quality: 0.8,
+        maxSizeBytes: 180 * 1024,
       })
+
+      setFormData((prev) => ({ ...prev, image: result.dataUrl }))
+      toast({
+        title: "⚡ Auto-compressed to WebP",
+        description: `${result.originalSizeKB} KB → ${result.compressedSizeKB} KB (${result.savedPercent}% smaller)`,
+      })
+    } catch (error) {
+      console.error("Compression error:", error)
+      toast({
+        title: "Compression error",
+        description: "Failed to compress image. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsCompressing(false)
+      // Reset input value so the same file can be re-selected if desired
+      e.target.value = ""
     }
-    reader.readAsDataURL(file)
   }
 
   return (
@@ -144,8 +189,15 @@ export function AdminGalleryManager() {
           </div>
           <div className="flex gap-2">
             {hasChanges && (
-              <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700 text-white animate-pulse">
-                Save Changes
+              <Button onClick={handleSave} disabled={isSaving || isCompressing} className="bg-green-600 hover:bg-green-700 text-white animate-pulse">
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
               </Button>
             )}
             <Dialog open={showUpload} onOpenChange={setShowUpload}>
@@ -205,22 +257,38 @@ export function AdminGalleryManager() {
                       <Input
                         type="file"
                         accept="image/*"
+                        disabled={isCompressing}
                         onChange={handleImageUpload}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
                       />
-                      <Button type="button" variant="outline" className="w-full">
-                        <Upload className="w-4 h-4 mr-2" />
-                        Upload Image
+                      <Button type="button" variant="outline" className="w-full" disabled={isCompressing}>
+                        {isCompressing ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin text-[#F5A623]" />
+                            Compressing to WebP...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 mr-2" />
+                            Upload & Auto-compress (WebP)
+                          </>
+                        )}
                       </Button>
                     </div>
                     {formData.image && (
                       <div className="relative w-full h-48 rounded-lg overflow-hidden border">
                         <Image src={formData.image} alt="Preview" fill className="object-cover" />
+                        {formData.image.startsWith("data:") && (
+                          <div className="absolute top-2 right-2 bg-black/75 text-white text-xs px-2 py-1 rounded flex items-center gap-1 font-mono">
+                            <Sparkles className="w-3 h-3 text-[#F5A623]" />
+                            {formData.image.startsWith("data:image/webp") ? "WebP" : "Optimized"} • {formatFileSize(getBase64Size(formData.image))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Button onClick={handleAdd} className="flex-1 bg-[#F5A623] hover:bg-[#FFB84D] text-white">
+                    <Button onClick={handleAdd} disabled={isCompressing} className="flex-1 bg-[#F5A623] hover:bg-[#FFB84D] text-white">
                       Add Image
                     </Button>
                     <Button variant="outline" onClick={() => setShowUpload(false)}>
@@ -244,6 +312,11 @@ export function AdminGalleryManager() {
                 <div key={image.id} className="relative group">
                   <div className="relative h-40 rounded-lg overflow-hidden bg-muted border-2 border-border">
                     <Image src={image.image || "/placeholder.svg"} alt={image.title} fill className="object-cover" />
+                    {image.image && image.image.startsWith("data:") && (
+                      <span className="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-mono pointer-events-none">
+                        {image.image.startsWith("data:image/webp") ? "WebP" : "Img"} • {formatFileSize(getBase64Size(image.image))}
+                      </span>
+                    )}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                       <Button
                         size="sm"
@@ -324,22 +397,38 @@ export function AdminGalleryManager() {
                 <Input
                   type="file"
                   accept="image/*"
+                  disabled={isCompressing}
                   onChange={handleImageUpload}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-not-allowed"
                 />
-                <Button type="button" variant="outline" className="w-full">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Image
+                <Button type="button" variant="outline" className="w-full" disabled={isCompressing}>
+                  {isCompressing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin text-[#F5A623]" />
+                      Compressing to WebP...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload & Auto-compress (WebP)
+                    </>
+                  )}
                 </Button>
               </div>
               {formData.image && (
                 <div className="relative w-full h-48 rounded-lg overflow-hidden border">
                   <Image src={formData.image} alt="Preview" fill className="object-cover" />
+                  {formData.image.startsWith("data:") && (
+                    <div className="absolute top-2 right-2 bg-black/75 text-white text-xs px-2 py-1 rounded flex items-center gap-1 font-mono">
+                      <Sparkles className="w-3 h-3 text-[#F5A623]" />
+                      {formData.image.startsWith("data:image/webp") ? "WebP" : "Optimized"} • {formatFileSize(getBase64Size(formData.image))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleUpdate} className="flex-1 bg-[#F5A623] hover:bg-[#FFB84D] text-white">
+              <Button onClick={handleUpdate} disabled={isCompressing} className="flex-1 bg-[#F5A623] hover:bg-[#FFB84D] text-white">
                 Update
               </Button>
               <Button variant="outline" onClick={() => setEditingItem(null)}>

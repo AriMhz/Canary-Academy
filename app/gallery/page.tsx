@@ -14,7 +14,7 @@ import { translations } from "@/lib/translations"
 
 export default function GalleryPage() {
   const { t, language } = useLanguage()
-  const { content } = useCMS()
+  const { content, isLoading } = useCMS()
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
 
@@ -81,34 +81,44 @@ export default function GalleryPage() {
           </div>
 
           {/* Image Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredImages.map((image, index) => (
-              <Card
-                key={image.id}
-                className="overflow-hidden cursor-pointer group hover:shadow-premium transition-all duration-300"
-                onClick={() => setSelectedImage(index)}
-              >
-                <div className="relative h-64 bg-muted">
-                  <Image
-                    src={image.image || "/placeholder.svg"}
-                    alt={image.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Badge className="bg-[#F5A623] hover:bg-[#FFB84D] text-white mb-2">{image.category}</Badge>
-                    <h3 className="text-lg font-bold text-white">{getBilingual(image.title, (image as any).title_np)}</h3>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {filteredImages.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">{t("gallery.noImages")}</p>
+          {isLoading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-64 rounded-xl bg-muted/60" />
+              ))}
             </div>
+          ) : (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredImages.map((image, index) => (
+                  <Card
+                    key={image.id}
+                    className="overflow-hidden cursor-pointer group hover:shadow-premium transition-all duration-300"
+                    onClick={() => setSelectedImage(index)}
+                  >
+                    <div className="relative h-64 bg-muted">
+                      <Image
+                        src={image.image || "/placeholder.svg"}
+                        alt={image.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Badge className="bg-[#F5A623] hover:bg-[#FFB84D] text-white mb-2">{image.category}</Badge>
+                        <h3 className="text-lg font-bold text-white">{getBilingual(image.title, (image as any).title_np)}</h3>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {filteredImages.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">{t("gallery.noImages")}</p>
+                </div>
+              )}
+            </>
           )}
         </Container>
       </section>

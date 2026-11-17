@@ -14,6 +14,7 @@ import { Calendar, Edit, Trash2, Plus, ImageIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Image from "next/image"
+import { compressImageToWebP } from "@/lib/image-compression"
 
 export function AdminNewsManager() {
   const { toast } = useToast()
@@ -134,7 +135,7 @@ export function AdminNewsManager() {
     })
   }
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -147,16 +148,29 @@ export function AdminNewsManager() {
       return
     }
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const base64String = reader.result as string
-      setFormData({ ...formData, image: base64String })
-      toast({
-        title: "Image uploaded",
-        description: "Image has been uploaded successfully",
+    try {
+      const result = await compressImageToWebP(file, {
+        maxWidth: 1600,
+        maxHeight: 1600,
+        quality: 0.8,
+        maxSizeBytes: 180 * 1024,
       })
+
+      setFormData({ ...formData, image: result.dataUrl })
+      toast({
+        title: "⚡ Auto-compressed to WebP",
+        description: `${result.originalSizeKB} KB → ${result.compressedSizeKB} KB (${result.savedPercent}% smaller)`,
+      })
+    } catch (error) {
+      console.error("Compression error:", error)
+      toast({
+        title: "Upload failed",
+        description: "Failed to compress image",
+        variant: "destructive",
+      })
+    } finally {
+      e.target.value = ""
     }
-    reader.readAsDataURL(file)
   }
 
   return (

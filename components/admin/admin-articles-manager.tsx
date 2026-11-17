@@ -14,6 +14,8 @@ import { useLanguage } from "@/lib/i18n-context"
 import { ImageInput } from "@/components/admin/form-fields"
 import { type CMSContent } from "@/lib/cms-storage"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { compressImageToWebP } from "@/lib/image-compression"
+import { useToast } from "@/hooks/use-toast"
 
 interface AdminArticlesManagerProps {
     content?: CMSContent
@@ -30,6 +32,7 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
     const [editingArticle, setEditingArticle] = useState<CMSContent["articles"][0] | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const { t, language } = useLanguage()
+    const { toast } = useToast()
 
     // Form state
     const [formData, setFormData] = useState({
@@ -63,12 +66,22 @@ export function AdminArticlesManager({ content: propsContent, updateContent: pro
         setEditingArticle(null)
     }
 
-    const handleUpload = (file: File) => {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-            setFormData({ ...formData, image: reader.result as string })
+    const handleUpload = async (file: File) => {
+        try {
+            const res = await compressImageToWebP(file, { maxWidth: 1600, quality: 0.8 })
+            setFormData(prev => ({ ...prev, image: res.dataUrl }))
+            toast({
+                title: "⚡ Image converted to WebP",
+                description: `${res.originalSizeKB} KB → ${res.compressedSizeKB} KB (${res.savedPercent}% smaller)`,
+            })
+        } catch (e) {
+            console.error("Compression error:", e)
+            toast({
+                title: "Error",
+                description: "Failed to compress image.",
+                variant: "destructive",
+            })
         }
-        reader.readAsDataURL(file)
     }
 
     const handleEdit = (article: CMSContent["articles"][0]) => {

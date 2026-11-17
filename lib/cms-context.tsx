@@ -10,6 +10,7 @@ interface CMSContextType {
   isEditorMode?: boolean
   updateContent?: (path: string[], value: any) => void
   refreshContent?: () => void
+  isLoading?: boolean
 }
 
 const CMSContext = createContext<CMSContextType | null>(null)
@@ -58,14 +59,19 @@ export function CMSProvider({
 }) {
   // Always start with defaultContent (or passed initialContent) to match server SSR
   const [content, setContent] = useState<CMSContent>(initialContent || defaultContent)
+  const [isLoading, setIsLoading] = useState(true)
   const { language } = useLanguage()
 
   // Listen for storage changes and custom events
   useEffect(() => {
     // Hydrate from API on mount
     const loadContent = async () => {
-      const data = await fetchCMSContent()
-      setContent(data)
+      try {
+        const data = await fetchCMSContent()
+        setContent(data)
+      } finally {
+        setIsLoading(false)
+      }
     }
     loadContent()
 
@@ -155,7 +161,7 @@ export function CMSProvider({
   }, [content, language])
 
   return (
-    <CMSContext.Provider value={{ content: localizedContent, isEditorMode, updateContent: handleUpdateContent, refreshContent }}>
+    <CMSContext.Provider value={{ content: localizedContent, isEditorMode, updateContent: handleUpdateContent, refreshContent, isLoading }}>
       {children}
     </CMSContext.Provider>
   )
@@ -167,12 +173,17 @@ export function useCMS() {
     // If no context, create a hook that reads directly and can refresh
     // Initialize with defaultContent to match server
     const [content, setContent] = useState<CMSContent>(defaultContent)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
       // Hydrate on mount
       const loadContent = async () => {
-        const data = await fetchCMSContent()
-        setContent(data)
+        try {
+          const data = await fetchCMSContent()
+          setContent(data)
+        } finally {
+          setIsLoading(false)
+        }
       }
       loadContent()
 
@@ -188,7 +199,7 @@ export function useCMS() {
       }
     }, [])
 
-    return { content, isEditorMode: false, refreshContent: async () => setContent(await fetchCMSContent()) }
+    return { content, isEditorMode: false, isLoading, refreshContent: async () => setContent(await fetchCMSContent()) }
   }
   return context
 }
